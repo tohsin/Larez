@@ -1,0 +1,14 @@
+pyuic5 -x test.ui -o test.py
+
+https://www.codespeedy.com/fingerprint-detection-in-python/
+https://docs.gspread.org/en/latest/user-guide.html#opening-a-spreadsheet
+
+create user
+deposit money
+authenticate
+transfer money
+pay
+
+splash
+login admin
+payment

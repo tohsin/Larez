@@ -1,0 +1,4 @@
+pyqt5
+gspread
+opencv-python
+numpy
