@@ -23,7 +23,7 @@ Item {
     MessageDialog {
         title: "Making Transfer"
         id: transferDialog
-        text: "You Are About To Make A Transfer of " + amount_field.text + " Amount to " + username_field.text
+        text: "You Are About To Make A Transfer of " + amount_field.text + " Naira to " + username_field.text
         informativeText: "Do You Want To Continue?"
         buttons: MessageDialog.Yes | MessageDialog.No | MessageDialog.Cancel
         onYesClicked: { stack.push('Success.ui.qml'); click.running = true }
@@ -104,7 +104,7 @@ Item {
         width: 136
         height: 124
         visible: use_username_button.visible
-        source: "../../../Downloads/Ps/GUI/whitefinger.jpg"
+        source: "whitefinger.jpg"
         anchors.horizontalCenter: parent.horizontalCenter
         fillMode: Image.PreserveAspectFit
         MouseArea {
