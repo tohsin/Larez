@@ -1,3 +1,3 @@
-I Put all the files in one folder because it's a bit messy on my side
+Checkout the requirements
 
-Checkout the requirements. It's basically just the PySide6 which i believe if you rename PyQt5, 'might' generate the same result because they basically have the same modules
+I believe if you rename PySide6 to PyQt5, it 'might' produce the same result because they basically have the same modules/functions
