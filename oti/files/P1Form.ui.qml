@@ -64,6 +64,7 @@ Item {
             font.pixelSize: 15
             topPadding: 7
             leftPadding: 9
+            rightPadding: 40
             anchors.verticalCenter: username_box.verticalCenter
             anchors.left: username_box.left
             anchors.right: username_box.right
@@ -107,6 +108,7 @@ Item {
             font.pixelSize: 15
             topPadding: 7
             leftPadding: 9
+            rightPadding: 40
             anchors.verticalCenter: password_box.verticalCenter
             anchors.left: password_box.left
             anchors.right: password_box.right
