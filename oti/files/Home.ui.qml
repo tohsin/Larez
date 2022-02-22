@@ -3,10 +3,10 @@ import QtQuick.Controls 6.2
 
 ApplicationWindow {
     id: window
-    width: 600
-    height: 900
+    width: 700
+    height: 800
     visible: true
-    visibility: "FullScreen"
+    visibility: "Windowed"
     x: (Screen.width - width)/2
     y: (Screen.height - height)/2
     title: "CU Pay"
