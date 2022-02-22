@@ -83,6 +83,7 @@ Item {
         function onFinishedprocess(correctpage) {
             if (correctpage === 'close') { stack.pop() }
             else { stack.replace(correctpage) }
+            /*onYesClicked: { stack.push('Success.ui.qml'); click.running = true } "for when the load screen pushed the success page"*/
         }
     }
 }
