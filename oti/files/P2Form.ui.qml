@@ -162,6 +162,7 @@ Item {
             font.pointSize: 12
             topPadding: 7
             leftPadding: 9
+            rightPadding: 40
             placeholderText: qsTr("Username")
         }
     }
@@ -208,6 +209,7 @@ Item {
             font.pointSize: 12
             topPadding: 7
             leftPadding: 9
+            rightPadding: 40
             placeholderText: qsTr("Pin")
         }
         Text {
