@@ -9,7 +9,7 @@ Item {
     Rectangle {
         id: time ; width: 10 ; height: 10 ; visible: false
     }
-
+    property var aNum: ""
     SequentialAnimation {
         id: click
         PropertyAnimation {
@@ -37,8 +37,10 @@ Item {
             font.family: "Verdana"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                if (enter_amount.text < 50.0) { warnDialog.open() }
-                else { purchaseDialog.open() }
+                if (enter_amount.text < 50 | enter_amount.text > aNum) {
+                    if (enter_amount.text < 50.0) { warnDialog.open() }
+                    if (enter_amount.text > aNum) { insufDialog.open() }
+                } else { purchaseDialog.open() }
             }
         }
     }
@@ -47,9 +49,8 @@ Item {
         id: purchaseDialog
         text: "You Are About To Make A Purchase with " + enter_amount.text + " Naira"
         informativeText: "Do You Want To Continue?"
-        buttons: MessageDialog.Yes | MessageDialog.No | MessageDialog.Cancel
+        buttons: MessageDialog.Yes | MessageDialog.No
         onYesClicked: { stack.push('Success.ui.qml'); click.running = true }
-        onCancelClicked: { stack.pop() ; stack.pop() }
     }
     MessageDialog {
         title: "Invalid Amount"
@@ -57,17 +58,49 @@ Item {
         text: "You Cannot Make Purchase With less than 50 Naira"
         buttons: MessageDialog.Ok
     }
+    MessageDialog {
+        title: "Invalid Amount"
+        id: insufDialog
+        text: "Amount You Entered Supercedes Your Available Balance"
+        buttons: MessageDialog.Ok
+    }
 
-    Button {
-        id: back_button
-        width: 65
-        height: 35
-        text: qsTr("<  BACK")
+    Image {
         anchors.left: parent.left
+        anchors.leftMargin: 40
         anchors.top: parent.top
-        anchors.leftMargin: 32
-        anchors.topMargin: 80
-        onClicked: stack.pop()
+        anchors.topMargin: 60
+        source: 'menubutton.png'
+        height: 30
+        width: height + 5
+        id: menubar
+        MouseArea {
+            anchors.fill: parent
+            onClicked: menu.open()
+        }
+        MessageDialog {
+            title: "Logout User"
+            id: userlogoutDialog
+            text: "You Are About To Logout"
+            informativeText: "Do You Want To Continue?"
+            buttons: MessageDialog.Yes | MessageDialog.No
+            onYesClicked: { backend.userlogout() ; stack.pop() ; stack.pop() }
+        }
+        Menu {
+            id: menu
+            MenuItem {
+                text: qsTr("Logout User") ;
+                onTriggered: userlogoutDialog.open()
+            }
+            MenuItem {
+                text: qsTr("Switch to Transfer Mode")
+                onTriggered: { backend.feature("Transfer") ; stack.replace("Transfer.ui.qml") ; backend.switchfeature() }
+            }
+            MenuItem {
+                text: qsTr("Switch to Register Mode")
+                onTriggered: { backend.feature("Register") ; stack.pop() ; stack.replace("Register.ui.qml") ; backend.switchfeature() }
+            }
+        }
     }
 
     Text {
@@ -110,7 +143,23 @@ Item {
             font.pointSize: 12
             topPadding: 7
             leftPadding: 9
+            rightPadding: 35
             placeholderText: qsTr("Enter Amount")
+        }
+        Image {
+            id:clearamount
+            height: 15
+            width: height
+            anchors.verticalCenter: amount_box.verticalCenter
+            anchors.right: amount_box.right
+            anchors.rightMargin: 10
+            source: "cleartext.png"
+
+            MouseArea {
+                id:clamt
+                anchors.fill: parent
+                onClicked: enter_amount.text = ""
+            }
         }
     }
 
@@ -118,20 +167,48 @@ Item {
         target: backend
 
         function onLoggeduser(customer){ loggeduser.text = "Hi, " + customer }
+        function onFeaturemode(activity){ modename.text = activity + " Window" }
+        function onAccbalance(cash){ acbal.text = "Available: " + cash ; aNum = cash }
     }
+
     Text {
-        id: loggeduser
-        x: 390
+        id: modename
+        x: parent.width - 210
         width: 150
-        height: 40
-        text: "Hi, "
-        font.pixelSize: 20
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        anchors.top: back_button.bottom
-        anchors.topMargin: 30
+        height: 20
+        text: " Window"
+        font.pixelSize: 18
+        anchors.top: parent.top
+        anchors.topMargin: 125
         font.family: "Verdana"
         font.styleName: "Regular"
         font.italic: true
+        font.bold: true
+
+        Text {
+            id: loggeduser
+            width: 150
+            height: 20
+            text: "Hi, "
+            font.pixelSize: 16
+            anchors.top: parent.bottom
+            anchors.right: parent.right
+            font.family: "Verdana"
+            font.styleName: "Regular"
+            font.italic: true
+        }
+        Text {
+            id: acbal
+            width: 150
+            height: 20
+            text: "Available "
+            font.pixelSize: 16
+            anchors.top: loggeduser.bottom
+            anchors.right: parent.right
+            font.family: "Verdana"
+            font.styleName: "Regular"
+            font.italic: true
+        }
     }
+
 }
