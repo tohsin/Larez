@@ -21,9 +21,9 @@ class Backend(QObject):
 
     report = []
     #supersheet = {'100': '0000'}
-    supersheet = {'': ''}
+    supersheet = {'1': ''}
     #adminsheet = {'200': '0000'}
-    adminsheet = {'': '0000'}
+    adminsheet = {'2': '0000'}
     #customersheet = {'': '0000'}
     customersheet = {'3': '0000'}
     pageindex = {
