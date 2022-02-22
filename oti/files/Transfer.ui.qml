@@ -9,7 +9,7 @@ Item {
     Rectangle {
         id: time ; width: 10 ; height: 10 ; visible: false
     }
-
+    property var aNum: ""
     SequentialAnimation {
         id: click
         PropertyAnimation {
@@ -23,11 +23,11 @@ Item {
     MessageDialog {
         title: "Making Transfer"
         id: transferDialog
-        text: "You Are About To Make A Transfer of " + amount_field.text + " Naira to " + username_field.text
+        text: "You Are About To Make A Transfer of " + amount_field.text + " Amount to " + username_field.text
         informativeText: "Do You Want To Continue?"
-        buttons: MessageDialog.Yes | MessageDialog.No | MessageDialog.Cancel
+        buttons: MessageDialog.Yes | MessageDialog.No
         onYesClicked: { stack.push('Success.ui.qml'); click.running = true }
-        onCancelClicked: { stack.pop() ; stack.pop() }
+        onNoClicked: username_checkBox.checked = false
     }
     MessageDialog {
         title: "Invalid Amount"
@@ -39,6 +39,12 @@ Item {
         title: "Invalid Recipient"
         id: warnDialog2
         text: "Recipient Either Doesn't exist or You Left The Column Empty"
+        buttons: MessageDialog.Ok
+    }
+    MessageDialog {
+        title: "Invalid Amount"
+        id: insufDialog
+        text: "Amount You Entered Supercedes Your Available Balance"
         buttons: MessageDialog.Ok
     }
     FocusScope {
@@ -78,24 +84,48 @@ Item {
 
         Switch {
             id: switch1
-            x: 254
-            y: 194
             text: qsTr("Switch")
             checked: false
             visible: false
         }
     }
 
-    Button {
-        id: back_button
-        width: 65
-        height: 35
-        text: qsTr("<  BACK")
+    Image {
         anchors.left: parent.left
+        anchors.leftMargin: 40
         anchors.top: parent.top
-        anchors.leftMargin: 32
-        anchors.topMargin: 80
-        onClicked: stack.pop()
+        anchors.topMargin: 60
+        source: 'menubutton.png'
+        height: 30
+        width: height + 5
+        id: menubar
+        MouseArea {
+            anchors.fill: parent
+            onClicked: menu.open()
+        }
+        MessageDialog {
+            title: "Logout User"
+            id: userlogoutDialog
+            text: "You Are About To Logout"
+            informativeText: "Do You Want To Continue?"
+            buttons: MessageDialog.Yes | MessageDialog.No
+            onYesClicked: { backend.userlogout() ; stack.pop() ; stack.pop() }
+        }
+        Menu {
+            id: menu
+            MenuItem {
+                text: qsTr("Logout User") ;
+                onTriggered: userlogoutDialog.open()
+            }
+            MenuItem {
+                text: qsTr("Switch to Purchase Mode")
+                onTriggered: { backend.feature("Purchase") ; stack.replace("Purchase.ui.qml") ; backend.switchfeature() }
+            }
+            MenuItem {
+                text: qsTr("Switch to Register Mode")
+                onTriggered: { backend.feature("Register") ; stack.pop() ; stack.replace("Register.ui.qml") ; backend.switchfeature() }
+            }
+        }
     }
 
     Image {
@@ -110,7 +140,8 @@ Item {
         MouseArea {
             anchors.fill: parent;
             onClicked: {
-                if (amount_field.text < 50.0) { warnDialog.open() ; amount_checkBox.checked = false}
+                if (amount_field.text < 50.0) { warnDialog.open() ; amount_checkBox.checked = false }
+                if (amount_field.text > aNum) { insufDialog.open() ; amount_checkBox.checked = false }
                 else { transferDialog.open() ; backend.transferfeature([amount_field.text, "'Biometrics ID - 00'", "fingerprint"]) }
             }
         }
@@ -169,6 +200,12 @@ Item {
             anchors.left: amount_box.right
             checked: false
             anchors.leftMargin: 15
+            onClicked: {
+                if (amount_checkBox.checked == true){
+                    if (amount_field.text < 50.0) { warnDialog.open() ; amount_checkBox.checked = false }
+                    if (amount_field.text > aNum) { insufDialog.open() ; amount_checkBox.checked = false }
+                }
+            }
         }
 
         Text {
@@ -197,7 +234,23 @@ Item {
             font.pointSize: 12
             topPadding: 7
             leftPadding: 9
+            rightPadding: 35
             placeholderText: qsTr("Amount")
+        }
+        Image {
+            id:clearamount
+            height: 15
+            width: height
+            anchors.verticalCenter: amount_box.verticalCenter
+            anchors.right: amount_box.right
+            anchors.rightMargin: 10
+            source: "cleartext.png"
+
+            MouseArea {
+                id:clamt
+                anchors.fill: parent
+                onClicked: amount_field.text = ""
+            }
         }
     }
     Text {
@@ -242,6 +295,7 @@ Item {
             font.pointSize: 12
             topPadding: 7
             leftPadding: 9
+            rightPadding: 35
             placeholderText: qsTr("Account No. / Mat No.")
         }
         Text {
@@ -268,10 +322,24 @@ Item {
             anchors.leftMargin: 15
             onClicked: {
                 if (username_checkBox.checked == true){
-                    if (amount_field.text < 50.0) { warnDialog.open() ; amount_checkBox.checked = false}
-                    if (username_field.text === '') { warnDialog2.open()  ; username_checkBox.checked = false}
+                    if (username_field.text === '') { warnDialog2.open()  ; username_checkBox.checked = false }
                     else { transferDialog.open() ; backend.transferfeature([amount_field.text, username_field.text, "typed"]) }
                 }
+            }
+        }
+        Image {
+            id:clearusername
+            height: 15
+            width: height
+            anchors.verticalCenter: username_box.verticalCenter
+            anchors.right: username_box.right
+            anchors.rightMargin: 10
+            source: "cleartext.png"
+
+            MouseArea {
+                id:clusr
+                anchors.fill: parent
+                onClicked: username_field.text = ""
             }
         }
     }
@@ -279,20 +347,46 @@ Item {
         target: backend
 
         function onLoggeduser(customer){ loggeduser.text = "Hi, " + customer }
+        function onFeaturemode(activity){ modename.text = activity + " Window" }
+        function onAccbalance(cash){ acbal.text = "Available: " + cash ; aNum = cash }
     }
     Text {
-        id: loggeduser
-        x: 390
+        id: modename
+        x: parent.width - 210
         width: 150
-        height: 40
-        text: "Hi, "
-        font.pixelSize: 20
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        anchors.top: back_button.bottom
-        anchors.topMargin: 30
+        height: 20
+        text: " Window"
+        font.pixelSize: 18
+        anchors.top: parent.top
+        anchors.topMargin: 125
         font.family: "Verdana"
         font.styleName: "Regular"
         font.italic: true
+        font.bold: true
+
+        Text {
+            id: loggeduser
+            width: 150
+            height: 20
+            text: "Hi, "
+            font.pixelSize: 16
+            anchors.top: parent.bottom
+            anchors.right: parent.right
+            font.family: "Verdana"
+            font.styleName: "Regular"
+            font.italic: true
+        }
+        Text {
+            id: acbal
+            width: 150
+            height: 20
+            text: "Available "
+            font.pixelSize: 16
+            anchors.top: loggeduser.bottom
+            anchors.right: parent.right
+            font.family: "Verdana"
+            font.styleName: "Regular"
+            font.italic: true
+        }
     }
 }
