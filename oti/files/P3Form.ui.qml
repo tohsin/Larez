@@ -13,44 +13,50 @@ Item {
         initialItem: features
         popEnter: Transition {
             PropertyAnimation {
-                property: "opacity"
+                property: "scale"
                 to: 1
                 duration: 200
+                easing.type: Easing.InQuart
             }
         }
         popExit: Transition {
             PropertyAnimation {
-                property: "opacity"
+                property: "scale"
                 to: 0
                 duration: 200
+                easing.type: Easing.OutQuart
             }
         }
         pushEnter: Transition {
             PropertyAnimation {
-                property: "opacity"
+                property: "scale"
                 to: 1
                 duration: 200
+                easing.type: Easing.InQuart
             }
         }
         pushExit: Transition {
             PropertyAnimation {
-                property: "opacity"
+                property: "scale"
                 to: 0
                 duration: 200
+                easing.type: Easing.OutQuart
             }
         }
         replaceEnter: Transition {
             PropertyAnimation {
-                property: "opacity"
+                property: "scale"
                 to: 1
                 duration: 200
+                easing.type: Easing.InQuart
             }
         }
         replaceExit: Transition {
             PropertyAnimation {
-                property: "opacity"
+                property: "scale"
                 to: 0
                 duration: 200
+                easing.type: Easing.OutQuart
             }
         }
     }

@@ -1,5 +1,4 @@
 import QtQuick 2.14
-import QtQuick.Controls 6.2
 
 Item {
     width: 600
@@ -8,6 +7,7 @@ Item {
     Rectangle {
         id: rect
         anchors.fill: parent
+        radius: 10
     }
     Image {
         id: success
