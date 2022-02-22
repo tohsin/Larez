@@ -163,7 +163,7 @@ Item {
             font.pointSize: 12
             topPadding: 7
             leftPadding: 9
-            rightPadding: 40
+            rightPadding: 35
             placeholderText: qsTr("Matric No. / Username")
         }
         Image {
@@ -211,7 +211,6 @@ Item {
             anchors.leftMargin: 0
             visible: use_fingerprint_button.visible
         }
-
         TextField {
             id: password
             echoMode: TextInput.Password
@@ -226,7 +225,7 @@ Item {
             font.pointSize: 12
             topPadding: 7
             leftPadding: 9
-            rightPadding: 40
+            rightPadding: 35
             placeholderText: qsTr("Pin")
         }
         Image {

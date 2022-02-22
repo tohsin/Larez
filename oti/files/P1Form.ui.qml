@@ -4,7 +4,6 @@ import Qt.labs.platform 1.1
 
 Item {
     id: window
-    property var correctpage: ""
     anchors.horizontalCenter: parent.horizontalCenter
 
     FocusScope {
@@ -64,12 +63,27 @@ Item {
             font.pixelSize: 15
             topPadding: 7
             leftPadding: 9
-            rightPadding: 40
+            rightPadding: 35
             anchors.verticalCenter: username_box.verticalCenter
             anchors.left: username_box.left
             anchors.right: username_box.right
             anchors.rightMargin: 1
             anchors.leftMargin: 1
+        }
+        Image {
+            id:clearusername
+            height: 15
+            width: height
+            anchors.verticalCenter: username_box.verticalCenter
+            anchors.right: username_box.right
+            anchors.rightMargin: 10
+            source: "cleartext.png"
+
+            MouseArea {
+                id:clusr
+                anchors.fill: parent
+                onClicked: username.text = ""
+            }
         }
     }
     Text {
@@ -108,12 +122,27 @@ Item {
             font.pixelSize: 15
             topPadding: 7
             leftPadding: 9
-            rightPadding: 40
+            rightPadding: 35
             anchors.verticalCenter: password_box.verticalCenter
             anchors.left: password_box.left
             anchors.right: password_box.right
             anchors.rightMargin: 1
             anchors.leftMargin: 1
+        }
+        Image {
+            id:clearpin
+            height: 15
+            width: height
+            anchors.verticalCenter: password_box.verticalCenter
+            anchors.right: password_box.right
+            anchors.rightMargin: 10
+            source: "cleartext.png"
+
+            MouseArea {
+                id:clpin
+                anchors.fill: parent
+                onClicked: password.text = ""
+            }
         }
         MessageDialog {
             title: "Incorrect Details Entered"

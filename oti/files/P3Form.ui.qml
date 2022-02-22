@@ -201,7 +201,7 @@ Item {
 
 
                     onClicked: {
-                        stack.push("P4Form.ui.qml");
+                        stack.push("Register.ui.qml");
                         backend.feature(reg.text);
                     }
                     onEntered: regi.scale = 1.2
@@ -246,7 +246,7 @@ Item {
                     onTriggered: adminlogoutDialog.open()
                 }
                 MenuItem {
-                    text: "Logout Super Admin"
+                    text: qsTr("Logout Super Admin")
                     onTriggered: superadminlogoutDialog.open()
                 }
             }

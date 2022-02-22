@@ -162,8 +162,23 @@ Item {
             font.pointSize: 12
             topPadding: 7
             leftPadding: 9
-            rightPadding: 40
+            rightPadding: 35
             placeholderText: qsTr("Username")
+        }
+        Image {
+            id:clearusername
+            height: 15
+            width: height
+            anchors.verticalCenter: username_box.verticalCenter
+            anchors.right: username_box.right
+            anchors.rightMargin: 10
+            source: "cleartext.png"
+
+            MouseArea {
+                id:clusr
+                anchors.fill: parent
+                onClicked: username.text = ""
+            }
         }
     }
     Text {
@@ -209,7 +224,7 @@ Item {
             font.pointSize: 12
             topPadding: 7
             leftPadding: 9
-            rightPadding: 40
+            rightPadding: 35
             placeholderText: qsTr("Pin")
         }
         Text {
@@ -239,6 +254,21 @@ Item {
                     page_loader.source = "Loadingpage.ui.qml";
                     backend.adminuser([username.text, password.text, "Pin"]);
                 }
+            }
+        }
+        Image {
+            id:clearpin
+            height: 15
+            width: height
+            anchors.verticalCenter: password_box.verticalCenter
+            anchors.right: password_box.right
+            anchors.rightMargin: 10
+            source: "cleartext.png"
+
+            MouseArea {
+                id:clpin
+                anchors.fill: parent
+                onClicked: password.text = ""
             }
         }
         MessageDialog {
