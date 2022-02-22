@@ -70,7 +70,7 @@ Item {
         width: 136
         height: 124
         visible: use_pin_button.visible
-        source: "../../../Downloads/Ps/GUI/whitefinger.jpg"
+        source: "whitefinger.jpg"
         anchors.horizontalCenter: parent.horizontalCenter
         fillMode: Image.PreserveAspectFit
         MouseArea {
