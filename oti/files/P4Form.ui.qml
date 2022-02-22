@@ -163,6 +163,7 @@ Item {
             font.pointSize: 12
             topPadding: 7
             leftPadding: 9
+            rightPadding: 40
             placeholderText: qsTr("Matric No. / Username")
         }
         Image {
@@ -225,6 +226,7 @@ Item {
             font.pointSize: 12
             topPadding: 7
             leftPadding: 9
+            rightPadding: 40
             placeholderText: qsTr("Pin")
         }
         Image {
