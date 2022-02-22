@@ -1,91 +1,58 @@
 import QtQuick 2.14
 import QtQuick.Controls 6.2
+import Qt.labs.platform 1.1
 
 Item {
     id: window
     width: 600
     height: 700
-    Rectangle {
+
+    FocusScope {
         id: white_rectangle
-        visible: true
-        color: "#ffffff"
         anchors.fill: parent
-        transformOrigin: Item.Center
-        radius: 8
-
-        Button {
-            id: use_pin_button
-            y: 522
-            width: 114
-            height: 40
-            text: qsTr("Use Pin")
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 120
-            visible: !switch1.checked & username_checkBox.checked
-            anchors.horizontalCenterOffset: 0
-            font.pointSize: 12
-            font.family: "Verdana"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: switch1.checked = !switch1.checked
-        }
-        Button {
-            id: use_fingerprint_button
-            y: 522
-            width: 156
-            height: 40
-            text: qsTr("Use Fingerprint")
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 120
-            visible: switch1.checked & username_checkBox.checked
-            anchors.horizontalCenterOffset: 0
-            font.pointSize: 12
-            font.family: "Verdana"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: switch1.checked = !switch1.checked
-        }
-
-        Switch {
-            id: switch1
-            x: 254
-            y: 194
-            text: qsTr("Switch")
-            checked: false
-            visible: false
-        }
     }
-
+    Rectangle {
+        id: time ; width: 10 ; height: 10 ; visible: false
+    }
+    SequentialAnimation {
+        id: click
+        PropertyAnimation {
+            target: time
+            property: "width"
+            duration: 2000
+            to: 100
+        }
+        ScriptAction { script: stack.replace('P3Form.ui.qml') }
+    }
     Button {
         id: back_button
-        width: 67
+        width: 65
         height: 35
-        text: qsTr("BACK")
+        text: qsTr("<  BACK")
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.leftMargin: 32
-        anchors.topMargin: 150
+        anchors.topMargin: 80
         onClicked: stack.pop()
     }
 
     Image {
-        id: image
-        width: 100
-        height: 100
-        anchors.top: parent.top
-        source: "../../../Downloads/Ps/OTI/Untitled-1.jpg"
-        anchors.topMargin: 40
-        anchors.horizontalCenter: white_rectangle.horizontalCenter
-        fillMode: Image.PreserveAspectFit
-    }
-    Image {
         id: fingerprint
-        y: 360
+        y: 460
         width: 136
         height: 124
-        visible: use_pin_button.visible
-        source: "../../../Downloads/Ps/GUI/fingerprint.png"
+        visible: password_checkBox.checked & regno_checkBox.checked
+        source: "whitefinger.jpg"
         anchors.horizontalCenter: parent.horizontalCenter
         fillMode: Image.PreserveAspectFit
-        MouseArea { anchors.fill: parent; onClicked: stack.push("P3Form.ui.qml") }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                stack.push('Success.ui.qml')
+                backend.registeruser([regno_field.text, '0000', "Biometric ID - 001"])
+                click.running = true
+            }
+        }
     }
 
     Text {
@@ -93,23 +60,24 @@ Item {
         x: 297
         width: 262
         height: 50
-        visible: use_pin_button.visible
-        text: qsTr("Place Finger on Scanner")
+        visible: fingerprint.visible
+        text: qsTr("Place Finger on Scanner to Register Fingerprint")
         anchors.top: fingerprint.bottom
-        font.pixelSize: 18
+        font.pixelSize: 20
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignTop
+        font.italic: true
         anchors.topMargin: -10
         anchors.horizontalCenter: fingerprint.horizontalCenter
     }
 
     Text {
-        id: admin
+        id: regno
         x: 60
-        y: 245
+        y: 200
         width: 152
         height: 41
-        text: qsTr("Admin:")
+        text: qsTr("User Reg No:")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.NoWrap
@@ -119,7 +87,7 @@ Item {
         font.styleName: "Regular"
 
         Rectangle {
-            id: username_box
+            id: regno_box
             width: 430
             height: 40
             color: "#ffffff"
@@ -131,15 +99,15 @@ Item {
             anchors.leftMargin: 0
         }
         CheckBox {
-            id: username_checkBox
+            id: regno_checkBox
             x: 428
             y: 304
             width: 13
             height: 12
             scale: 2.4
-            anchors.verticalCenter: username_box.verticalCenter
-            anchors.left: username_box.right
-            checked: true
+            anchors.verticalCenter: regno_box.verticalCenter
+            anchors.left: regno_box.right
+            checked: false
             anchors.leftMargin: 15
         }
 
@@ -149,8 +117,8 @@ Item {
             width: 127
             height: 25
             text: qsTr("Click To Check/Uncheck")
-            anchors.right: username_checkBox.right
-            anchors.top: username_box.bottom
+            anchors.right: regno_checkBox.right
+            anchors.top: regno_box.bottom
             font.pixelSize: 13
             horizontalAlignment: Text.AlignRight
             anchors.topMargin: 10
@@ -158,27 +126,42 @@ Item {
         }
 
         TextField {
-            id: username
+            id: regno_field
             height: 38
-            anchors.verticalCenter: username_box.verticalCenter
-            anchors.left: username_box.left
-            anchors.right: username_box.right
+            anchors.verticalCenter: regno_box.verticalCenter
+            anchors.left: regno_box.left
+            anchors.right: regno_box.right
             anchors.rightMargin: 1
             anchors.leftMargin: 1
             baselineOffset: 15
             font.pointSize: 12
             topPadding: 7
             leftPadding: 9
-            placeholderText: qsTr("Username")
+            rightPadding: 35
+            placeholderText: qsTr("Reg No. / Username")
+        }
+        Image {
+            id: clearregno
+            height: 15
+            width: height
+            anchors.verticalCenter: regno_box.verticalCenter
+            anchors.right: regno_box.right
+            anchors.rightMargin: 10
+            source: "cleartext.png"
+
+            MouseArea {
+                id: clusr
+                anchors.fill: parent
+                onClicked: regno_field.text = ""
+            }
         }
     }
     Text {
         id: pin
         x: 60
-        y: 400
+        y: 360
         width: 152
         height: 41
-        visible: use_fingerprint_button.visible
         text: qsTr("Pin:")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
@@ -198,13 +181,11 @@ Item {
             anchors.top: parent.bottom
             anchors.topMargin: 0
             anchors.leftMargin: 0
-            visible: use_fingerprint_button.visible
         }
-
         TextField {
             id: password
+            echoMode: TextInput.Password
             height: 38
-            visible: use_fingerprint_button.visible
             anchors.verticalCenter: password_box.verticalCenter
             anchors.left: password_box.left
             anchors.right: password_box.right
@@ -214,7 +195,23 @@ Item {
             font.pointSize: 12
             topPadding: 7
             leftPadding: 9
+            rightPadding: 35
             placeholderText: qsTr("Pin")
+        }
+        Image {
+            id: clearpin
+            height: 15
+            width: height
+            anchors.verticalCenter: password_box.verticalCenter
+            anchors.right: password_box.right
+            anchors.rightMargin: 10
+            source: "cleartext.png"
+
+            MouseArea {
+                id: clpin
+                anchors.fill: parent
+                onClicked: password.text = ""
+            }
         }
         Text {
             id: p_check_uncheck
@@ -238,7 +235,23 @@ Item {
             anchors.left: password.right
             checked: false
             anchors.leftMargin: 15
-            onClicked: stack.push("P3Form.ui.qml")
+        }
+        MessageDialog {
+            title: "Invalid Username"
+            id: invalidDialog
+            text: "Reg No is either already in use or doesn't exist"
+            buttons: MessageDialog.Ok
+        }
+
+        Connections {
+            target: backend
+
+            function onInvalid(number) {
+                if (number === 1) {
+                    invalidDialog.open()
+                    regno_checkBox.checked = false
+                }
+            }
         }
     }
 }
