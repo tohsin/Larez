@@ -2,9 +2,14 @@ import sys
 from PySide6.QtCore import QObject, Signal, Slot
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtWidgets import QApplication
-#import gspread
+from database import Sheet
+import gspread
 import datetime
-
+def test_gspread():
+    sh = Sheet()
+    print(sh.get_entireTableUser())
+    
+    
 class Backend(QObject):
     def __init__(self):
         QObject.__init__(self)
@@ -200,15 +205,17 @@ class Backend(QObject):
         self.amount = None
         
 
-
+test_gspread()
 if __name__ == "__main__":
+    
     app = QApplication(sys.argv)
     engine = QQmlApplicationEngine()
     back = Backend()
     engine.rootContext().setContextProperty("backend", back)
     engine.quit.connect(app.quit)
-    engine.load('Home.ui.qml')
-    engine.load('P3Form.ui.qml')
+    # engine.load('Home.ui.qml')
+    engine.load('oti/files/Home.ui.qml')
+    engine.load('oti/files/P3Form.ui.qml')
     #gs = gspread.service_account(filename='service_accnt.json')
     #gc = pygsheets.authorize(service_file='service_accnt.json')
     sys.exit(app.exec())

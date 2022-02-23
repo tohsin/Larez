@@ -1,3 +1,0 @@
-import gspread
-
-def get

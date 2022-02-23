@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "larez-340015",
+  "private_key_id": "a52b3a9b50762ab188bb4b9c940ae8eebf0cb4af",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCd11Ly5EtX3WuL\nGoIILz0xBJe4cdWznt/FC0SoPF1Hm0ddqQ9gNLmHp+F5dVoM4lIoGXLA4Hz24Ebc\nj6aSsLWdqU8378Di85NfgbJ/4co+P4m/1x4rgeWEUBNT2JQu0boYe+A5dvGtcV/G\n8rekaQPXUPvFUhopi2SKpnuS5eVkyGcJw8bGi8CoPy10bBHkLx3mgt4jnNTWejq3\nKrnhbdeMmaKQhi5wdLBPAyNgjnfoCwq2FfK9HPDgHeGGFKHOBf7/zhKdL8o//0hM\nq2/dJE+6iFP/tGoqAy7Touju5zbnTgklg41QxRqKqbmDspKwAWiD+0R2MM8Q/GNZ\nO3d/Y38TAgMBAAECggEAAqVJ0CVwd9wPweijVlTIX0p26pIJ5XVbxdc/AtzkKV+a\nbiD3z4KCu5neRyVm6YFfpCltCXuZzJ+MwISt45aPrMFaQRNFNeikRz0Ky2by92Ek\nQ3FtIYiPWszmzgh6z2AXkPJ+myf5vBEC7HhECL7z4AeM+M08AAdEm6hXuOoekrZc\nepiP+FBVpbqyuSMSMLsnugYRFsy4PnkAdlD85nq4NlCX0Gx70gTpEbLjaS+eUG7n\nCb8tO8ki1j1LhnKDSh2lWdbmytEensZxAWaJpGMnlsZGJbkvXdn1O2omfOFUFgBl\nzu3hrcUh3ue3GgaNV4AejRNlj9tKuq4xdEgcbdNmWQKBgQDKqwi9qbC8MAIBU0EJ\nTG+ibmbx+kmAZw0ucZmwrNyrdsN2Jrn6htDs9cRcAYGu4hAIH9uhEINGIsM8TzMi\nUf+WmaGRcAJVoUr6o0ErUitF0NPOVi6/KaG4F+xQrF9s5MngVYR1dHH/SApgGhCV\nTXsG+u2hSxveaIJLCYRWd0K6iwKBgQDHYHgFEDM762YzCvXSsF7HSJ2zy6+bAMnu\ne/6EQsFAWioKJtgl0BFGD7q7s6Ny5rO0e2Co14LMyxKwdekiHrSd4ukftnYuJfj8\ne37ECTbNGssHeAoEP89TOTxE0phX23wp5spmXIse+vDp2C1D3mW+IBQha2+w7T5J\nmzTsnIBGmQKBgQCI18FYJurBtny0Hl3MhILgH0F9Y60bePmKgYPvqlh5ogBKl819\nnmgVh8ClCxNgXR3MDo7Cix7ITZKb9zIkm09Dhcp1JDc/UGALKg5HzPyQ8HcDXGfG\nBbs/TU/wDOOF6FlzEusUT6LlZuQyjYbi+OT4CphHDyrrGo/XUL69j1tMDwKBgExo\ncBagqsHf6P7OyH7CENCWx7lL6jShDMJUyqmtW5pp84qIcHWtU7Fh/dJJee5i86PL\nVLPgQ8RwXu05gusMkXOgrm704j21V8KLIX3HejUIe56VJmGSgsYGPU6y1qd0+hSk\n2hR4iuiIiyNTMaW86Yj/ijd0kQ1hHmnfDV1QbOihAoGBAIBfu/qiiVitN6S8KBos\nLWURoC/Si25vvIpi760fgRSFSQoieJ4sg/Kl31ffyvBM48By0P84RPO0I+wdBKaQ\nuZ6NgKlInVpc40FfJgQts8+y7hzpP3KjTbjpISm8WddCoFhHG2h2DtktebhLZc41\nNrDGixnKsVjBnGaL8OIvsyka\n-----END PRIVATE KEY-----\n",
+  "client_email": "larez-operations@larez-340015.iam.gserviceaccount.com",
+  "client_id": "104370057723744662024",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/larez-operations%40larez-340015.iam.gserviceaccount.com"
+}
