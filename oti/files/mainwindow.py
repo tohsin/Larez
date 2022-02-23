@@ -204,7 +204,7 @@ class Backend(QObject):
         self.recepientlog = ""
         self.amount = None
         
-
+#  this ran for me so try
 test_gspread()
 if __name__ == "__main__":
     
