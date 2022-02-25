@@ -1,4 +1,5 @@
 import sys
+import os
 from PySide6.QtCore import QObject, Signal, Slot
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtWidgets import QApplication
@@ -214,8 +215,8 @@ if __name__ == "__main__":
     engine.rootContext().setContextProperty("backend", back)
     engine.quit.connect(app.quit)
     # engine.load('Home.ui.qml')
-    engine.load('oti/files/Home.ui.qml')
-    engine.load('oti/files/P3Form.ui.qml')
+    engine.load('src/UI/Home.ui.qml')
+    engine.load('src/UI/P3Form.ui.qml')
     #gs = gspread.service_account(filename='service_accnt.json')
     #gc = pygsheets.authorize(service_file='service_accnt.json')
     sys.exit(app.exec())
