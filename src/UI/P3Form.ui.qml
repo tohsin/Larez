@@ -217,7 +217,7 @@ Item {
         }
         Text {
             id: redirect
-            y: 150
+            y: 170
             width: 152
             height: 41
             text: qsTr("Tapping a feature will redirect you to the Login Page")
