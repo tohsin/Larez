@@ -44,7 +44,6 @@ class Backend(QObject):
     @Slot()
     def closeapp(self):
         for items in self.report: print(items)
-        app.quit()
 
     finishedprocess = Signal(str)
 
