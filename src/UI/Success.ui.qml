@@ -14,6 +14,6 @@ Item {
         height: 300
         width: height
         anchors.centerIn: parent
-        source: "success.png"
+        source: "../images/success.png"
     }
 }

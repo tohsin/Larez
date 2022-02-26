@@ -95,7 +95,7 @@ Item {
         anchors.leftMargin: 40
         anchors.top: parent.top
         anchors.topMargin: 60
-        source: 'menubutton.png'
+        source: '../images/menubutton.png'
         height: 30
         width: height + 5
         id: menubar
@@ -134,7 +134,7 @@ Item {
         width: 136
         height: 124
         visible: use_username_button.visible
-        source: "whitefinger.jpg"
+        source: "../images/whitefinger.jpg"
         anchors.horizontalCenter: parent.horizontalCenter
         fillMode: Image.PreserveAspectFit
         MouseArea {
@@ -244,7 +244,7 @@ Item {
             anchors.verticalCenter: amount_box.verticalCenter
             anchors.right: amount_box.right
             anchors.rightMargin: 10
-            source: "cleartext.png"
+            source: "../images/cleartext.png"
 
             MouseArea {
                 id:clamt
@@ -334,7 +334,7 @@ Item {
             anchors.verticalCenter: username_box.verticalCenter
             anchors.right: username_box.right
             anchors.rightMargin: 10
-            source: "cleartext.png"
+            source: "../images/cleartext.png"
 
             MouseArea {
                 id:clusr

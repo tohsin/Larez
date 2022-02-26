@@ -76,7 +76,7 @@ Item {
                 y: 5
                 width: 100
                 height: 100
-                source: "pur.png"
+                source: "../images/pur.png"
                 fillMode: Image.PreserveAspectFit
 
                 Behavior on scale { PropertyAnimation { duration: 100 } }
@@ -124,7 +124,7 @@ Item {
                 y: 5
                 width: 100
                 height: 100
-                source: "trans.png"
+                source: "../images/trans.png"
                 fillMode: Image.PreserveAspectFit
 
                 Behavior on scale { PropertyAnimation { duration: 100 } }
@@ -173,7 +173,7 @@ Item {
                 y: 5
                 width: 100
                 height: 100
-                source: "reg.png"
+                source: "../images/reg.png"
                 fillMode: Image.PreserveAspectFit
                 Behavior on scale { PropertyAnimation { duration: 100 } }
                 Text {
@@ -237,7 +237,7 @@ Item {
             anchors.leftMargin: 40
             anchors.top: parent.top
             anchors.topMargin: 60
-            source: 'menubutton.png'
+            source: '../images/menubutton.png'
             height: 30
             width: height + 5
             id: menubar

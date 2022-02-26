@@ -70,7 +70,7 @@ Item {
         anchors.leftMargin: 40
         anchors.top: parent.top
         anchors.topMargin: 60
-        source: 'menubutton.png'
+        source: '../images/menubutton.png'
         height: 30
         width: height + 5
         id: menubar
@@ -153,7 +153,7 @@ Item {
             anchors.verticalCenter: amount_box.verticalCenter
             anchors.right: amount_box.right
             anchors.rightMargin: 10
-            source: "cleartext.png"
+            source: "../images/cleartext.png"
 
             MouseArea {
                 id:clamt

@@ -42,7 +42,7 @@ Item {
         width: 136
         height: 124
         visible: password_checkBox.checked & regno_checkBox.checked
-        source: "whitefinger.jpg"
+        source: "../images/whitefinger.jpg"
         anchors.horizontalCenter: parent.horizontalCenter
         fillMode: Image.PreserveAspectFit
         MouseArea {
@@ -147,7 +147,7 @@ Item {
             anchors.verticalCenter: regno_box.verticalCenter
             anchors.right: regno_box.right
             anchors.rightMargin: 10
-            source: "cleartext.png"
+            source: "../images/cleartext.png"
 
             MouseArea {
                 id: clusr
@@ -205,7 +205,7 @@ Item {
             anchors.verticalCenter: password_box.verticalCenter
             anchors.right: password_box.right
             anchors.rightMargin: 10
-            source: "cleartext.png"
+            source: "../images/cleartext.png"
 
             MouseArea {
                 id: clpin

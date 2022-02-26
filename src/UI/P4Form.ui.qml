@@ -70,7 +70,7 @@ Item {
         width: 136
         height: 124
         visible: use_pin_button.visible
-        source: "whitefinger.jpg"
+        source: "../images/whitefinger.jpg"
         anchors.horizontalCenter: parent.horizontalCenter
         fillMode: Image.PreserveAspectFit
         MouseArea {
@@ -173,7 +173,7 @@ Item {
             anchors.verticalCenter: username_box.verticalCenter
             anchors.right: username_box.right
             anchors.rightMargin: 10
-            source: "cleartext.png"
+            source: "../images/cleartext.png"
 
             MouseArea {
                 id:clusr
@@ -235,7 +235,7 @@ Item {
             anchors.verticalCenter: password_box.verticalCenter
             anchors.right: password_box.right
             anchors.rightMargin: 10
-            source: "cleartext.png"
+            source: "../images/cleartext.png"
 
             MouseArea {
                 id:clpin

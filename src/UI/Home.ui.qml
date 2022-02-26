@@ -7,15 +7,15 @@ ApplicationWindow {
     height: 800
     visible: true
     visibility: "Windowed"
-    x: (Screen.width - width)/2
-    y: (Screen.height - height)/2
+    x: (Screen.width - width) / 2
+    y: (Screen.height - height) / 2
     title: "CU Pay"
     flags: Qt.FramelessWindowHint
 
     Image {
         id: back_image
         anchors.fill: parent
-        source: "wallpaper.jpg"
+        source: "../images/wallpaper.jpg"
     }
 
     Rectangle {
@@ -33,7 +33,7 @@ ApplicationWindow {
             width: 100
             height: 100
             anchors.top: parent.top
-            source: "Untitled-1.jpg"
+            source: "../images/Untitled-1.jpg"
             anchors.topMargin: 40
             anchors.horizontalCenter: white_rectangle.horizontalCenter
             fillMode: Image.PreserveAspectFit
@@ -49,11 +49,14 @@ ApplicationWindow {
     }
     Image {
         id: close
-        source: "closebutton.png"
-        x: 25 ; y: x
-        height: 20 ; width: height
+        source: "../images/closebutton.png"
+        x: 25
+        y: x
+        height: 20
+        width: height
         MouseArea {
-            anchors.fill: parent; onClicked: backend.closeapp()
+            anchors.fill: parent
+            onClicked: backend.closeapp()
         }
     }
 }
