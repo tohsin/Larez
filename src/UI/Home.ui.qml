@@ -30,10 +30,10 @@ ApplicationWindow {
 
         Image {
             id: image
-            width: 100
-            height: 100
+            width: 150
+            height: 150
             anchors.top: parent.top
-            source: "../images/Untitled-1.jpg"
+            source: "../images/culogo.jpg"
             anchors.topMargin: 40
             anchors.horizontalCenter: white_rectangle.horizontalCenter
             fillMode: Image.PreserveAspectFit
