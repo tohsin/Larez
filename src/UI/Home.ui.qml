@@ -56,7 +56,7 @@ ApplicationWindow {
         width: height
         MouseArea {
             anchors.fill: parent
-            onClicked: backend.closeapp()
+            onClicked: { backend.closeapp() ; window.close() }
         }
     }
 }
