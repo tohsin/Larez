@@ -216,10 +216,7 @@ if __name__ == "__main__":
     back = Backend()
     engine.rootContext().setContextProperty("backend", back)
     engine.quit.connect(app.quit)
-    # engine.load('Home.ui.qml')
-    engine.load('src/UI/Home.ui.qml')
-    engine.load('src/UI/P3Form.ui.qml')
-    #gs = gspread.service_account(filename='service_accnt.json')
-    #gc = pygsheets.authorize(service_file='service_accnt.json')
+    engine.load('UI/Home.ui.qml')
+    engine.load('UI/P3Form.ui.qml')
     sys.exit(app.exec())
 
