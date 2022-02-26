@@ -12,11 +12,13 @@ class Sheet:
         
     def load_userTable(self, sh)->None:
         self.usersheet =  sh.sheet1
+        
     def create_new_user(self):
         pass
         
     def get_cell(self, row, col, worksheet):
         return worksheet.cell(row, col).value
+    
     def edit_cell(self, row , col, worksheet, val):
         worksheet.update_cell(row, col, val)
         
