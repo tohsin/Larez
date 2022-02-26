@@ -1,7 +1,7 @@
 import gspread
 class Sheet:
     def __init__(self) -> None:
-        sa = gspread.service_account(filename="/Users/elena/dev/Larez/service_accnt.json")
+        sa = gspread.service_account(filename="service_accnt.json")
         sh = sa.open("Larez_User")
         self.load_userTable(sh)
         self.table = self.get_entireTable(self.usersheet)
