@@ -3,7 +3,7 @@ import QtQuick.Controls 6.2
 
 ApplicationWindow {
     id: window
-    width: 700
+    width: 600
     height: 800
     visible: true
     visibility: "Windowed"
@@ -11,41 +11,36 @@ ApplicationWindow {
     y: (Screen.height - height) / 2
     title: "CU Pay"
     flags: Qt.FramelessWindowHint
+    color: "transparent"
 
-    Image {
-        id: back_image
-        anchors.fill: parent
-        source: "../images/wallpaper.jpg"
+    Switch {
+        id: switch1
+        checked: false
+        visible: false
     }
 
     Rectangle {
         id: white_rectangle
         visible: true
         color: "#ffffff"
-        width: 600
-        height: 700
-        radius: 8
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-
-        Image {
-            id: image
-            width: 150
-            height: 150
-            anchors.top: parent.top
-            source: "../images/culogo.jpg"
-            anchors.topMargin: 40
-            anchors.horizontalCenter: white_rectangle.horizontalCenter
-            fillMode: Image.PreserveAspectFit
-        }
+        anchors.fill: parent
+        radius: 8   
+    }
+    Image {
+        id: image
+        width: 150
+        height: 150
+        visible: switch1.checked
+        anchors.top: white_rectangle.top
+        source: "../images/culogo.jpg"
+        anchors.topMargin: 40
+        anchors.horizontalCenter: white_rectangle.horizontalCenter
+        fillMode: Image.PreserveAspectFit
     }
     Loader {
         id: page_loader
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        source: "P1Form.ui.qml"
-        width: 600
-        height: 700
+        source: "Splash.ui.qml"
+        anchors.fill: parent
     }
     Image {
         id: close
@@ -57,6 +52,14 @@ ApplicationWindow {
         MouseArea {
             anchors.fill: parent
             onClicked: { backend.closeapp() ; window.close() }
+        }
+    }
+    Connections {
+        target: backend
+
+        function onFinishedprocess(correctpage) {
+            if (correctpage === 'P1Form.ui.qml') { switch1.checked = !switch1.checked }
+
         }
     }
 }

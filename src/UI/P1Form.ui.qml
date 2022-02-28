@@ -4,14 +4,14 @@ import Qt.labs.platform 1.1
 
 Item {
     id: window
-    anchors.horizontalCenter: parent.horizontalCenter
-
+    anchors.fill: parent
     FocusScope {
         id: white_rectangle
         anchors.fill: parent
 
         Button {
             id: log_in_button
+            visible: !switch1.checked
             y: 506
             width: 114
             height: 40
@@ -22,20 +22,105 @@ Item {
             font.pointSize: 12
             font.family: "Verdana"
             anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: 100
             onClicked: {
                 page_loader.source = 'Loadingpage.ui.qml';
                 backend.superuser([username.text, password.text , "Pin"]);
             }
         }
+        Button {
+            id: use_pin_button
+            y: 522
+            width: 114
+            height: 40
+            text: qsTr("Use Pin")
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 120
+            visible: switch1.checked
+            anchors.horizontalCenterOffset: 0
+            font.pointSize: 12
+            font.family: "Verdana"
+            anchors.horizontalCenter: parent.horizontalCenter
+            onClicked: switch1.checked = !switch1.checked
+        }
+        Button {
+            id: use_fingerprint_button
+            y: 522
+            width: 156
+            height: 40
+            text: qsTr("Use Fingerprint")
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 120
+            visible: !switch1.checked
+            anchors.horizontalCenterOffset: -100
+            font.pointSize: 12
+            font.family: "Verdana"
+            anchors.horizontalCenter: parent.horizontalCenter
+            onClicked: switch1.checked = !switch1.checked
+        }
+        Switch {
+            id: switch1
+            checked: true
+            visible: false
+        }
     }
-
     Text {
-        id: superadmin
+        id: biometrics
+        visible: switch1.checked
         x: 60
         y: 245
         width: 152
         height: 41
-        text: qsTr("Super-Admin:")
+        text: qsTr("Super Admin")
+        font.pixelSize: 20
+        verticalAlignment: Text.AlignVCenter
+        wrapMode: Text.NoWrap
+        fontSizeMode: Text.Fit
+        font.capitalization: Font.AllUppercase
+        font.family: "Verdana"
+        font.styleName: "Regular"
+    }
+    Image {
+        id: fingerprint
+        visible: switch1.checked
+        y: 360
+        width: 150
+        height: 150
+        source: "../images/whitefinger.jpg"
+        anchors.horizontalCenter: parent.horizontalCenter
+        fillMode: Image.PreserveAspectFit
+        MouseArea {
+            anchors.fill: parent;
+            onClicked: {
+                page_loader.source = "Loadingpage.ui.qml";
+                backend.superuser(['', '', "Fingerprint"]);
+            }
+        }
+    }
+    Text {
+        id: place_finger
+        visible: switch1.checked
+        x: 297
+        width: 262
+        height: 50
+        text: qsTr("Place Finger on Scanner")
+        anchors.top: fingerprint.bottom
+        font.pixelSize: 20
+        font.italic: true
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignTop
+        anchors.topMargin: 10
+        anchors.horizontalCenter: fingerprint.horizontalCenter
+    }
+
+    Text {
+        id: superadmin
+        visible: !switch1.checked
+        x: 60
+        y: 245
+        width: 152
+        height: 41
+        text: qsTr("Super Admin")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.NoWrap
@@ -46,7 +131,7 @@ Item {
 
         Rectangle {
             id: username_box
-            width: 467
+            width: 480
             height: 40
             color: "#ffffff"
             radius: 5
@@ -57,10 +142,10 @@ Item {
 
         TextField {
             id: username
-            width: 467
-            height: 38
+            width: username_box.width
+            height: username_box.height - 2
             placeholderText: qsTr("Username")
-            font.pixelSize: 15
+            font.pixelSize: 16
             topPadding: 7
             leftPadding: 9
             rightPadding: 35
@@ -88,11 +173,12 @@ Item {
     }
     Text {
         id: pin
+        visible: !switch1.checked
         x: 60
         y: 400
         width: 152
         height: 41
-        text: qsTr("Pin:")
+        text: qsTr("Pin")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.NoWrap
@@ -103,8 +189,8 @@ Item {
 
         Rectangle {
             id: password_box
-            width: 467
-            height: 40
+            width: username_box.width
+            height: username_box.height
             color: "#ffffff"
             radius: 5
             border.width: 1
@@ -116,10 +202,10 @@ Item {
         TextField {
             id: password
             echoMode: TextInput.Password
-            width: 467
-            height: 38
+            width: username_box.width
+            height: username_box.height - 2
             placeholderText: qsTr("Pin")
-            font.pixelSize: 15
+            font.pixelSize: 16
             topPadding: 7
             leftPadding: 9
             rightPadding: 35
@@ -168,3 +254,7 @@ D{i:9}D{i:7}
 }
 ##^##*/
 
+/*
+TOC
+
+*/

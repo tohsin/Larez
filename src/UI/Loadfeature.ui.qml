@@ -4,15 +4,6 @@ import Qt.labs.platform 1.1
 
 Item {
     id: window
-    width: Screen.width
-    height: Screen.height
-
-
-    /*x: -600
-    y: -700
-    x: (Screen.width - width) / 2
-    y: (Screen.height - height) / 2*/
-    anchors.centerIn: parent
     property string correctpage: ""
 
     Rectangle {
@@ -28,8 +19,8 @@ Item {
         visible: true
         color: "white"
         anchors.centerIn: parent
-        width: height
-        height: parent.height / 2
+        width: height * 2
+        height: parent.height / 4
         radius: 8
     }
 
