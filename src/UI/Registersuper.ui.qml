@@ -4,23 +4,10 @@ import Qt.labs.platform 1.1
 
 Item {
     id: window
-
+    property var code: ""
     FocusScope {
         id: white_rectangle
         anchors.fill: parent
-    }
-    Rectangle {
-        id: time ; width: 10 ; height: 10 ; visible: false
-    }
-    SequentialAnimation {
-        id: click
-        PropertyAnimation {
-            target: time
-            property: "width"
-            duration: 2000
-            to: 100
-        }
-        ScriptAction { script: stack.replace('P3Form.ui.qml') }
     }
     Text {
         id: back_button
@@ -35,22 +22,29 @@ Item {
         font.bold: true
         MouseArea {
             anchors.fill: parent
-            onClicked: stack.pop()
+            onClicked: page_loader.source = 'P2Form.ui.qml'
         }
     }
 
     Image {
         id: fingerprint
-        y: 500
+        y: 545
         width: 140
         height: 140
-        visible: false
+        visible: admin_box.checked | super_box.checked
         source: "../images/whitefinger.jpg"
         anchors.horizontalCenter: parent.horizontalCenter
         fillMode: Image.PreserveAspectFit
         MouseArea {
             anchors.fill: parent
-            onClicked: confirmDialog.open()
+
+            onClicked: {
+                if (super_box.checked === true) {
+                    code = 1
+                } else { code = 0 }
+                backend.registersuper([regno_field.text, '0000', "Biometric ID - 001", code])
+                confirmDialog.open()
+            }
         }
     }
 
@@ -76,7 +70,7 @@ Item {
         y: 245
         width: 152
         height: 41
-        text: qsTr("User Reg No")
+        text: qsTr("Username")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.NoWrap
@@ -110,7 +104,7 @@ Item {
             topPadding: 7
             leftPadding: 9
             rightPadding: 35
-            placeholderText: qsTr("Reg No. / Username")
+            placeholderText: qsTr("Username")
         }
         Image {
             id: clearregno
@@ -185,56 +179,97 @@ Item {
                 onClicked: password.text = ""
             }
         }
-        Text {
-            id: enterfingerprint
-            x: 336
-            width: 140
-            height: 40
-            text: qsTr("Enter Fingerprint  >")
-            anchors.right: password_box.right
-            anchors.top: password_box.bottom
-            font.pixelSize: 16
-            font.bold: true
-            horizontalAlignment: Text.AlignRight
-            anchors.topMargin: 13
-            MouseArea {
-                anchors.fill: parent
-                onClicked: { fingerprint.visible = true ; goback.visible = true ; enterfingerprint.visible = false }
-            }
-        }
-        Text {
-            id: goback
-            visible: false
-            x: 336
-            width: 140
-            height: 40
-            text: qsTr("<  Go Back")
-            anchors.right: password_box.right
-            anchors.top: password_box.bottom
-            font.pixelSize: 16
-            font.bold: true
-            horizontalAlignment: Text.AlignRight
-            anchors.topMargin: 13
-            MouseArea {
-                anchors.fill: parent
-                onClicked: { fingerprint.visible = false ; goback.visible = false ; enterfingerprint.visible = true }
-            }
-        }
         MessageDialog {
             title: "Invalid Username"
             id: invalidDialog
-            text: "Reg No is either already in use or doesn't exist"
+            text: "Username is already taken"
             buttons: MessageDialog.Ok
         }
         MessageDialog {
-            title: "User Registration"
+            title: "Registration Successful"
+            id: successDialog
+            text: "New (Super) Admin Has Been Registered Successfully"
+            buttons: MessageDialog.Ok
+            onOkClicked: page_loader.source = "P2Form.ui.qml"
+        }
+        MessageDialog {
+            title: "Details You Entered Are Incomplete"
+            id: incompleteDialog
+            text: "Fill the empty fields"
+            buttons: MessageDialog.Ok
+            onOkClicked: { super_box.checked = false ; admin_box.checked = false ; incompleteDialog.close()}
+        }
+        MessageDialog {
+            title: "Admin Registration"
             id: confirmDialog
             text: "You Are About To Register " + regno_field.text
             buttons: MessageDialog.Ok | MessageDialog.Cancel
-            onOkClicked: {
-                stack.push('Success.ui.qml')
-                backend.registeruser([regno_field.text, '0000', "Biometric ID - 001"])
-                click.running = true
+            onOkClicked: successDialog.open()
+        }
+    }
+
+    FocusScope {
+        id: row
+        x: 60
+        y: 500
+        width: 260
+        height: 40
+
+        CheckBox {
+            id: super_box
+            width: 13
+            height: 13
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.topMargin: 6
+            anchors.leftMargin: 6
+            scale: 2
+            onCheckedChanged: {
+                if ( regno_field.text === "" | password.text === "" ) { incompleteDialog.open() }
+                if (super_box.checked === true & admin_box.checked === true) { admin_box.checked = false }
+            }
+        }
+
+        Text {
+            id: super_text
+            height: 20
+            text: qsTr("Super Admin")
+            anchors.verticalCenter: super_box.verticalCenter
+            anchors.left: super_box.right
+            font.pixelSize: 15
+            font.family: "Verdana"
+            anchors.leftMargin: 15
+            MouseArea {
+                anchors.fill: parent
+                onClicked: super_box.checked = !super_box.checked
+            }
+        }
+        CheckBox {
+            id: admin_box
+            width: 13
+            height: 13
+            anchors.verticalCenter: super_box.verticalCenter
+            anchors.left: super_text.right
+            anchors.leftMargin: 30
+            scale: 2
+            onCheckedChanged: {
+                if ( regno_field.text === "" | password.text === "" ) { incompleteDialog.open() }
+                if (admin_box.checked === true & super_box.checked === true) { super_box.checked = false }
+            }
+        }
+
+        Text {
+            id: admin_text
+            height: 20
+            text: qsTr("Admin")
+            anchors.verticalCenter: super_box.verticalCenter
+            anchors.left: admin_box.right
+            font.pixelSize: 15
+            font.family: "Verdana"
+            anchors.leftMargin: 15
+            MouseArea {
+                anchors.fill: parent
+                onClicked: admin_box.checked = !admin_box.checked
             }
         }
     }
@@ -242,15 +277,14 @@ Item {
         target: backend
 
         function onInvalid(number) { if (number === 1) { invalidDialog.open() ; regno_checkBox.checked = false } }
-        function onFeaturemode(activity){ modename.text = activity + " Page" }
     }
 
     Text {
         id: modename
-        x: parent.width - 230
+        x: parent.width - 235
         width: 150
         height: 20
-        text: qsTr(" Page")
+        text: qsTr("Admin Registration")
         font.pixelSize: 18
         anchors.top: parent.top
         anchors.topMargin: 87
