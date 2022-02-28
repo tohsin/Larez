@@ -4,8 +4,7 @@ import Qt.labs.platform 1.1
 
 Item {
     id: window
-    width: 600
-    height: 700
+
     Rectangle {
         id: time ; width: 10 ; height: 10 ; visible: false
     }
@@ -18,7 +17,7 @@ Item {
             duration: 2000;
             to: 100;
         }
-        ScriptAction { script: { stack.replace('P3Form.ui.qml') ; backend.log(3) } }
+        ScriptAction { script: { stack.replace('P3Form.ui.qml') ; backend.transactiondone(1) } }
     }
     MessageDialog {
         title: "Making Transfer"
@@ -27,7 +26,15 @@ Item {
         informativeText: "Do You Want To Continue?"
         buttons: MessageDialog.Yes | MessageDialog.No
         onYesClicked: { stack.push('Success.ui.qml'); click.running = true }
-        onNoClicked: username_checkBox.checked = false
+
+    }
+    MessageDialog {
+        title: "Making Transfer"
+        id: transferDialogBio
+        text: "You Are About To Make A Transfer of " + amount_field.text + " Amount to Biometric-ID A2"
+        informativeText: "Do You Want To Continue?"
+        buttons: MessageDialog.Yes | MessageDialog.No
+        onYesClicked: { stack.push('Success.ui.qml'); click.running = true }
     }
     MessageDialog {
         title: "Invalid Amount"
@@ -94,9 +101,9 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: 40
         anchors.top: parent.top
-        anchors.topMargin: 60
+        anchors.topMargin: 80
         source: '../images/menubutton.png'
-        height: 30
+        height: 25
         width: height + 5
         id: menubar
         MouseArea {
@@ -131,8 +138,8 @@ Item {
     Image {
         id: fingerprint
         y: 360
-        width: 136
-        height: 124
+        width: 150
+        height: 150
         visible: use_username_button.visible
         source: "../images/whitefinger.jpg"
         anchors.horizontalCenter: parent.horizontalCenter
@@ -142,7 +149,7 @@ Item {
             onClicked: {
                 if (amount_field.text < 50.0) { warnDialog.open() ; amount_checkBox.checked = false }
                 if (amount_field.text > aNum) { insufDialog.open() ; amount_checkBox.checked = false }
-                else { transferDialog.open() ; backend.transferfeature([amount_field.text, "'Biometrics ID - 00'", "fingerprint"]) }
+                else { transferDialogBio.open() ; backend.transferfeature([amount_field.text, "'Biometrics ID - 00'", "Fingerprint"]) }
             }
         }
     }
@@ -155,10 +162,11 @@ Item {
         visible: use_username_button.visible
         text: qsTr("Place Finger on Scanner")
         anchors.top: fingerprint.bottom
-        font.pixelSize: 18
+        font.pixelSize: 20
+        font.italic: true
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignTop
-        anchors.topMargin: -10
+        anchors.topMargin: 10
         anchors.horizontalCenter: fingerprint.horizontalCenter
     }
 
@@ -168,7 +176,7 @@ Item {
         y: 245
         width: 152
         height: 41
-        text: qsTr("Amount:")
+        text: qsTr("Amount")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.NoWrap
@@ -260,7 +268,7 @@ Item {
         width: 152
         height: 41
         visible: use_fingerprint_button.visible
-        text: qsTr("Recepient:")
+        text: qsTr("Recepient")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
         fontSizeMode: Text.Fit
@@ -270,7 +278,7 @@ Item {
 
         Rectangle {
             id: username_box
-            width: 427
+            width: 470
             height: 40
             color: "#ffffff"
             radius: 5
@@ -296,33 +304,25 @@ Item {
             topPadding: 7
             leftPadding: 9
             rightPadding: 35
-            placeholderText: qsTr("Account No. / Mat No.")
+            placeholderText: qsTr("Account No. / Reg No.")
         }
         Text {
-            id: p_check_uncheck
+            id: proceed
             x: 336
-            width: 127
-            height: 25
-            text: qsTr("Click To Check/Uncheck")
-            anchors.right: username_checkBox.right
+            width: 140
+            height: 40
+            text: qsTr("Proceed  >")
+            anchors.right: username_box.right
             anchors.top: username_box.bottom
-            font.pixelSize: 13
+            font.pixelSize: 16
+            font.bold: true
             horizontalAlignment: Text.AlignRight
-            anchors.topMargin: 10
-            anchors.rightMargin: -7
-        }
-        CheckBox {
-            id: username_checkBox
-            width: 13
-            height: 12
-            scale: 2.4
-            anchors.verticalCenter: username_box.verticalCenter
-            anchors.left: username_field.right
-            checked: false
-            anchors.leftMargin: 15
-            onClicked: {
-                if (username_checkBox.checked == true){
-                    if (username_field.text === '') { warnDialog2.open()  ; username_checkBox.checked = false }
+            anchors.topMargin: 13
+            anchors.rightMargin: -5
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    if (username_field.text === '') { warnDialog2.open() }
                     else { transferDialog.open() ; backend.transferfeature([amount_field.text, username_field.text, "typed"]) }
                 }
             }
@@ -355,7 +355,7 @@ Item {
         x: parent.width - 210
         width: 150
         height: 20
-        text: " Window"
+        text: qsTr(" Window")
         font.pixelSize: 18
         anchors.top: parent.top
         anchors.topMargin: 125
@@ -368,7 +368,7 @@ Item {
             id: loggeduser
             width: 150
             height: 20
-            text: "Hi, "
+            text: qsTr("Hi, ")
             font.pixelSize: 16
             anchors.top: parent.bottom
             anchors.right: parent.right
@@ -380,7 +380,7 @@ Item {
             id: acbal
             width: 150
             height: 20
-            text: "Available "
+            text: qsTr("Available ")
             font.pixelSize: 16
             anchors.top: loggeduser.bottom
             anchors.right: parent.right

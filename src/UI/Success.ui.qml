@@ -1,8 +1,6 @@
 import QtQuick 2.14
 
 Item {
-    width: 600
-    height: 700
 
     Rectangle {
         id: rect
