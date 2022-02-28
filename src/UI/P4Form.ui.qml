@@ -4,8 +4,6 @@ import Qt.labs.platform 1.1
 
 Item {
     id: window
-    width: 600
-    height: 700
 
     FocusScope {
         id: white_rectangle
@@ -13,13 +11,13 @@ Item {
 
         Button {
             id: use_pin_button
+            visible: !switch1.checked
             y: 522
             width: 114
             height: 40
             text: qsTr("Use Pin")
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 120
-            visible: !switch1.checked & username_checkBox.checked
             anchors.horizontalCenterOffset: 0
             font.pointSize: 12
             font.family: "Verdana"
@@ -27,15 +25,34 @@ Item {
             onClicked: switch1.checked = !switch1.checked
         }
         Button {
+            id: log_in_button
+            visible: use_fingerprint_button.visible
+            y: 506
+            width: 114
+            height: 40
+            text: qsTr("Log In")
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 120
+            enabled: true
+            font.pointSize: 12
+            font.family: "Verdana"
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: 100
+            onClicked: {
+                stack.push('Loadfeature.ui.qml');
+                backend.studentuser([username.text, password.text, "Pin"]);
+            }
+        }
+        Button {
             id: use_fingerprint_button
+            visible: switch1.checked
             y: 522
             width: 156
             height: 40
             text: qsTr("Use Fingerprint")
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 120
-            visible: switch1.checked & username_checkBox.checked
-            anchors.horizontalCenterOffset: 0
+            anchors.horizontalCenterOffset: -100
             font.pointSize: 12
             font.family: "Verdana"
             anchors.horizontalCenter: parent.horizontalCenter
@@ -44,31 +61,48 @@ Item {
 
         Switch {
             id: switch1
-            x: 254
-            y: 194
-            text: qsTr("Switch")
             checked: false
             visible: false
         }
     }
-
-    Button {
+    Text {
+        id: biometrics
+        visible: !switch1.checked
+        x: 60
+        y: 245
+        width: 152
+        height: 41
+        text: qsTr("Customer")
+        font.pixelSize: 20
+        verticalAlignment: Text.AlignVCenter
+        wrapMode: Text.NoWrap
+        fontSizeMode: Text.Fit
+        font.capitalization: Font.AllUppercase
+        font.family: "Verdana"
+        font.styleName: "Regular"
+    }
+    Text {
         id: back_button
-        width: 65
-        height: 35
-        text: qsTr("<  BACK")
         anchors.left: parent.left
+        anchors.leftMargin: 35
         anchors.top: parent.top
-        anchors.leftMargin: 32
-        anchors.topMargin: 80
-        onClicked: stack.pop()
+        anchors.topMargin: 87
+        text: qsTr("<  Back")
+        width: 80
+        height: 40
+        font.pixelSize: 18
+        font.bold: true
+        MouseArea {
+            anchors.fill: parent
+            onClicked: stack.pop()
+        }
     }
 
     Image {
         id: fingerprint
         y: 360
-        width: 136
-        height: 124
+        width: 150
+        height: 150
         visible: use_pin_button.visible
         source: "../images/whitefinger.jpg"
         anchors.horizontalCenter: parent.horizontalCenter
@@ -77,7 +111,7 @@ Item {
             anchors.fill: parent;
             onClicked: {
                 stack.push('Loadfeature.ui.qml')
-                backend.studentuser([username.text, '0000', "fingerprint"]);
+                backend.studentuser(['3', '0000', "Fingerprint"]);
             }
         }
     }
@@ -90,20 +124,22 @@ Item {
         visible: use_pin_button.visible
         text: qsTr("Place Finger on Scanner")
         anchors.top: fingerprint.bottom
-        font.pixelSize: 18
+        font.pixelSize: 20
+        font.italic: true
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignTop
-        anchors.topMargin: -10
+        anchors.topMargin: 10
         anchors.horizontalCenter: fingerprint.horizontalCenter
     }
 
     Text {
         id: customer
+        visible: switch1.checked
         x: 60
         y: 245
         width: 152
         height: 41
-        text: qsTr("Customer:")
+        text: qsTr("Customer")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.NoWrap
@@ -114,7 +150,7 @@ Item {
 
         Rectangle {
             id: username_box
-            width: 430
+            width: 480
             height: 40
             color: "#ffffff"
             radius: 5
@@ -124,36 +160,10 @@ Item {
             anchors.topMargin: 0
             anchors.leftMargin: 0
         }
-        CheckBox {
-            id: username_checkBox
-            x: 428
-            y: 304
-            width: 13
-            height: 12
-            scale: 2.4
-            anchors.verticalCenter: username_box.verticalCenter
-            anchors.left: username_box.right
-            checked: false
-            anchors.leftMargin: 15
-        }
-
-        Text {
-            id: check_uncheck
-            x: 336
-            width: 127
-            height: 25
-            text: qsTr("Click To Check/Uncheck")
-            anchors.right: username_checkBox.right
-            anchors.top: username_box.bottom
-            font.pixelSize: 13
-            horizontalAlignment: Text.AlignRight
-            anchors.topMargin: 10
-            anchors.rightMargin: -7
-        }
 
         TextField {
             id: username
-            height: 38
+            height: username_box.height - 2
             anchors.verticalCenter: username_box.verticalCenter
             anchors.left: username_box.left
             anchors.right: username_box.right
@@ -164,7 +174,7 @@ Item {
             topPadding: 7
             leftPadding: 9
             rightPadding: 35
-            placeholderText: qsTr("Matric No. / Username")
+            placeholderText: qsTr("Reg No. / Username")
         }
         Image {
             id:clearusername
@@ -185,12 +195,12 @@ Item {
     }
     Text {
         id: pin
+        visible: use_fingerprint_button.visible
         x: 60
         y: 400
         width: 152
         height: 41
-        visible: use_fingerprint_button.visible
-        text: qsTr("Pin:")
+        text: qsTr("Pin")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
         fontSizeMode: Text.Fit
@@ -200,8 +210,8 @@ Item {
 
         Rectangle {
             id: password_box
-            width: 427
-            height: 40
+            width: username_box.width
+            height: username_box.height
             color: "#ffffff"
             radius: 5
             border.width: 1
@@ -214,7 +224,7 @@ Item {
         TextField {
             id: password
             echoMode: TextInput.Password
-            height: 38
+            height: username_box.height - 2
             visible: use_fingerprint_button.visible
             anchors.verticalCenter: password_box.verticalCenter
             anchors.left: password_box.left
@@ -243,35 +253,7 @@ Item {
                 onClicked: password.text = ""
             }
         }
-        Text {
-            id: p_check_uncheck
-            x: 336
-            width: 127
-            height: 25
-            text: qsTr("Click To Check/Uncheck")
-            anchors.right: password_checkBox.right
-            anchors.top: password_box.bottom
-            font.pixelSize: 13
-            horizontalAlignment: Text.AlignRight
-            anchors.topMargin: 10
-            anchors.rightMargin: -7
-        }
-        CheckBox {
-            id: password_checkBox
-            width: 13
-            height: 12
-            scale: 2.4
-            anchors.verticalCenter: password_box.verticalCenter
-            anchors.left: password.right
-            checked: false
-            anchors.leftMargin: 15
-            onClicked: {
-                if (password_checkBox.checked == true) {
-                    stack.push('Loadfeature.ui.qml')
-                    backend.studentuser([username.text, password.text, "password"]);
-                }
-            }
-        }
+
         MessageDialog {
             title: "Incorrect Details Entered"
             id: incorrectDialog
@@ -283,7 +265,7 @@ Item {
             target: backend
 
             function onIncorrect(number) {
-                if (number === 1) { incorrectDialog.open()  ; password_checkBox.checked = false ; if (fingerprint.visible == true) {username_checkBox.checked = false } }
+                if (number === 1) { incorrectDialog.open() }
             }
         }
     }

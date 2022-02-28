@@ -4,8 +4,7 @@ import Qt.labs.platform 1.1
 
 Item {
     id: window
-    width: 600
-    height: 700
+
     Rectangle {
         id: time ; width: 10 ; height: 10 ; visible: false
     }
@@ -18,7 +17,7 @@ Item {
             duration: 2000;
             to: 100;
         }
-        ScriptAction { script: { backend.purchasefeature(enter_amount.text); stack.replace('P3Form.ui.qml') ; backend.log(1) } }
+        ScriptAction { script: { backend.purchasefeature(enter_amount.text); stack.replace('P3Form.ui.qml') ; backend.transactiondone(0) } }
     }
 
     FocusScope {
@@ -69,9 +68,9 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: 40
         anchors.top: parent.top
-        anchors.topMargin: 60
+        anchors.topMargin: 80
         source: '../images/menubutton.png'
-        height: 30
+        height: 25
         width: height + 5
         id: menubar
         MouseArea {
@@ -109,7 +108,7 @@ Item {
         y: 245
         width: 152
         height: 41
-        text: qsTr("Amount:")
+        text: qsTr("Amount")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.NoWrap
@@ -120,7 +119,7 @@ Item {
 
         Rectangle {
             id: amount_box
-            width: 430
+            width: 480
             height: 40
             color: "#ffffff"
             radius: 5
@@ -133,7 +132,7 @@ Item {
 
         TextField {
             id: enter_amount
-            height: 38
+            height: amount_box.height - 2
             anchors.verticalCenter: amount_box.verticalCenter
             anchors.left: amount_box.left
             anchors.right: amount_box.right

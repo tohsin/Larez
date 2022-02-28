@@ -4,8 +4,6 @@ import Qt.labs.platform 1.1
 
 Item {
     id: window
-    width: 600
-    height: 700
 
     StackView {
         id: stack
@@ -218,14 +216,13 @@ Item {
         Text {
             id: redirect
             y: 170
-            width: 152
+            width: 160
             height: 41
             text: qsTr("Tapping a feature will redirect you to the Login Page")
-            font.pixelSize: 20
+            font.pixelSize: 14
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             anchors.horizontalCenter: parent.horizontalCenter
-            fontSizeMode: Text.Fit
             font.capitalization: Font.Capitalize
             font.family: "Verdana"
             font.styleName: "Regular"
@@ -236,10 +233,10 @@ Item {
             anchors.left: parent.left
             anchors.leftMargin: 40
             anchors.top: parent.top
-            anchors.topMargin: 60
+            anchors.topMargin: 80
             source: '../images/menubutton.png'
-            height: 30
-            width: height + 5
+            height: 25
+            width: height + 10
             id: menubar
             MouseArea {
                 anchors.fill: parent
@@ -247,6 +244,18 @@ Item {
             }
             Menu {
                 id: menu
+                Menu {
+                    title: qsTr("Manage Admins")
+                    MenuItem {
+                        text: qsTr("Register Admin") ;
+                        onTriggered: page_loader.source = "RegistersuperP3.ui.qml"
+                    }
+                    MenuItem {
+                        text: qsTr("Remove Admin") ;
+                        onTriggered: page_loader.source = "RemovesuperP3.ui.qml"
+                    }
+                }
+                MenuSeparator { }
                 MenuItem {
                     text: qsTr("Logout Admin") ;
                     onTriggered: adminlogoutDialog.open()
@@ -271,7 +280,7 @@ Item {
             text: "Logging out Super Admin also logs out current Admin"
             informativeText: "Do You Want To Continue?"
             buttons: MessageDialog.Yes | MessageDialog.No
-            onYesClicked: { backend.superadminlogout() ; page_loader.source = "P1Form.ui.qml"}
+            onYesClicked: { backend.superadminlogout(1) ; page_loader.source = "P1Form.ui.qml"}
         }
     }
 }
