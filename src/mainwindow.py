@@ -41,7 +41,7 @@ class Backend(QObject):
         if self.report: print("The following transactions occurred in this session")
         for items in self.report: print(items)
 
-    finishedprocess = Signal(str)
+    finishedprocess = Signal(str) # To close the loading page and open the next correct page
 
     def test_gspread(self):
         self.googlesheet = Sheet()
@@ -53,10 +53,11 @@ class Backend(QObject):
         ''' Called after process has finished'''
         self.finishedprocess.emit(code)
 
-    incorrect = Signal(int)
+    incorrect = Signal(int) #Incorrect Signal for login and transfer. Check invalid Signal
     
     @Slot(list)
     def superuser(self, s_user):
+        #self.userdetails(s_user, 0) #ANSWER
         self.super = s_user[0]
         s_password = s_user[1]
         self.superlog = s_user[2] # Remove this line when fingerprint if-block is done
@@ -76,9 +77,10 @@ class Backend(QObject):
 
     @Slot(list)
     def adminuser(self, a_user):
+        # self.userdetails(a_user, 1) #ANSWER
         self.admin = a_user[0]
         a_password = a_user[1] # Calls pi to capture finger for processing
-        self.adminlog = a_user[2] # fingerprint if-block
+        self.adminlog = a_user[2]
         if self.admin in self.adminsheet:
             password = self.adminsheet[self.admin]
             if a_password == password: self.loaded(self.pageindex[3]); self.log("1100", self.admin)
@@ -90,18 +92,13 @@ class Backend(QObject):
         self.log("51-0", self.admin)
         self.admin = ""
         self.adminlog = ""
-
-    # function will be called to extract important info
-    '''def userdetails(self, information):
-        data = gspread.open('customer.doc')[information]
-        return data'''
         
-    loggeduser = Signal(str)
-    accbalance = Signal(float)
+    loggeduser = Signal(str) # Transfers login detail when mode changes from purchase to transfer and vice versa
+    accbalance = Signal(float) # Transfers accbal when mode changes and displays it
     
     @Slot(list)
-    def studentuser(self, user):
-        #self.student, password, balance, = userdetails(self, user)
+    def studentuser(self, user): #user = [name, pin, "Fingerprint/Pin"]
+        #self.userdetails(user, 2) # ANSWER
         self.student = user[0]
         u_password = user[1]
         self.studentlog = user[2]
@@ -111,7 +108,7 @@ class Backend(QObject):
             else: self.loaded('close'); self.incorrect.emit(1); self.log("1002", self.student)
         else: self.loaded('close'); self.incorrect.emit(1); self.log("1002", self.student)
 
-    featuremode = Signal(str)
+    featuremode = Signal(str) # To tell what page to go to after successful student log in
     
     @Slot(str)
     def feature(self, activity):
@@ -129,30 +126,37 @@ class Backend(QObject):
         self.amount = amount
 
     @Slot(list)
-    def transferfeature(self, details):
-        print(f"{details[1]} {details[2]} details and received {details[0]}")
-        # if details[2] == 'fingerprint': pass #fetch user from database if biometrics
+    def transferfeature(self, details): # details = [amount, fingerpicture/ username, "Fingerprint/ Typed"]
         self.amount = 0.0 if details[0] == '' else float(details[0])
         self.recipient = details[1]
         self.recipientlog = details[2]
-        if self.recipient not in self.customersheet: self.loaded('close')
+        if self.recipient not in self.customersheet: self.loaded('close'); self.incorrect.emit(2)
+        # ANSWER BELOW
+        """if self.recipientlog == "Fingerprint":
+            if self.recipient in self.googlesheet('users')[fingerprint]:
+                self.recipient = self.googlesheet('users')[fingerprint][self.recipient] # return a name
+            else: self.loaded('close'); self.incorrect.emit(2)
+        elif self.recipientlog == "Typed":
+            if self.recipient not in self.customersheet: self.loaded('close'); self.incorrect.emit(2)"""
 
     @Slot(int)
     def transactiondone(self, code):
         if code == 0:
-            self.log("2112", self.student) if self.studentlog == "Fingerprint" else self.log("2102", self.student)
+            self.log("2112", self.student) if self.studentlog == "Fingerprint" else self.log("2102", self.student)            
         elif code == 1:
             self.log("3112", self.student) if self.studentlog == "Fingerprint" else self.log("3102", self.student)
+        # self.googlesheet('users')[self.student].writedata['amount'] = self.availbal - self.amount #For deducting from account
         
-    invalid = Signal(int)
+    invalid = Signal(int) # Invalid Signal for register and remove. Check Incorrect Signal
     @Slot(list)
     def registeruser(self, details):
+        # self.userdetails(details, 32) # ANSWER
         self.student = details[0]
         password = details[1]
         fingerprint = details[2]
         #check if user exists in database
         #if self.student in gs('students'): self.invalid.emit(1); self.log(4) # failed
-        """if details not in gs('students'):
+        """if details not in self.googlesheet('students'):
             with open (gs('students'), 'a+') as file:
                 file.write(details)
                 self.log(5), self.log("41-2", self.student)
@@ -161,27 +165,29 @@ class Backend(QObject):
 
     @Slot(list)
     def registersuper(self, details):
+        # self.userdetails(details, 3) # ANSWER
         entry = details[0]
-        password = details[1]
-        fingerprint = details[2]
-        auth = details[3] # 1 for super admin
+        auth = details[1]
+        password = details[2]
+        fingerprint = details[3]
         # check if (super/admin)sheet already contains username
-        '''if entry in gs('admins'):
+        '''if entry in self.googlesheet('admins'):
             self.invalid.emit(1); self.log("40-1", entry) if auth == 1 else self.log("40-0", entry)'''
         # write new entry to the googlesheet
-        self.log("41-1", entry) if auth == 1 else self.log("41-0", entry)
+        self.log("41-1", entry) if auth == 'Super Admin' else self.log("41-0", entry)
 
     @Slot(list)
     def removesuper(self, details):
+        #self.userdetails(details, 4) # ANSWER
         removename = details[0]
         removerank = details[1] #Would be gotten from sheet, remove later
         supername = details[2]
-        superauth = "Pin" if details[3] == "Pin" else "Biometric"
+        auth = "Pin" if details[3] == "Pin" else "Fingerprint"
         # check if (super/admin)sheet doesn't contain removename
         '''if removename not in gs('admins'):
-            self.invalid.emit(1); self.log(['6','0','',supername,superauth], removename)'''
+            self.invalid.emit(1); self.log(['6','0','',supername,auth], removename)'''
         # remove name from googlesheet
-        self.log(['6','1',removerank,supername,superauth], removename)
+        self.log(['6','1',removerank,supername,auth], removename)
         
             
     @Slot()
@@ -205,7 +211,7 @@ class Backend(QObject):
         elif code[0] == '2':
             message = f"Purchase {passkey[code[1]]}: {userkey[code[3]]} {name} used {biokey[code[2]]} for {self.amount:.2f} by {datetime.datetime.now().__str__()[:19]}\n"
         elif code[0] == '3':
-            message = f"Transfer {passkey[code[1]]}: {userkey[code[3]]} {name} used {biokey[code[2]]} for {self.amount:.2f} to {self.recipient} by {datetime.datetime.now().__str__()[:19]}\n"
+            message = f"Transfer {passkey[code[1]]}: {userkey[code[3]]} {name} used {biokey[code[2]]} for {self.amount:.2f} to {self.recipientlog} {self.recipient} by {datetime.datetime.now().__str__()[:19]}\n"
         elif code[0] == '4':
             message = f"Register {passkey[code[1]]}: {userkey[code[3]]} {name} by {datetime.datetime.now().__str__()[:19]}\n"
         elif code[0] == '5':
