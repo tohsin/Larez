@@ -244,7 +244,6 @@ Item {
         target: backend
 
         function onInvalid(number) { if (number === 1) { invalidDialog.open() ; regno_checkBox.checked = false } }
-        function onFeaturemode(activity){ modename.text = activity + " Page" }
     }
 
     Text {
@@ -252,7 +251,7 @@ Item {
         x: parent.width - 225
         width: 150
         height: 20
-        text: qsTr(" Page")
+        text: qsTr("Registration Page")
         font.pixelSize: 18
         anchors.top: parent.top
         anchors.topMargin: 87

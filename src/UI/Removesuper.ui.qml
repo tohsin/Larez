@@ -30,7 +30,36 @@ Item {
             onClicked: page_loader.source = 'P2Form.ui.qml'
         }
     }
-    Button {
+    Rectangle {
+        id: use_pin_button
+        color: "#ffffff"
+        radius: 8
+        border.width: 3
+        width: 114
+        height: 40
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 120
+        visible: fingerprint.visible
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+        Text {
+            width: 150
+            height: 40
+            text: qsTr("Use Pin")
+            anchors.verticalCenter: parent.verticalCenter
+            font.pixelSize: 15
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.bold: true
+            font.family: "Verdana"
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: switch1.checked = !switch1.checked
+        }
+    }
+    /*Button {
         id: use_pin_button
         visible: fingerprint.visible
         y: 522
@@ -44,9 +73,44 @@ Item {
         font.family: "Verdana"
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: switch1.checked = !switch1.checked
+    }*/
+    Rectangle {
+        id: submit_button
+        color: "black"
+        visible: use_fingerprint_button.visible
+        radius: 8
+        width: 114
+        height: 40
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 120
+        anchors.horizontalCenterOffset: 100
+        anchors.horizontalCenter: parent.horizontalCenter
+        Text {
+            width: 150
+            height: 40
+            color: "white"
+            text: qsTr("Submit")
+            anchors.verticalCenter: parent.verticalCenter
+            font.pixelSize: 15
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.bold: true
+            font.family: "Verdana"
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                if ( regno_field.text === "" | ver_field.text === "" | password.text === "" ) { incompleteDialog.open() }
+                else {
+                    backend.removesuper([regno_field.text, 'Admin', "1", "Pin"]);
+                    confirmDialog.open()
+                }
+            }
+        }
     }
 
-    Button {
+    /*Button {
         id: submit_button
         visible: use_fingerprint_button.visible
         y: 506
@@ -67,8 +131,37 @@ Item {
                 confirmDialog.open()
             }
         }
+    }*/
+    Rectangle {
+        id: use_fingerprint_button
+        color: "#ffffff"
+        radius: 8
+        border.width: 3
+        width: 156
+        height: 40
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 120
+        visible: ver.visible
+        anchors.horizontalCenterOffset: -100
+        anchors.horizontalCenter: parent.horizontalCenter
+        Text {
+            width: 160
+            height: 40
+            text: qsTr("Use Fingerprint")
+            anchors.verticalCenter: parent.verticalCenter
+            font.pixelSize: 15
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.bold: true
+            font.family: "Verdana"
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: switch1.checked = !switch1.checked
+        }
     }
-    Button {
+    /*Button {
         id: use_fingerprint_button
         visible: ver.visible
         y: 522
@@ -82,7 +175,7 @@ Item {
         font.family: "Verdana"
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: switch1.checked = !switch1.checked
-    }
+    }*/
 
     Image {
         id: fingerprint
@@ -328,13 +421,14 @@ Item {
         }
         Image {
             id: clearpin
-            height: 15
+            height: 14
             width: height
             anchors.verticalCenter: password_box.verticalCenter
             anchors.right: password_box.right
             anchors.rightMargin: 10
-            source: "../images/cleartext.png"
-
+            source: "../images/closebutton.png"
+            sourceSize.width: 20
+            sourceSize.height: 20
             MouseArea {
                 id: clpin
                 anchors.fill: parent

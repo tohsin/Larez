@@ -54,44 +54,87 @@ Item {
         text: "Amount You Entered Supercedes Your Available Balance"
         buttons: MessageDialog.Ok
     }
+    MessageDialog {
+        title: "Logout User"
+        id: userlogoutDialog
+        text: "You Are About To Logout"
+        informativeText: "Do You Want To Continue?"
+        buttons: MessageDialog.Yes | MessageDialog.No
+        onYesClicked: { backend.userlogout() ; stack.pop() ; stack.pop() }
+    }
+    MessageDialog {
+        title: "Logout User"
+        id: userlogoutDialog1
+        text: "Switching to Registration Will Log You Out Of Your Current Session"
+        informativeText: "Do You Want To Continue?"
+        buttons: MessageDialog.Yes | MessageDialog.No
+        onYesClicked: { backend.userlogout() ; backend.feature("Register") ; stack.pop() ; stack.replace("Register.ui.qml") ; backend.switchfeature() }
+    }
     FocusScope {
         id: white_rectangle
         anchors.fill: parent
 
-        Button {
+        Rectangle {
             id: use_username_button
-            y: 522
+            color: "#ffffff"
+            radius: 8
+            border.width: 3
             width: 150
             height: 40
-            text: qsTr("Type Number")
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 120
             visible: !switch1.checked & amount_checkBox.checked
             anchors.horizontalCenterOffset: 0
-            font.pointSize: 12
-            font.family: "Verdana"
             anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: switch1.checked = !switch1.checked
+            Text {
+                width: 160
+                height: 40
+                text: qsTr("Type Number")
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 15
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font.bold: true
+                font.family: "Verdana"
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            MouseArea {
+                anchors.fill: parent
+                onClicked: switch1.checked = !switch1.checked
+            }
         }
-        Button {
+        Rectangle {
             id: use_fingerprint_button
-            y: 522
+            color: "#ffffff"
+            radius: 8
+            border.width: 3
             width: 156
             height: 40
-            text: qsTr("Use Fingerprint")
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 120
             visible: switch1.checked & amount_checkBox.checked
             anchors.horizontalCenterOffset: 0
-            font.pointSize: 12
-            font.family: "Verdana"
             anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: switch1.checked = !switch1.checked
+            Text {
+                width: 160
+                height: 40
+                text: qsTr("Use Fingerprint")
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 15
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font.bold: true
+                font.family: "Verdana"
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            MouseArea {
+                anchors.fill: parent
+                onClicked: switch1.checked = !switch1.checked
+            }
         }
 
         Switch {
             id: switch1
-            text: qsTr("Switch")
             checked: false
             visible: false
         }
@@ -104,19 +147,11 @@ Item {
         anchors.topMargin: 80
         source: '../images/menubutton.png'
         height: 25
-        width: height + 5
+        width: height + 2
         id: menubar
         MouseArea {
             anchors.fill: parent
             onClicked: menu.open()
-        }
-        MessageDialog {
-            title: "Logout User"
-            id: userlogoutDialog
-            text: "You Are About To Logout"
-            informativeText: "Do You Want To Continue?"
-            buttons: MessageDialog.Yes | MessageDialog.No
-            onYesClicked: { backend.userlogout() ; stack.pop() ; stack.pop() }
         }
         Menu {
             id: menu
@@ -124,13 +159,14 @@ Item {
                 text: qsTr("Logout User") ;
                 onTriggered: userlogoutDialog.open()
             }
+            MenuSeparator {}
             MenuItem {
                 text: qsTr("Switch to Purchase Mode")
                 onTriggered: { backend.feature("Purchase") ; stack.replace("Purchase.ui.qml") ; backend.switchfeature() }
             }
             MenuItem {
-                text: qsTr("Switch to Register Mode")
-                onTriggered: { backend.feature("Register") ; stack.pop() ; stack.replace("Register.ui.qml") ; backend.switchfeature() }
+                text: qsTr("Switch to Registration Mode")
+                onTriggered: userlogoutDialog1.open()
             }
         }
     }
@@ -324,7 +360,7 @@ Item {
                 anchors.fill: parent
                 onClicked: {
                     if (username_field.text === '') { warnDialog2.open() }
-                    else { transferDialog.open() ; backend.transferfeature([amount_field.text, username_field.text, "typed"]) }
+                    else { transferDialog.open() ; backend.transferfeature([amount_field.text, username_field.text, "Typed"]) }
                 }
             }
         }
@@ -351,6 +387,7 @@ Item {
         function onLoggeduser(customer){ loggeduser.text = "Hi, " + customer }
         function onFeaturemode(activity){ modename.text = activity + " Window" }
         function onAccbalance(cash){ acbal.text = "Available: " + cash ; aNum = cash }
+        function onIncorrect(number) { if (number === 2) { warnDialog2.open() ; transferDialog.close() ; transferDialogBio.close() } }
     }
     Text {
         id: modename

@@ -9,64 +9,105 @@ Item {
         id: white_rectangle
         anchors.fill: parent
 
-        Button {
+        Rectangle {
             id: log_in_button
-            visible: !switch1.checked
-            y: 506
+            visible: switch1.checked
             width: 114
             height: 40
-            text: qsTr("Log In")
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 120
-            enabled: true
-            font.pointSize: 12
-            font.family: "Verdana"
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: 100
-            onClicked: {
-                page_loader.source = 'Loadingpage.ui.qml';
-                backend.superuser([username.text, password.text , "Pin"]);
+            color: "black"
+            radius: 8
+            Text {
+                width: 150
+                height: 40
+                color: "white"
+                text: qsTr("Log In")
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 15
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font.bold: true
+                font.family: "Verdana"
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    page_loader.source = 'Loadingpage.ui.qml';
+                    backend.superuser([username.text, password.text , "Pin"]);
+                }
             }
         }
-        Button {
+        Rectangle {
             id: use_pin_button
-            y: 522
+            color: "#ffffff"
+            radius: 8
+            border.width: 3
             width: 114
             height: 40
-            text: qsTr("Use Pin")
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 120
+            visible: !switch1.checked
+            anchors.horizontalCenterOffset: 0
+            anchors.horizontalCenter: parent.horizontalCenter
+            Text {
+                width: 150
+                height: 40
+                text: qsTr("Use Pin")
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 15
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font.bold: true
+                font.family: "Verdana"
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            MouseArea {
+                anchors.fill: parent
+                onClicked: switch1.checked = !switch1.checked
+            }
+        }
+        Rectangle {
+            id: use_fingerprint_button
+            color: "#ffffff"
+            radius: 8
+            border.width: 3
+            width: 156
+            height: 40
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 120
             visible: switch1.checked
-            anchors.horizontalCenterOffset: 0
-            font.pointSize: 12
-            font.family: "Verdana"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: switch1.checked = !switch1.checked
-        }
-        Button {
-            id: use_fingerprint_button
-            y: 522
-            width: 156
-            height: 40
-            text: qsTr("Use Fingerprint")
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 120
-            visible: !switch1.checked
             anchors.horizontalCenterOffset: -100
-            font.pointSize: 12
-            font.family: "Verdana"
             anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: switch1.checked = !switch1.checked
+            Text {
+                width: 160
+                height: 40
+                text: qsTr("Use Fingerprint")
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 15
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font.bold: true
+                font.family: "Verdana"
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            MouseArea {
+                anchors.fill: parent
+                onClicked: switch1.checked = !switch1.checked
+            }
         }
         Switch {
             id: switch1
-            checked: true
+            checked: false
             visible: false
         }
     }
     Text {
-        id: biometrics
-        visible: switch1.checked
+        id: biometric
+        visible: !switch1.checked
         x: 60
         y: 245
         width: 152
@@ -82,7 +123,7 @@ Item {
     }
     Image {
         id: fingerprint
-        visible: switch1.checked
+        visible: !switch1.checked
         y: 360
         width: 150
         height: 150
@@ -99,7 +140,7 @@ Item {
     }
     Text {
         id: place_finger
-        visible: switch1.checked
+        visible: !switch1.checked
         x: 297
         width: 262
         height: 50
@@ -115,7 +156,7 @@ Item {
 
     Text {
         id: superadmin
-        visible: !switch1.checked
+        visible: switch1.checked
         x: 60
         y: 245
         width: 152
@@ -174,7 +215,7 @@ Item {
     }
     Text {
         id: pin
-        visible: !switch1.checked
+        visible: switch1.checked
         x: 60
         y: 400
         width: 152

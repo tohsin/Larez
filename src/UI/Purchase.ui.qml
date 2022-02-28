@@ -22,24 +22,39 @@ Item {
 
     FocusScope {
         id: white_rectangle
-        anchors.fill: parent      
-        Button {
-            id: submit
-            y: 522
+        anchors.fill: parent
+
+        Rectangle {
+            id: submit_button
+            color: "black"
+            radius: 8
             width: 115
             height: 40
-            text: qsTr("Submit")
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 120
             anchors.horizontalCenterOffset: 0
-            font.pointSize: 12
-            font.family: "Verdana"
             anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: {
-                if (enter_amount.text < 50 | enter_amount.text > aNum) {
-                    if (enter_amount.text < 50.0) { warnDialog.open() }
-                    if (enter_amount.text > aNum) { insufDialog.open() }
-                } else { purchaseDialog.open() }
+            Text {
+                width: 150
+                height: 40
+                color: "white"
+                text: qsTr("Submit")
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 15
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font.bold: true
+                font.family: "Verdana"
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    if (enter_amount.text < 50 | enter_amount.text > aNum) {
+                        if (enter_amount.text < 50.0) { warnDialog.open() }
+                        if (enter_amount.text > aNum) { insufDialog.open() }
+                    } else { purchaseDialog.open() }
+                }
             }
         }
     }
@@ -63,6 +78,22 @@ Item {
         text: "Amount You Entered Supercedes Your Available Balance"
         buttons: MessageDialog.Ok
     }
+    MessageDialog {
+        title: "Logout User"
+        id: userlogoutDialog
+        text: "You Are About To Logout"
+        informativeText: "Do You Want To Continue?"
+        buttons: MessageDialog.Yes | MessageDialog.No
+        onYesClicked: { backend.userlogout() ; stack.pop() ; stack.pop() }
+    }
+    MessageDialog {
+        title: "Logout User"
+        id: userlogoutDialog1
+        text: "Switching to Registration Will Log You Out Of Your Current Session"
+        informativeText: "Do You Want To Continue?"
+        buttons: MessageDialog.Yes | MessageDialog.No
+        onYesClicked: { backend.userlogout() ; backend.feature("Register") ; stack.pop() ; stack.replace("Register.ui.qml") ; backend.switchfeature() }
+    }
 
     Image {
         anchors.left: parent.left
@@ -71,19 +102,11 @@ Item {
         anchors.topMargin: 80
         source: '../images/menubutton.png'
         height: 25
-        width: height + 5
+        width: height + 2
         id: menubar
         MouseArea {
             anchors.fill: parent
             onClicked: menu.open()
-        }
-        MessageDialog {
-            title: "Logout User"
-            id: userlogoutDialog
-            text: "You Are About To Logout"
-            informativeText: "Do You Want To Continue?"
-            buttons: MessageDialog.Yes | MessageDialog.No
-            onYesClicked: { backend.userlogout() ; stack.pop() ; stack.pop() }
         }
         Menu {
             id: menu
@@ -91,13 +114,14 @@ Item {
                 text: qsTr("Logout User") ;
                 onTriggered: userlogoutDialog.open()
             }
+            MenuSeparator { }
             MenuItem {
                 text: qsTr("Switch to Transfer Mode")
                 onTriggered: { backend.feature("Transfer") ; stack.replace("Transfer.ui.qml") ; backend.switchfeature() }
             }
             MenuItem {
-                text: qsTr("Switch to Register Mode")
-                onTriggered: { backend.feature("Register") ; stack.pop() ; stack.replace("Register.ui.qml") ; backend.switchfeature() }
+                text: qsTr("Switch to Registration Mode")
+                onTriggered: userlogoutDialog1.open()
             }
         }
     }

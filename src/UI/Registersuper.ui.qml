@@ -40,9 +40,9 @@ Item {
 
             onClicked: {
                 if (super_box.checked === true) {
-                    code = 1
-                } else { code = 0 }
-                backend.registersuper([regno_field.text, '0000', "Biometric ID - 001", code])
+                    code = "Super Admin"
+                } else { code = "Admin" }
+                backend.registersuper([regno_field.text, code, '0000', "Biometric ID - 001"])
                 confirmDialog.open()
             }
         }
