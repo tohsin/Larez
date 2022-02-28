@@ -147,13 +147,14 @@ Item {
         }
         Image {
             id:clearamount
-            height: 15
+            height: 14
             width: height
             anchors.verticalCenter: amount_box.verticalCenter
             anchors.right: amount_box.right
             anchors.rightMargin: 10
-            source: "../images/cleartext.png"
-
+            source: "../images/closebutton.png"
+            sourceSize.width: 20
+            sourceSize.height: 20
             MouseArea {
                 id:clamt
                 anchors.fill: parent

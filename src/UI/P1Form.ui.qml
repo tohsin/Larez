@@ -157,13 +157,14 @@ Item {
         }
         Image {
             id:clearusername
-            height: 15
+            height: 14
             width: height
             anchors.verticalCenter: username_box.verticalCenter
             anchors.right: username_box.right
             anchors.rightMargin: 10
-            source: "../images/cleartext.png"
-
+            source: "../images/closebutton.png"
+            sourceSize.width: 20
+            sourceSize.height: 20
             MouseArea {
                 id:clusr
                 anchors.fill: parent
@@ -217,13 +218,14 @@ Item {
         }
         Image {
             id:clearpin
-            height: 15
+            height: 14
             width: height
             anchors.verticalCenter: password_box.verticalCenter
             anchors.right: password_box.right
             anchors.rightMargin: 10
-            source: "../images/cleartext.png"
-
+            source: "../images/closebutton.png"
+            sourceSize.width: 20
+            sourceSize.height: 20
             MouseArea {
                 id:clpin
                 anchors.fill: parent

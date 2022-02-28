@@ -236,7 +236,7 @@ Item {
             anchors.topMargin: 80
             source: '../images/menubutton.png'
             height: 25
-            width: height + 10
+            width: height + 2
             id: menubar
             MouseArea {
                 anchors.fill: parent
