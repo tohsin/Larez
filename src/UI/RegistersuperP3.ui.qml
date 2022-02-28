@@ -9,17 +9,17 @@ Item {
         id: white_rectangle
         anchors.fill: parent
     }
-    Text {
+    Image {
         id: back_button
         anchors.left: parent.left
         anchors.leftMargin: 35
         anchors.top: parent.top
         anchors.topMargin: 87
-        text: qsTr("<  Back")
-        width: 80
-        height: 40
-        font.pixelSize: 18
-        font.bold: true
+        width: 30
+        height: 30
+        source: "../images/back.jpg"
+        sourceSize.width: 100
+        sourceSize.height: 100
         MouseArea {
             anchors.fill: parent
             onClicked: page_loader.source = 'P3Form.ui.qml'
@@ -108,13 +108,14 @@ Item {
         }
         Image {
             id: clearregno
-            height: 15
+            height: 14
             width: height
             anchors.verticalCenter: regno_box.verticalCenter
             anchors.right: regno_box.right
             anchors.rightMargin: 10
-            source: "../images/cleartext.png"
-
+            source: "../images/closebutton.png"
+            sourceSize.width: 20
+            sourceSize.height: 20
             MouseArea {
                 id: clusr
                 anchors.fill: parent
@@ -166,13 +167,14 @@ Item {
         }
         Image {
             id: clearpin
-            height: 15
+            height: 14
             width: height
             anchors.verticalCenter: password_box.verticalCenter
             anchors.right: password_box.right
             anchors.rightMargin: 10
-            source: "../images/cleartext.png"
-
+            source: "../images/closebutton.png"
+            sourceSize.width: 20
+            sourceSize.height: 20
             MouseArea {
                 id: clpin
                 anchors.fill: parent
