@@ -5,13 +5,7 @@ from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtWidgets import QApplication
 from database import Sheet
 import datetime
-import gspread
-
-
-def test_gspread():
-    sh = Sheet()
-    print(sh.get_entireTableUser())
-    
+import gspread    
     
 class Backend(QObject):
     def __init__(self):
@@ -28,6 +22,7 @@ class Backend(QObject):
         self.recipientlog = ""
         self.amount = None
 
+    googlesheet = None
     report = []
     #supersheet = {'100': '0000'}
     supersheet = {'': ''}
@@ -43,10 +38,17 @@ class Backend(QObject):
 
     @Slot()
     def closeapp(self):
+        if self.report: print("The following transactions occurred in this session")
         for items in self.report: print(items)
 
     finishedprocess = Signal(str)
 
+    def test_gspread(self):
+        self.googlesheet = Sheet()
+        if self.googlesheet: print(f'Loaded: {len(self.googlesheet.table)-1} entries')
+        #print(self.googlesheet.get_entireTableUser())
+        self.finishedprocess.emit(self.pageindex[1])
+    
     def loaded(self, code):
         ''' Called after process has finished'''
         self.finishedprocess.emit(code)
@@ -55,38 +57,37 @@ class Backend(QObject):
     
     @Slot(list)
     def superuser(self, s_user):
-        print(f"Hey superuser, {s_user[0]}. You used {s_user[2]}")
         self.super = s_user[0]
         s_password = s_user[1]
-        self.superlog = s_user[2]
+        self.superlog = s_user[2] # Remove this line when fingerprint if-block is done
+        # Write an if block for when fingerprint is used
         if self.super in self.supersheet:
             password = self.supersheet[self.super]
-            if s_password == password: self.loaded(self.pageindex[2])
-            else: self.loaded(self.pageindex[1]); self.incorrect.emit(1)
-        else: self.loaded(self.pageindex[1]); self.incorrect.emit(1)
+            if s_password == password: self.loaded(self.pageindex[2]); self.log("1101", self.super)
+            else: self.loaded(self.pageindex[1]); self.incorrect.emit(1); self.log("1001", self.super)
+        else: self.loaded(self.pageindex[1]); self.incorrect.emit(1); self.log("1001", self.super)
 
-    @Slot()
-    def superadminlogout(self):
-        print(f"Bye superadmin, {self.super} at {datetime.datetime.now().__str__()[:19]}")
+    @Slot(int)
+    def superadminlogout(self, code):
+        self.log("51-1", self.super)
         self.super = ""
         self.superlog = ""
-        self.adminlogout()
+        if code == 1: self.adminlogout()
 
     @Slot(list)
     def adminuser(self, a_user):
-        print(f"Hey admin, {a_user[0]}. You used {a_user[2]}")
         self.admin = a_user[0]
         a_password = a_user[1] # Calls pi to capture finger for processing
-        self.adminlog = a_user[2]
+        self.adminlog = a_user[2] # fingerprint if-block
         if self.admin in self.adminsheet:
             password = self.adminsheet[self.admin]
-            if a_password == password: self.loaded(self.pageindex[3])
-            else: self.loaded(self.pageindex[2]); self.incorrect.emit(1)
-        else: self.loaded(self.pageindex[2]); self.incorrect.emit(1)
+            if a_password == password: self.loaded(self.pageindex[3]); self.log("1100", self.admin)
+            else: self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1000", self.admin)
+        else: self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1000", self.admin)
 
     @Slot()
     def adminlogout(self):
-        print(f"Bye admin, {self.admin} at {datetime.datetime.now().__str__()[:19]}")
+        self.log("51-0", self.admin)
         self.admin = ""
         self.adminlog = ""
 
@@ -101,22 +102,21 @@ class Backend(QObject):
     @Slot(list)
     def studentuser(self, user):
         #self.student, password, balance, = userdetails(self, user)
-        print(f"Hey student, {user[0]}")
         self.student = user[0]
         u_password = user[1]
         self.studentlog = user[2]
         if self.student in self.customersheet:
             password = self.customersheet[self.student]
-            if u_password == password: self.loaded(self.pageindex[self.activity]); self.switchfeature()
-            else: self.loaded('close'); self.incorrect.emit(1)
-        else: self.loaded('close'); self.incorrect.emit(1)
+            if u_password == password: self.loaded(self.pageindex[self.activity]); self.switchfeature(); self.log("1102", self.student)
+            else: self.loaded('close'); self.incorrect.emit(1); self.log("1002", self.student)
+        else: self.loaded('close'); self.incorrect.emit(1); self.log("1002", self.student)
 
     featuremode = Signal(str)
     
     @Slot(str)
     def feature(self, activity):
-        print(f"{activity} chosen")
         self.activity = activity
+        if activity == "Register": self.featuremode.emit("Registration")
 
     @Slot()
     def switchfeature(self):
@@ -126,7 +126,6 @@ class Backend(QObject):
         
     @Slot(float)
     def purchasefeature(self, amount):
-        print(f"{amount} involved")
         self.amount = amount
 
     @Slot(list)
@@ -138,66 +137,86 @@ class Backend(QObject):
         self.recipientlog = details[2]
         if self.recipient not in self.customersheet: self.loaded('close')
 
+    @Slot(int)
+    def transactiondone(self, code):
+        if code == 0:
+            self.log("2112", self.student) if self.studentlog == "Fingerprint" else self.log("2102", self.student)
+        elif code == 1:
+            self.log("3112", self.student) if self.studentlog == "Fingerprint" else self.log("3102", self.student)
+        
     invalid = Signal(int)
     @Slot(list)
     def registeruser(self, details):
-        print(f"{details[0]} has Registered been")
         self.student = details[0]
+        password = details[1]
+        fingerprint = details[2]
         #check if user exists in database
         #if self.student in gs('students'): self.invalid.emit(1); self.log(4) # failed
         """if details not in gs('students'):
             with open (gs('students'), 'a+') as file:
                 file.write(details)
-                self.log(5)
-        else: self.log(4)"""
-        self.log(5)
+                self.log(5), self.log("41-2", self.student)
+        else: self.log(4), self.log("40-2", self.student)"""
+        self.log("41-2", self.student)
 
+    @Slot(list)
+    def registersuper(self, details):
+        entry = details[0]
+        password = details[1]
+        fingerprint = details[2]
+        auth = details[3] # 1 for super admin
+        # check if (super/admin)sheet already contains username
+        '''if entry in gs('admins'):
+            self.invalid.emit(1); self.log("40-1", entry) if auth == 1 else self.log("40-0", entry)'''
+        # write new entry to the googlesheet
+        self.log("41-1", entry) if auth == 1 else self.log("41-0", entry)
+
+    @Slot(list)
+    def removesuper(self, details):
+        removename = details[0]
+        removerank = details[1] #Would be gotten from sheet, remove later
+        supername = details[2]
+        superauth = "Pin" if details[3] == "Pin" else "Biometric"
+        # check if (super/admin)sheet doesn't contain removename
+        '''if removename not in gs('admins'):
+            self.invalid.emit(1); self.log(['6','0','',supername,superauth], removename)'''
+        # remove name from googlesheet
+        self.log(['6','1',removerank,supername,superauth], removename)
+        
+            
     @Slot()
     def userlogout(self):
-        print(f"Bye user, {self.student} at {datetime.datetime.now().__str__()[:19]}")
+        self.log("51-2", self.student)
         self.student = ""
         self.studentlog = ""
         self.activity = ""
 
-    @Slot(int)
-    def log(self, instruction):
-        # Purchase Success
-        if instruction == 1:
-            message = f"Success: {self.student} {self.activity} {self.amount:.2f} by {datetime.datetime.now().__str__()[:19]}"
-            print(message) ; self.report.append(message)
-        # Purchase failed
-        elif instruction == 0:
-            message = f"Failed: {self.student} {self.activity} {self.amount:.2f} by {datetime.datetime.now().__str__()[:19]}"
-            print(message) ; self.report.append(message)
+    def writeout(self, message):
+        with open('cupaylog.txt', 'a') as file:
+            file.write(message)
+        print('event logged')
 
-        # Transfer Success
-        elif instruction == 3:
-            message = f"Success: {self.student} {self.activity} {self.amount:.2f} to {self.recipient} by {datetime.datetime.now().__str__()[:19]}"
-            print(message) ; self.report.append(message)
-        # Transfer failed
-        elif instruction == 2:
-            message = f"Failed: {self.student} {self.activity} {self.amount:.2f} to {self.recipient} by {datetime.datetime.now().__str__()[:19]}"
-            print(message) ; self.report.append(message)
-            
-        # Registration success
-        elif instruction == 5:
-            message = f"Success: {self.student} {self.activity} by {datetime.datetime.now().__str__()[:19]}"
-            print(message) ; self.report.append(message)
-        # Registration failed
-        elif instruction == 4:
-            message = f"Failed: {self.student} {self.activity} by {datetime.datetime.now().__str__()[:19]}"
-            print(message) ; self.report.append(message)
-        #Sends email to user
-        def writeout(reportfile):
-            # read report and rewrite or append value
-            # return
-            ''' gss = pygsheets.open('CU pay.sheets')
-            with open (gss, 'a') as writer:
-                writer.write(report)'''
-            pass
-        #writeout(self.report)
+    def log(self, code, name):
+        passkey = {'1': 'Success', '0': 'Fail'}
+        biokey = {'1': 'Biometric', '0': 'Pin'}
+        userkey = {'1': 'Super Admin', '0': 'Admin', '2': 'User'}
+        if code[0] == '1':
+            message = f"Login {passkey[code[1]]}: {userkey[code[3]]} {name} used {biokey[code[2]]} by {datetime.datetime.now().__str__()[:19]}\n"
+        elif code[0] == '2':
+            message = f"Purchase {passkey[code[1]]}: {userkey[code[3]]} {name} used {biokey[code[2]]} for {self.amount:.2f} by {datetime.datetime.now().__str__()[:19]}\n"
+        elif code[0] == '3':
+            message = f"Transfer {passkey[code[1]]}: {userkey[code[3]]} {name} used {biokey[code[2]]} for {self.amount:.2f} to {self.recipient} by {datetime.datetime.now().__str__()[:19]}\n"
+        elif code[0] == '4':
+            message = f"Register {passkey[code[1]]}: {userkey[code[3]]} {name} by {datetime.datetime.now().__str__()[:19]}\n"
+        elif code[0] == '5':
+            message = f"Logout {passkey[code[1]]}: {userkey[code[3]]} {name} by {datetime.datetime.now().__str__()[:19]}\n"
+        elif code[0] == '6':
+            message = f"Removal {passkey[code[1]]}: {code[2]} {name} removed by Super Admin {code[3]} with {code[4]} at {datetime.datetime.now().__str__()[:19]}\n"
+        self.writeout(message)
+        self.report.append(message)
+        # the 'register and delete (super) admin' codes to write to spreadsheet
         
-    def reset_vars(self):
+    def reset_variables(self):
         ''' Called after a log has been printed'''
         self.student = ""
         self.studentlog = ""
@@ -206,16 +225,13 @@ class Backend(QObject):
         self.recepientlog = ""
         self.amount = None
         
-#  this ran for me so try wha
-test_gspread()
 if __name__ == "__main__":
-    
     app = QApplication(sys.argv)
-    engine = QQmlApplicationEngine()
+    engine = QQmlApplicationEngine()    
     back = Backend()
     engine.rootContext().setContextProperty("backend", back)
-    engine.quit.connect(app.quit)
     engine.load('UI/Home.ui.qml')
+    back.test_gspread()
+    engine.quit.connect(app.quit)
     engine.load('UI/P3Form.ui.qml')
     sys.exit(app.exec())
-
