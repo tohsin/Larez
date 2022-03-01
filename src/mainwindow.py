@@ -1,11 +1,12 @@
-import sys
 import os
-from PySide6.QtCore import QObject, Signal, Slot
-from PySide6.QtQml import QQmlApplicationEngine
-from PySide6.QtWidgets import QApplication
-from database import Sheet
+import sys
+#import gspread
 import datetime
-import gspread    
+from database import Sheet
+from PySide6.QtWidgets import QApplication
+from PySide6.QtQml import QQmlApplicationEngine
+from PySide6.QtCore import QObject, Signal, Slot
+ 
     
 class Backend(QObject):
     def __init__(self):
@@ -36,24 +37,46 @@ class Backend(QObject):
         'Register': 'Register.ui.qml'
         }
 
+    """
+    Signals used for communicating with QML from Python
+    1. Incorrect: For login and transfer activities. Check 'Invalid Signal' in No. 2
+    2. Invalid: For register and remove user/admins activities. Check 'Incorrect Signal' in No. 1
+    3. Finishedprocess: Used when changing page to close the loading page and open the next page
+    4. Loggeduser: Emitted when user changes mode from purchase to transfer and vice versa. Transfers login detail across modes
+    5. Accbalance: Communicates user's account balance when mode changes and displays it. Emitted with 'Loggeduser Signal' in No. 4
+    6. Featuremode: Displays the current activity window. Emitted with 'Loggeduser Signal' in No. 4
+    """
+    incorrect = Signal(int)
+    invalid = Signal(int) 
+    finishedprocess = Signal(str) 
+    loggeduser = Signal(str) 
+    accbalance = Signal(float)
+    featuremode = Signal(str)
+
+    """
+    Slots are used to communicate with Python from QML
+    1. Closeapp: Runs when close button is clicked. It prints the activity log for that current session and closes the application
+    2. Superuser: Runs during a Super Admin log in. It passes the information entered and, at the end, emits appropriate Signal(s) based on the outcome of the login attempt
+    3. Superadminlogout: Called when a Super Admin is logged out.
+    4. Adminuser: Runs during an Admin log in. See Description of 'Superuser Slot' in No. 2 for extra detail
+    5. Adminlogout: Called when an Admin is logged out.
+    6. Studentuser: Runs during a User/Student log in. See Description of 'Superuser Slot' in No. 2 for extra detail
+    7. Userlogout: Called when a User/Student is logged out.
+    8. Registersuper: Called when Registering a Super Admin or Admin
+    9. Removesuper: Called when Removing a Super Admin or Admin
+    10. Feature: Called to assign the variable which tells the program what activity was chosen. Helps to Display and Load the correct page
+    11. Switchfeature: Called to emit Signals which display Activity window, Logged user's name, and Account balance. See 'Loggeduser Signal' in No. 4 of Signal List
+    12. Purchasefeature: Called to assign the variable which tells the program what amount was spent
+    13. Transferfeature: Called to assign the variables which tell the program what amount was transferred, the Recipient, and Recipient's means of identification
+    14. Registeruser: Called to assign the variables which tell the program Reg No., Password, and Fingerprint of New User
+    15. Transactiondone: Called after a Purchase or Transfer was attempted regardless if it was successful or not
+    """
+
     @Slot()
     def closeapp(self):
         if self.report: print("The following transactions occurred in this session")
         for items in self.report: print(items)
-
-    finishedprocess = Signal(str) # To close the loading page and open the next correct page
-
-    def test_gspread(self):
-        self.googlesheet = Sheet()
-        if self.googlesheet: print(f'Loaded: {len(self.googlesheet.table)-1} entries')
-        #print(self.googlesheet.get_entireTableUser())
-        self.finishedprocess.emit(self.pageindex[1])
-    
-    def loaded(self, code):
-        ''' Called after process has finished'''
-        self.finishedprocess.emit(code)
-
-    incorrect = Signal(int) #Incorrect Signal for login and transfer. Check invalid Signal
+        
     
     @Slot(list)
     def superuser(self, s_user):
@@ -71,8 +94,7 @@ class Backend(QObject):
     @Slot(int)
     def superadminlogout(self, code):
         self.log("51-1", self.super)
-        self.super = ""
-        self.superlog = ""
+        self.super, self.superlog = "", ""
         if code == 1: self.adminlogout()
 
     @Slot(list)
@@ -90,13 +112,35 @@ class Backend(QObject):
     @Slot()
     def adminlogout(self):
         self.log("51-0", self.admin)
-        self.admin = ""
-        self.adminlog = ""
-        
-    loggeduser = Signal(str) # Transfers login detail when mode changes from purchase to transfer and vice versa
-    accbalance = Signal(float) # Transfers accbal when mode changes and displays it
-    
+        self.admin, self.adminlog = "", ""
+
     @Slot(list)
+    def registersuper(self, details):
+        # self.userdetails(details, 3) # ANSWER
+        entry = details[0]
+        auth = details[1]
+        password = details[2]
+        fingerprint = details[3]
+        # check if (super/admin)sheet already contains username
+        '''if entry in self.googlesheet('admins'):
+            self.invalid.emit(1); self.log("40-1", entry) if auth == 1 else self.log("40-0", entry)'''
+        # write new entry to the googlesheet
+        self.log("41-1", entry) if auth == 'Super Admin' else self.log("41-0", entry)
+
+    @Slot(list) # str incoming
+    def removesuper(self, details):
+        #self.userdetails(details, 4) # ANSWER
+        removename = details[0]
+        removerank = details[1] #Would be gotten from sheet, remove later
+        supername = details[2]
+        auth = "Pin" if details[3] == "Pin" else "Fingerprint"
+        # check if (super/admin)sheet doesn't contain removename
+        '''if removename not in gs('admins'):
+            self.invalid.emit(1); self.log(['6','0','',supername,auth], removename)'''
+        # remove name from googlesheet
+        self.log(['6','1',removerank,supername,auth], removename)
+    
+    @Slot(list) # str incoming data
     def studentuser(self, user): #user = [name, pin, "Fingerprint/Pin"]
         #self.userdetails(user, 2) # ANSWER
         self.student = user[0]
@@ -108,8 +152,11 @@ class Backend(QObject):
             else: self.loaded('close'); self.incorrect.emit(1); self.log("1002", self.student)
         else: self.loaded('close'); self.incorrect.emit(1); self.log("1002", self.student)
 
-    featuremode = Signal(str) # To tell what page to go to after successful student log in
-    
+    @Slot()
+    def userlogout(self):
+        self.log("51-2", self.student)
+        self.student, self.studentlog, self.activity = "", "", ""
+
     @Slot(str)
     def feature(self, activity):
         self.activity = activity
@@ -132,24 +179,16 @@ class Backend(QObject):
         self.recipientlog = details[2]
         if self.recipient not in self.customersheet: self.loaded('close'); self.incorrect.emit(2)
         # ANSWER BELOW
-        """if self.recipientlog == "Fingerprint":
+        """self.amount = 0.0 if details[0] == '' else float(details[0])
+        if self.recipientlog == "Fingerprint":
             if self.recipient in self.googlesheet('users')[fingerprint]:
                 self.recipient = self.googlesheet('users')[fingerprint][self.recipient] # return a name
             else: self.loaded('close'); self.incorrect.emit(2)
         elif self.recipientlog == "Typed":
             if self.recipient not in self.customersheet: self.loaded('close'); self.incorrect.emit(2)"""
-
-    @Slot(int)
-    def transactiondone(self, code):
-        if code == 0:
-            self.log("2112", self.student) if self.studentlog == "Fingerprint" else self.log("2102", self.student)            
-        elif code == 1:
-            self.log("3112", self.student) if self.studentlog == "Fingerprint" else self.log("3102", self.student)
-        # self.googlesheet('users')[self.student].writedata['amount'] = self.availbal - self.amount #For deducting from account
         
-    invalid = Signal(int) # Invalid Signal for register and remove. Check Incorrect Signal
     @Slot(list)
-    def registeruser(self, details):
+    def registeruser(self, details): # apply str to all incoming data
         # self.userdetails(details, 32) # ANSWER
         self.student = details[0]
         password = details[1]
@@ -163,39 +202,31 @@ class Backend(QObject):
         else: self.log(4), self.log("40-2", self.student)"""
         self.log("41-2", self.student)
 
-    @Slot(list)
-    def registersuper(self, details):
-        # self.userdetails(details, 3) # ANSWER
-        entry = details[0]
-        auth = details[1]
-        password = details[2]
-        fingerprint = details[3]
-        # check if (super/admin)sheet already contains username
-        '''if entry in self.googlesheet('admins'):
-            self.invalid.emit(1); self.log("40-1", entry) if auth == 1 else self.log("40-0", entry)'''
-        # write new entry to the googlesheet
-        self.log("41-1", entry) if auth == 'Super Admin' else self.log("41-0", entry)
-
-    @Slot(list)
-    def removesuper(self, details):
-        #self.userdetails(details, 4) # ANSWER
-        removename = details[0]
-        removerank = details[1] #Would be gotten from sheet, remove later
-        supername = details[2]
-        auth = "Pin" if details[3] == "Pin" else "Fingerprint"
-        # check if (super/admin)sheet doesn't contain removename
-        '''if removename not in gs('admins'):
-            self.invalid.emit(1); self.log(['6','0','',supername,auth], removename)'''
-        # remove name from googlesheet
-        self.log(['6','1',removerank,supername,auth], removename)
-        
-            
-    @Slot()
-    def userlogout(self):
-        self.log("51-2", self.student)
-        self.student = ""
-        self.studentlog = ""
-        self.activity = ""
+    @Slot(int)
+    def transactiondone(self, code):
+        if code == 0:
+            self.log("2112", self.student) if self.studentlog == "Fingerprint" else self.log("2102", self.student)            
+        elif code == 1:
+            self.log("3112", self.student) if self.studentlog == "Fingerprint" else self.log("3102", self.student)
+        # self.googlesheet('users')[self.student].writedata['amount'] = self.availbal - self.amount #For deducting from account
+   
+    """
+    Script Functions
+    1. Test_gspread: Retrieves Googlesheet from cloud
+    2. Loaded: Called to close Loading page after a process has completed
+    3. Log: Called after an activity has been executed successfully or failingly
+    4. Writeout: Executed activity is written to external log file. 'Log Function' calls 'Writout'
+    """
+    
+    def test_gspread(self):
+        self.googlesheet = Sheet()
+        if self.googlesheet: print(f'Loaded: {len(self.googlesheet.table)-1} entries')
+        #print(self.googlesheet.get_entireTableUser())
+        self.finishedprocess.emit(self.pageindex[1])
+    
+    def loaded(self, code):
+        ''' Called after process has finished'''
+        self.finishedprocess.emit(code)
 
     def writeout(self, message):
         with open('cupaylog.txt', 'a') as file:
