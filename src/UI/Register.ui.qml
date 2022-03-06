@@ -9,19 +9,7 @@ Item {
         id: white_rectangle
         anchors.fill: parent
     }
-    Rectangle {
-        id: time ; width: 10 ; height: 10 ; visible: false
-    }
-    SequentialAnimation {
-        id: click
-        PropertyAnimation {
-            target: time
-            property: "width"
-            duration: 2000
-            to: 100
-        }
-        ScriptAction { script: stack.replace('P3Form.ui.qml') }
-    }
+
     Image {
         id: back_button
         anchors.left: parent.left
@@ -50,7 +38,7 @@ Item {
         fillMode: Image.PreserveAspectFit
         MouseArea {
             anchors.fill: parent
-            onClicked: confirmDialog.open()
+            onClicked: backend.registeruser([regno_field.text, password.text, password.text])
         }
     }
 
@@ -233,17 +221,21 @@ Item {
             id: confirmDialog
             text: "You Are About To Register " + regno_field.text
             buttons: MessageDialog.Ok | MessageDialog.Cancel
-            onOkClicked: {
-                stack.push('Success.ui.qml')
-                backend.registeruser([regno_field.text, '0000', "Biometric ID - 001"])
-                click.running = true
-            }
+            onOkClicked: successDialog.open()
+        }
+        MessageDialog {
+            title: "Registration Successful"
+            id: successDialog
+            text: "New User Has Been Registered Successfully"
+            buttons: MessageDialog.Ok
+            onOkClicked: stack.replace('P3Form.ui.qml')
         }
     }
     Connections {
         target: backend
 
-        function onInvalid(number) { if (number === 1) { invalidDialog.open() ; regno_checkBox.checked = false } }
+        function onInvalid(number) { if (number === 1) { invalidDialog.open() } }
+        function onProceed(value) { if (value == 1) { confirmDialog.open() } }
     }
 
     Text {

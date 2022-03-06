@@ -59,21 +59,6 @@ Item {
             onClicked: switch1.checked = !switch1.checked
         }
     }
-    /*Button {
-        id: use_pin_button
-        visible: fingerprint.visible
-        y: 522
-        width: 114
-        height: 40
-        text: qsTr("Use Pin")
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 120
-        anchors.horizontalCenterOffset: 0
-        font.pointSize: 12
-        font.family: "Verdana"
-        anchors.horizontalCenter: parent.horizontalCenter
-        onClicked: switch1.checked = !switch1.checked
-    }*/
     Rectangle {
         id: submit_button
         color: "black"
@@ -103,35 +88,11 @@ Item {
             onClicked: {
                 if ( regno_field.text === "" | ver_field.text === "" | password.text === "" ) { incompleteDialog.open() }
                 else {
-                    backend.removesuper([regno_field.text, 'Admin', "1", "Pin"]);
-                    confirmDialog.open()
+                    backend.removesuper([regno_field.text, ver_field.text, "Pin", password.text]);
                 }
             }
         }
     }
-
-    /*Button {
-        id: submit_button
-        visible: use_fingerprint_button.visible
-        y: 506
-        width: 114
-        height: 40
-        text: qsTr("Submit")
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 120
-        enabled: true
-        font.pointSize: 12
-        font.family: "Verdana"
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.horizontalCenterOffset: 100
-        onClicked: {
-            if ( regno_field.text === "" | ver_field.text === "" | password.text === "" ) { incompleteDialog.open() }
-            else {
-                backend.removesuper([regno_field.text, 'Admin', "1", "Pin"]);
-                confirmDialog.open()
-            }
-        }
-    }*/
     Rectangle {
         id: use_fingerprint_button
         color: "#ffffff"
@@ -161,21 +122,6 @@ Item {
             onClicked: switch1.checked = !switch1.checked
         }
     }
-    /*Button {
-        id: use_fingerprint_button
-        visible: ver.visible
-        y: 522
-        width: 156
-        height: 40
-        text: qsTr("Use Fingerprint")
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 120
-        anchors.horizontalCenterOffset: -100
-        font.pointSize: 12
-        font.family: "Verdana"
-        anchors.horizontalCenter: parent.horizontalCenter
-        onClicked: switch1.checked = !switch1.checked
-    }*/
 
     Image {
         id: fingerprint
@@ -191,8 +137,7 @@ Item {
             onClicked: {
                 if ( regno_field.text === "" | ver_field.text === "" | password.text === "" ) { incompleteDialog.open() }
                 else {
-                    backend.removesuper([regno_field.text, 'Admin', "Biometric ID - C1", "Biometric"])
-                    confirmDialog.open()
+                    backend.removesuper([regno_field.text, ver_field.text, "Fingerprint", "Bio - C1"])
                 }
             }
         }
@@ -438,7 +383,7 @@ Item {
         MessageDialog {
             title: "Invalid Username"
             id: invalidDialog
-            text: "Username is already taken"
+            text: "Username Doesn't Exist"
             buttons: MessageDialog.Ok
         }
         MessageDialog {
@@ -460,18 +405,23 @@ Item {
             id: incompleteDialog
             text: "Fill the empty fields"
             buttons: MessageDialog.Ok
-            onOkClicked: { incompleteDialog.close()}
+            onOkClicked: { incompleteDialog.close() }
+        }
+        MessageDialog {
+            title: "Incorrect Details Entered"
+            id: incorrectDialog
+            text: "Invalid Verification Username or Password"
+            buttons: MessageDialog.Ok
         }
     }
     Connections {
         target: backend
 
         function onInvalid(number) {
-            if (number === 1) {
-                invalidDialog.open()
-                regno_checkBox.checked = false
-            }
+            if (number === 1) { invalidDialog.open() ; regno_checkBox.checked = false }
         }
+        function onIncorrect(number) { if (number === 3) { incorrectDialog.open() } }
+        function onProceed(value) { if (value == 1) { confirmDialog.open() } }
     }
 
     Text {

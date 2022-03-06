@@ -13,12 +13,6 @@ ApplicationWindow {
     flags: Qt.FramelessWindowHint
     color: "transparent"
 
-    Switch {
-        id: switch1
-        checked: false
-        visible: false
-    }
-
     Rectangle {
         id: white_rectangle
         visible: true
@@ -30,7 +24,7 @@ ApplicationWindow {
         id: image
         width: 150
         height: 150
-        visible: switch1.checked
+        visible: false
         anchors.top: white_rectangle.top
         source: "../images/culogo.jpg"
         anchors.topMargin: 40
@@ -58,7 +52,7 @@ ApplicationWindow {
         target: backend
 
         function onFinishedprocess(correctpage) {
-            if (correctpage === 'P1Form.ui.qml') { switch1.checked = !switch1.checked }
+            if (correctpage === 'P1Form.ui.qml') { image.visible = true }
 
         }
     }
