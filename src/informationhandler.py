@@ -4,8 +4,9 @@ go to the corresponding qml files to ensure the values returned match
     login
         information = ['Fingerprint', fingerpicture]
         information = [name, pin, 'Pin']
-    register
-        info = [name, rank, pin, fingerprint]
+        
+    register    info = [name, rank, pin, fingerprint] DONE
+    
     remove
         info = [name, supername, 'Fingerprint/Pin', superlog]
     transfer
@@ -16,6 +17,24 @@ table data
     data = [name, rank, pin, fingerprint] #super | admin
     data = [name, rank, accbal, pin, fingerprint] # user
     name synonymous with reg no / username
+
+NOTES FROM EXPERIMENTAL
+1. in removes and register when the verifying super is incorrect
+emit incorrect 3 when super user is wrong
+
+2. registersuper should have a superverification page
+
+3. new function pdtolist
+
+4. Updated Functions: test_gpspread , registeruser
+
+5. New Signal proceed: used in remove and register (super|user)
+
+6. Superuser | Adminuser function have been updated
+7. Guy just check everything tbh
+
+8. Registersuper now has a verification page
+
 """
 
 def userdetails(self, information, code):
@@ -33,10 +52,10 @@ def userdetails(self, information, code):
                     self.loaded(self.pageindex[3]); self.log("1110", self.admin) # success
                 else:
                     if code == 0 : self.loaded(self.pageindex[1]); self.incorrect.emit(1); self.log("1011", "Undefined")
-                    elif code == 1:self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1010", "Undefined")
+                    elif code == 1: self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1010", "Undefined")
             else:
                 if code == 0 : self.loaded(self.pageindex[1]); self.incorrect.emit(1); self.log("1011", "Undefined")
-                elif code == 1:self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1010", "Undefined")
+                elif code == 1: self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1010", "Undefined")
             
         elif information[2] == 'Pin': # information = [name, pin, 'Pin']
             user = information[0]
@@ -53,13 +72,13 @@ def userdetails(self, information, code):
                         self.loaded(self.pageindex[3]); self.log("1100", self.admin)
                     else:
                         if code == 0 : self.loaded(self.pageindex[1]); self.incorrect.emit(1); self.log("1001", "Undefined")
-                        elif code == 1:self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1000", "Undefined")
+                        elif code == 1: self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1000", "Undefined")
                 else:
                     if code == 0: self.loaded(self.pageindex[1]); self.incorrect.emit(1); self.log("1001", f"'{data[1]} {data[0]}'")
                     elif code == 1: self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1000", f"'{data[1]} {data[0]}'")
             else:
                 if code == 0 : self.loaded(self.pageindex[1]); self.incorrect.emit(1); self.log("1001", "Undefined")
-                elif code == 1:self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1000", "Undefined")
+                elif code == 1: self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1000", "Undefined")
 
     elif code == 2: # User #IN P4Form: change information from [name, pin, "Fingerprint/Pin"] >> not Done - ["Fingerprint", fingerpicture] & Done - [name, pin, "Pin"]
         if information[0] == 'Fingerprint':
@@ -102,7 +121,7 @@ def userdetails(self, information, code):
             self.log('41-2', name)
 
     elif code == 4: # Removing Super or Admin
-        name, supername, auth, superlog = information # info = [name, supername, 'Fingerprint/Pin', superlog]
+        removename, supername, auth, superlog = information # info = [name, supername, 'Fingerprint/Pin', superlog]
         # Super verification
         if auth == 'Fingerprint':
             if fingerprint not in self.googlesheet('admins').row[fingerprint]:
@@ -111,18 +130,18 @@ def userdetails(self, information, code):
             supername = data[0]
         elif auth == 'Pin':
             if supername not in self.googlesheet('admins')[username]:
-                self.log(['6','0','Unfound', f"{Unfound} {supername}", auth], name)
+                self.log(['6','0','Unfound', f"Unfound {supername}", auth], removename)
                 self.incorrect.emit(1); return
             else:
                 data = self.googlesheet('admins').row[username][supername]
                 if superlog != data[2]:
-                    self.log(['6','0','Unfound', f"{Unlogged} {supername}", auth], name)
+                    self.log(['6','0','Unfound', f"Unverified {supername}", auth], removename)
                     self.incorrect.emit(1); return
         # Removee Verification                
         if name not in self.googlesheet('admins')[username]:
-            self.incorrect.emit(1); self.log(['6','0','Unfound', supername, auth], name) # fail
+            self.incorrect.emit(1); self.log(['6','0','Unfound', supername, auth], removename) # fail
         else: # data = [name, rank, pin, fingerprint]
-            data = self.googlesheet('admins').row[username][name]
+            data = self.googlesheet('admins').row[username][removename]
             self.googlesheet('admins').moverow[information].('deletedadmins')
-            if data[1] == 'Super Admin': self.log(['6','1','Super Admin', supername, auth], name)
-            elif data[1] == 'Admin': self.log(['6','1','Admin', supername, auth], name)
+            if data[1] == 'Super Admin': self.log(['6','1','Super Admin', supername, auth], removename)
+            elif data[1] == 'Admin': self.log(['6','1','Admin', supername, auth], removename)

@@ -1,12 +1,17 @@
-import os
-import sys
-#import gspread
-import datetime
-from database import Sheet
 from PySide6.QtWidgets import QApplication
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtCore import QObject, Signal, Slot
- 
+#import gspread
+
+from database import Sheet
+
+import os
+import sys
+import datetime
+
+
+
+# EXPERIMENTAL
     
 class Backend(QObject):
     def __init__(self):
@@ -17,20 +22,20 @@ class Backend(QObject):
         self.adminlog = ""
         self.student = ""
         self.studentlog = ""
-        self.availbal = 6000
+        self.availbal = 0
         self.activity = ""
         self.recipient = ""
         self.recipientlog = ""
-        self.amount = None
+        self.amount = 0
 
     googlesheet = None
     report = []
     #supersheet = {'100': '0000'}
-    supersheet = {'': ''}
+    #supersheet = {'': ''}
     #adminsheet = {'200': '0000'}
-    adminsheet = {'': '0000'}
+    #adminsheet = {'': '0000'}
     #customersheet = {'': '0000'}
-    customersheet = {'3': '0000'}
+    #customersheet = {'3': '0000'}
     pageindex = {
         1: "P1Form.ui.qml", 2: "P2Form.ui.qml", 3: "P3Form.ui.qml",
         'Purchase': 'Purchase.ui.qml', 'Transfer': 'Transfer.ui.qml',
@@ -52,6 +57,7 @@ class Backend(QObject):
     loggeduser = Signal(str) 
     accbalance = Signal(float)
     featuremode = Signal(str)
+    proceed = Signal(int)
 
     """
     Slots are used to communicate with Python from QML
@@ -85,11 +91,12 @@ class Backend(QObject):
         s_password = s_user[1]
         self.superlog = s_user[2] # Remove this line when fingerprint if-block is done
         # Write an if block for when fingerprint is used
-        if self.super in self.supersheet:
-            password = self.supersheet[self.super]
-            if s_password == password: self.loaded(self.pageindex[2]); self.log("1101", self.super)
+        
+        if self.supersheet['Name'].get(self.super) == None: self.loaded(self.pageindex[1]); self.incorrect.emit(1); self.log("1001", self.super)
+        else:
+            data = self.supersheet.loc[self.supersheet['Name'].get(self.super)]
+            if s_password == data.Pin: self.loaded(self.pageindex[2]); self.log("1101", self.super)
             else: self.loaded(self.pageindex[1]); self.incorrect.emit(1); self.log("1001", self.super)
-        else: self.loaded(self.pageindex[1]); self.incorrect.emit(1); self.log("1001", self.super)
 
     @Slot(int)
     def superadminlogout(self, code):
@@ -103,11 +110,12 @@ class Backend(QObject):
         self.admin = a_user[0]
         a_password = a_user[1] # Calls pi to capture finger for processing
         self.adminlog = a_user[2]
-        if self.admin in self.adminsheet:
-            password = self.adminsheet[self.admin]
-            if a_password == password: self.loaded(self.pageindex[3]); self.log("1100", self.admin)
+        
+        if self.adminsheet['Name'].get(self.admin) == None: self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1000", self.admin)
+        else:
+            data = self.adminsheet.loc[self.adminsheet['Name'].get(self.admin)]
+            if a_password == data.Pin: self.loaded(self.pageindex[3]); self.log("1100", self.admin)
             else: self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1000", self.admin)
-        else: self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1000", self.admin)
 
     @Slot()
     def adminlogout(self):
@@ -115,42 +123,104 @@ class Backend(QObject):
         self.admin, self.adminlog = "", ""
 
     @Slot(list)
+    def checksuper(self, details):
+        entry = details[0]
+        auth = details[1]
+        if ((auth == 'Super Admin') & (self.supersheet['Name'].get(entry) != None)) | ((auth == 'Admin') & (self.adminsheet['Name'].get(entry) != None)):
+            self.invalid.emit(1); self.log("40-1", entry) if auth == 'Super Admin' else self.log("40-0", entry)
+        else: self.proceed.emit(2)
+        
+    @Slot(list)
     def registersuper(self, details):
+        import csv
         # self.userdetails(details, 3) # ANSWER
+        information = details[:4]
         entry = details[0]
         auth = details[1]
         password = details[2]
         fingerprint = details[3]
-        # check if (super/admin)sheet already contains username
-        '''if entry in self.googlesheet('admins'):
-            self.invalid.emit(1); self.log("40-1", entry) if auth == 1 else self.log("40-0", entry)'''
-        # write new entry to the googlesheet
-        self.log("41-1", entry) if auth == 'Super Admin' else self.log("41-0", entry)
+        supername = details[4]
+        superpin = details[5]
+        superlog = details[6]
+        #Super verify
+        if self.supersheet['Name'].get(supername) == None:
+            self.log('40-1', f"{entry} Unfound {supername}") if auth == 'Super Admin' else self.log('40-0', f"{entry} Unfound {supername}")
+            self.incorrect.emit(3); return
+        else:
+            data = self.supersheet.loc[self.supersheet['Name'].get(supername)]
+            if superpin != data.Pin:
+                self.log('40-1', f"{entry} Unverified {supername}") if auth == 'Super Admin' else self.log('40-0', f"{entry} Unverified {supername}")
+                self.incorrect.emit(3); return
+        
+        information.append(datetime.datetime.now().__str__()[:19])
 
-    @Slot(list) # str incoming
-    def removesuper(self, details):
-        #self.userdetails(details, 4) # ANSWER
-        removename = details[0]
-        removerank = details[1] #Would be gotten from sheet, remove later
-        supername = details[2]
-        auth = "Pin" if details[3] == "Pin" else "Fingerprint"
-        # check if (super/admin)sheet doesn't contain removename
-        '''if removename not in gs('admins'):
-            self.invalid.emit(1); self.log(['6','0','',supername,auth], removename)'''
-        # remove name from googlesheet
-        self.log(['6','1',removerank,supername,auth], removename)
+        if auth == 'Super Admin': self.supersheet.loc[entry] = information
+        else: self.adminsheet.loc[entry] = information
+        self.proceed.emit(1)
+        with open ('admindummy.csv', 'a') as file:
+            csv_writer = csv.writer(file)
+            csv_writer.writerow(information)
+        self.log("41-1", entry) if auth == 'Super Admin' else self.log("41-0", entry)
+        if (auth == 'Super Admin') & (self.adminsheet['Name'].get(entry) != None): self.log("41-1", f"{entry} by Super: {supername} - {superlog}")        
     
-    @Slot(list) # str incoming data
+    @Slot(list)
+    def removesuper(self, details):
+        import csv
+        #self.userdetails(details, 4) # ANSWER
+
+        removename = details[0] # Remove rank has been removed from details[1]
+        supername = details[1]
+        auth = details[2]
+        superlog = details[3]
+
+        #Super verify # biometric not included in this code
+        if self.supersheet['Name'].get(supername) == None: self.log(['6','0','Unfound', 'Unfound', auth], removename); self.incorrect.emit(3); return
+        else:
+            data = self.supersheet.loc[self.supersheet['Name'].get(supername)]
+            if superlog != data.Pin:
+                self.log(['6','0','Unfound', f"Unverified {supername}", auth], removename)
+                self.incorrect.emit(3); return
+        
+        #Removee verify
+        if (self.supersheet['Name'].get(removename) != None) | (self.adminsheet['Name'].get(removename) != None): # if a super admin and an admin, it'll remove admin profile
+            if (self.supersheet['Name'].get(removename) != None) & (self.adminsheet['Name'].get(removename) != None): # user in both lists
+                data = list(self.adminsheet.loc[removename])
+                self.adminsheet.drop(removename, inplace = True)
+            elif self.supersheet['Name'].get(removename) != None: # user a superadmin
+                data = list(self.supersheet.loc[removename])
+                self.supersheet.drop(removename, inplace = True)
+            elif self.adminsheet['Name'].get(removename) != None: # user an admin
+                data = list(self.adminsheet.loc[removename])
+                self.adminsheet.drop(removename, inplace = True)
+            data.append(datetime.datetime.now().__str__()[:19])
+            with open('deletedadmins.csv', 'a') as dfile:
+                csv_writer = csv.writer(dfile)
+                csv_writer.writerow(data)
+                
+            self.proceed.emit(1)
+            formatted_list = self.pdtolist()
+            removerank = data[1]
+            
+            with open ('admindummy.csv', 'w') as file:
+                csv_writer = csv.writer(file)
+                csv_writer.writerows(formatted_list)
+            self.log(['6','1',removerank,supername,auth], removename)
+        else:
+            self.invalid.emit(1); self.log(['6','0','Undefined',supername,auth], removename)
+    
+    @Slot(list)
     def studentuser(self, user): #user = [name, pin, "Fingerprint/Pin"]
         #self.userdetails(user, 2) # ANSWER
         self.student = user[0]
         u_password = user[1]
         self.studentlog = user[2]
-        if self.student in self.customersheet:
-            password = self.customersheet[self.student]
-            if u_password == password: self.loaded(self.pageindex[self.activity]); self.switchfeature(); self.log("1102", self.student)
+
+        if self.customersheet['Name'].get(self.student) == None: self.loaded('close'); self.incorrect.emit(1); self.log("1002", self.student)
+        else:
+            data = self.customersheet.loc[self.customersheet['Name'].get(self.student)]
+            self.availbal = data[2]
+            if u_password == data.Pin: self.loaded(self.pageindex[self.activity]); self.switchfeature(); self.log("1102", self.student)
             else: self.loaded('close'); self.incorrect.emit(1); self.log("1002", self.student)
-        else: self.loaded('close'); self.incorrect.emit(1); self.log("1002", self.student)
 
     @Slot()
     def userlogout(self):
@@ -188,19 +258,24 @@ class Backend(QObject):
             if self.recipient not in self.customersheet: self.loaded('close'); self.incorrect.emit(2)"""
         
     @Slot(list)
-    def registeruser(self, details): # apply str to all incoming data
+    def registeruser(self, details):
+        import csv
         # self.userdetails(details, 32) # ANSWER
         self.student = details[0]
         password = details[1]
         fingerprint = details[2]
-        #check if user exists in database
-        #if self.student in gs('students'): self.invalid.emit(1); self.log(4) # failed
-        """if details not in self.googlesheet('students'):
-            with open (gs('students'), 'a+') as file:
-                file.write(details)
-                self.log(5), self.log("41-2", self.student)
-        else: self.log(4), self.log("40-2", self.student)"""
-        self.log("41-2", self.student)
+        details.insert(1, 'User')
+        details.insert(2, 0)
+        details.append(datetime.datetime.now().__str__()[:19])
+
+        if self.customersheet['Name'].get(self.student) == None:
+            self.proceed.emit(1)
+            self.customersheet.loc[self.student] = details
+            with open ('userdummy.csv', 'a+') as file:
+                csv_writer = csv.writer(file)
+                csv_writer.writerow(details)
+            self.log("41-2", self.student)
+        else: self.invalid.emit(1); self.log("40-2", self.student)
 
     @Slot(int)
     def transactiondone(self, code):
@@ -219,11 +294,48 @@ class Backend(QObject):
     """
     
     def test_gspread(self):
+        """
+        tosin needs to define a function for removing a user
+        a function for loading the sheet to a panda file, it's in gspread documentation
+        """
+        from pandas import read_csv 
         self.googlesheet = Sheet()
         if self.googlesheet: print(f'Loaded: {len(self.googlesheet.table)-1} entries')
         #print(self.googlesheet.get_entireTableUser())
         self.finishedprocess.emit(self.pageindex[1])
-    
+
+        #Experimental
+        spreadsheet = read_csv('admindummy.csv', dtype = str)
+        spreadsheet.set_index(spreadsheet['Name'], inplace = True)
+        self.supersheet = spreadsheet.loc[spreadsheet['Rank']=='Super Admin']
+        self.adminsheet = spreadsheet.loc[spreadsheet['Rank']=='Admin']
+        self.customersheet = read_csv('userdummy.csv', dtype = str)
+        self.customersheet.set_index(self.customersheet['Name'], inplace = True)
+        self.customersheet = self.customersheet.astype({'Amount': float})
+        print(f"Admins: {len(spreadsheet)} Entries\nUsers: {len(self.customersheet)} Entries")
+        """
+        When working
+            df.set_index(df['Name'], inplace = True)
+        For finding column
+            if y['Name'].get(username) == None: self.incorrect.emit(1)
+            else: data = y.loc[y['Name'].get(username)]
+        when writing to csv
+            df.sort_values('Name')
+            df.to_csv('path', index = False)
+        To Add
+            df.loc[name] = [name,rank,pin,fingerprint]
+        To Remove
+            data = df.loc[index]
+            deleteddf.loc[index] = [data.Name, data.Rank, data.Pin, data.Fingerprint]
+            df.drop(index, inplace = True)
+        """
+    def pdtolist(self):
+        superlist = [list(self.supersheet.iloc[i]) for i in range(len(self.supersheet))]
+        adminlist = [list(self.adminsheet.iloc[i]) for i in range(len(self.adminsheet))]
+        superlist.insert(0, list(self.supersheet.columns))
+        finallist = superlist + adminlist
+        return finallist
+        
     def loaded(self, code):
         ''' Called after process has finished'''
         self.finishedprocess.emit(code)
@@ -251,7 +363,6 @@ class Backend(QObject):
             message = f"Removal {passkey[code[1]]}: {code[2]} {name} removed by Super Admin {code[3]} with {code[4]} at {datetime.datetime.now().__str__()[:19]}\n"
         self.writeout(message)
         self.report.append(message)
-        # the 'register and delete (super) admin' codes to write to spreadsheet
         
     def reset_variables(self):
         ''' Called after a log has been printed'''
