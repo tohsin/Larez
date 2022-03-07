@@ -60,14 +60,14 @@ Item {
 
     Text {
         id: regno
-        x: 60
         y: 245
-        width: 152
         height: 41
+        anchors.left: parent.left
+        anchors.leftMargin: 60
+        anchors.right: parent.right
         text: qsTr("User Reg No")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
-        wrapMode: Text.NoWrap
         fontSizeMode: Text.Fit
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
@@ -75,15 +75,14 @@ Item {
 
         Rectangle {
             id: regno_box
-            width: 470
             height: 40
             color: "#ffffff"
             radius: 5
             border.width: 1
             anchors.left: parent.left
             anchors.top: parent.bottom
-            anchors.topMargin: 0
-            anchors.leftMargin: 0
+            anchors.right: parent.right
+            anchors.rightMargin: 60
         }
         TextField {
             id: regno_field

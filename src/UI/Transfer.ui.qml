@@ -208,14 +208,14 @@ Item {
 
     Text {
         id: amount
-        x: 60
         y: 245
-        width: 152
         height: 41
+        anchors.left: parent.left
+        anchors.leftMargin: 60
+        anchors.right: parent.right
         text: qsTr("Amount")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
-        wrapMode: Text.NoWrap
         fontSizeMode: Text.Fit
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
@@ -223,27 +223,25 @@ Item {
 
         Rectangle {
             id: amount_box
-            width: 430
             height: 40
             color: "#ffffff"
             radius: 5
             border.width: 1
             anchors.left: parent.left
             anchors.top: parent.bottom
-            anchors.topMargin: 0
-            anchors.leftMargin: 0
+            anchors.right: amount_checkBox.left
+            anchors.rightMargin: 15
         }
         CheckBox {
             id: amount_checkBox
-            x: 428
             y: 304
             width: 13
             height: 12
             scale: 2.4
             anchors.verticalCenter: amount_box.verticalCenter
-            anchors.left: amount_box.right
+            anchors.right: parent.right
+            anchors.rightMargin: 60
             checked: false
-            anchors.leftMargin: 15
             onClicked: {
                 if (amount_checkBox.checked == true){ checkamount(amount_field.text) }
             }
@@ -265,7 +263,7 @@ Item {
 
         TextField {
             id: amount_field
-            height: 38
+            height: amount_box.height - 2
             anchors.verticalCenter: amount_box.verticalCenter
             anchors.left: amount_box.left
             anchors.right: amount_box.right
@@ -300,11 +298,12 @@ Item {
     }
     Text {
         id: username
-        x: 60
-        y: 400
-        width: 152
-        height: 41
         visible: use_fingerprint_button.visible
+        y: 400
+        height: 41
+        anchors.left: parent.left
+        anchors.leftMargin: 60
+        anchors.right: parent.right
         text: qsTr("Recipient")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
@@ -315,21 +314,20 @@ Item {
 
         Rectangle {
             id: username_box
-            width: 470
+            visible: use_fingerprint_button.visible
             height: 40
             color: "#ffffff"
             radius: 5
             border.width: 1
             anchors.left: parent.left
             anchors.top: parent.bottom
-            anchors.topMargin: 0
-            anchors.leftMargin: 0
-            visible: use_fingerprint_button.visible
+            anchors.right: parent.right
+            anchors.rightMargin: 60
         }
 
         TextField {
             id: username_field
-            height: 38
+            height: username_box.height - 2
             visible: use_fingerprint_button.visible
             anchors.verticalCenter: username_box.verticalCenter
             anchors.left: username_box.left

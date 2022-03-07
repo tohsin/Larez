@@ -4,13 +4,14 @@ import QtQuick.Controls 6.2
 ApplicationWindow {
     id: window
     width: 600
+    /*width: (9/16) * height*/
     height: 800
     visible: true
     visibility: "Windowed"
     x: (Screen.width - width) / 2
     y: (Screen.height - height) / 2
     title: "CU Pay"
-    flags: Qt.FramelessWindowHint
+    /*flags: Qt.FramelessWindowHint*/
     color: "transparent"
 
     Rectangle {

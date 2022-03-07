@@ -268,10 +268,13 @@ Item {
     Text {
         id: admin
         visible: use_fingerprint_button.visible
-        x: 60
+        /*x: 60
+        width: 152*/
         y: 245
-        width: 152
         height: 41
+        anchors.left: parent.left
+        anchors.leftMargin: 60
+        anchors.right: parent.right
         text: qsTr("Admin")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
@@ -282,20 +285,20 @@ Item {
 
         Rectangle {
             id: username_box
-            width: 430
+            /*width: 480*/
             height: 40
             color: "#ffffff"
             radius: 5
             border.width: 1
             anchors.left: parent.left
             anchors.top: parent.bottom
-            anchors.topMargin: 0
-            anchors.leftMargin: 0
+            anchors.right: parent.right
+            anchors.rightMargin: 60
         }
 
         TextField {
             id: username
-            height: 38
+            height: username_box.height - 2
             anchors.verticalCenter: username_box.verticalCenter
             anchors.left: username_box.left
             anchors.right: username_box.right
@@ -342,21 +345,19 @@ Item {
 
         Rectangle {
             id: password_box
-            width: 427
-            height: 40
+            width: username_box.width
+            height: username_box.height
             color: "#ffffff"
             radius: 5
             border.width: 1
             anchors.left: parent.left
             anchors.top: parent.bottom
-            anchors.topMargin: 0
-            anchors.leftMargin: 0
         }
 
         TextField {
             id: password
             echoMode: TextInput.Password
-            height: 38
+            height: username_box.height - 2
             anchors.verticalCenter: password_box.verticalCenter
             anchors.left: password_box.left
             anchors.right: password_box.right

@@ -161,14 +161,14 @@ Item {
 
     Text {
         id: removee
-        x: 60
         y: 170
-        width: 152
         height: 41
+        anchors.left: parent.left
+        anchors.leftMargin: 60
+        anchors.right: parent.right
         text: qsTr("Username")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
-        wrapMode: Text.NoWrap
         fontSizeMode: Text.Fit
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
@@ -176,26 +176,24 @@ Item {
 
         Rectangle {
             id: regno_box
-            width: 430
             height: 40
             color: "#ffffff"
             radius: 5
             border.width: 1
             anchors.left: parent.left
             anchors.top: parent.bottom
-            anchors.topMargin: 0
-            anchors.leftMargin: 0
+            anchors.right: regno_checkBox.left
+            anchors.rightMargin: 15
         }
         CheckBox {
             id: regno_checkBox
-            x: 428
             width: 13
             height: 12
             scale: 2.4
             anchors.verticalCenter: regno_box.verticalCenter
-            anchors.left: regno_box.right
+            anchors.right: parent.right
+            anchors.rightMargin: 60
             checked: false
-            anchors.leftMargin: 15
         }
 
         Text {
@@ -214,7 +212,7 @@ Item {
 
         TextField {
             id: regno_field
-            height: 38
+            height: regno_box.height - 2
             anchors.verticalCenter: regno_box.verticalCenter
             anchors.left: regno_box.left
             anchors.right: regno_box.right
@@ -265,14 +263,14 @@ Item {
     Text {
         id: ver
         visible: regno_checkBox.checked & switch1.checked
-        x: 60
         y: 350
-        width: 152
         height: 41
+        anchors.left: parent.left
+        anchors.leftMargin: 60
+        anchors.right: parent.right
         text: qsTr("Username")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
-        wrapMode: Text.NoWrap
         fontSizeMode: Text.Fit
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
@@ -280,15 +278,14 @@ Item {
 
         Rectangle {
             id: ver_box
-            width: 470
             height: 40
             color: "#ffffff"
             radius: 5
             border.width: 1
             anchors.left: parent.left
             anchors.top: parent.bottom
-            anchors.topMargin: 0
-            anchors.leftMargin: 0
+            anchors.right: parent.right
+            anchors.rightMargin: 60
         }
         TextField {
             id: ver_field

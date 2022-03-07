@@ -157,14 +157,14 @@ Item {
     Text {
         id: superadmin
         visible: switch1.checked
-        x: 60
         y: 245
-        width: 152
+        anchors.left: parent.left
+        anchors.leftMargin: 60
+        anchors.right: parent.right
         height: 41
         text: qsTr("Super Admin")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
-        wrapMode: Text.NoWrap
         fontSizeMode: Text.Fit
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
@@ -172,13 +172,14 @@ Item {
 
         Rectangle {
             id: username_box
-            width: 480
             height: 40
             color: "#ffffff"
             radius: 5
             border.width: 1
             anchors.left: parent.left
             anchors.top: parent.bottom
+            anchors.right: parent.right
+            anchors.rightMargin: 60
         }
 
         TextField {
