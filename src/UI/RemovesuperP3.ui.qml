@@ -27,7 +27,7 @@ Item {
         sourceSize.height: 100
         MouseArea {
             anchors.fill: parent
-            onClicked: page_loader.source = 'P3Form.ui.qml'
+            onClicked: { page_loader.source = 'P3Form.ui.qml' ; revert() }
         }
     }
     Rectangle {
@@ -226,6 +226,7 @@ Item {
             leftPadding: 9
             rightPadding: 35
             placeholderText: qsTr("Username")
+            readOnly: regno_checkBox.checked
         }
         Image {
             id: clearregno
@@ -391,7 +392,7 @@ Item {
             id: successDialog
             text: "New (Super) Admin Has Been Removed Successfully"
             buttons: MessageDialog.Ok
-            onOkClicked: page_loader.source = "P3Form.ui.qml"
+            onOkClicked: { page_loader.source = "P3Form.ui.qml" ; revert() }
         }
         MessageDialog {
             title: "Admin Removal"
@@ -426,11 +427,12 @@ Item {
 
     Text {
         id: modename
-        x: parent.width - 225
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: -40
         width: 150
         height: 20
         text: qsTr("Admin Removal")
-        font.pixelSize: 18
+        font.pixelSize: 22
         anchors.top: parent.top
         anchors.topMargin: 87
         font.family: "Verdana"
@@ -438,4 +440,9 @@ Item {
         font.italic: true
         font.bold: true
     }
+    Component.onCompleted: {
+        image.scale = 0.7
+        image.anchors.horizontalCenterOffset = 215
+    }
+    function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = 0 }
 }

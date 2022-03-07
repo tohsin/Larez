@@ -25,16 +25,16 @@ Item {
         text: "You Are About To Make A Transfer of " + amount_field.text + " Amount to " + username_field.text
         informativeText: "Do You Want To Continue?"
         buttons: MessageDialog.Yes | MessageDialog.No
-        onYesClicked: { stack.push('Success.ui.qml'); click.running = true }
+        onYesClicked: { stack.push('Success.ui.qml'); click.running = true ; revert() }
 
     }
     MessageDialog {
         title: "Making Transfer"
         id: transferDialogBio
-        text: "You Are About To Make A Transfer of " + amount_field.text + " Amount to Biometric-ID A2"
+        text: "You Are About To Make A Transfer of " + amount_field.text + " Amount to Bio-ID A2"
         informativeText: "Do You Want To Continue?"
         buttons: MessageDialog.Yes | MessageDialog.No
-        onYesClicked: { stack.push('Success.ui.qml'); click.running = true }
+        onYesClicked: { stack.push('Success.ui.qml'); click.running = true ; revert() }
     }
     MessageDialog {
         title: "Invalid Amount"
@@ -60,7 +60,7 @@ Item {
         text: "You Are About To Logout"
         informativeText: "Do You Want To Continue?"
         buttons: MessageDialog.Yes | MessageDialog.No
-        onYesClicked: { backend.userlogout() ; stack.pop() ; stack.pop() }
+        onYesClicked: { backend.userlogout() ; stack.pop() ; stack.pop(); revert() }
     }
     MessageDialog {
         title: "Logout User"
@@ -185,7 +185,7 @@ Item {
             onClicked: {
                 if (amount_field.text < 50.0) { warnDialog.open() ; amount_checkBox.checked = false }
                 if (amount_field.text > aNum) { insufDialog.open() ; amount_checkBox.checked = false }
-                else { transferDialogBio.open() ; backend.transferfeature([amount_field.text, "'Biometrics ID - 00'", "Fingerprint"]) }
+                else { transferDialogBio.open() ; backend.transferfeature([amount_field.text, "'Bio ID - 00'", "Fingerprint"]) }
             }
         }
     }
@@ -245,10 +245,7 @@ Item {
             checked: false
             anchors.leftMargin: 15
             onClicked: {
-                if (amount_checkBox.checked == true){
-                    if (amount_field.text < 50.0) { warnDialog.open() ; amount_checkBox.checked = false }
-                    if (amount_field.text > aNum) { insufDialog.open() ; amount_checkBox.checked = false }
-                }
+                if (amount_checkBox.checked == true){ checkamount(amount_field.text) }
             }
         }
 
@@ -280,6 +277,9 @@ Item {
             leftPadding: 9
             rightPadding: 35
             placeholderText: qsTr("Amount")
+            readOnly: amount_checkBox.checked
+            validator: IntValidator {bottom: 1; top: 100000}
+            inputMethodHints: Qt.ImhDigitsOnly
         }
         Image {
             id:clearamount
@@ -305,7 +305,7 @@ Item {
         width: 152
         height: 41
         visible: use_fingerprint_button.visible
-        text: qsTr("Recepient")
+        text: qsTr("Recipient")
         font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
         fontSizeMode: Text.Fit
@@ -361,6 +361,7 @@ Item {
                 onClicked: {
                     if (username_field.text === '') { warnDialog2.open() }
                     else { transferDialog.open() ; backend.transferfeature([amount_field.text, username_field.text, "Typed"]) }
+                    checkamount(amount_field.text)
                 }
             }
         }
@@ -384,36 +385,64 @@ Item {
     Connections {
         target: backend
 
-        function onLoggeduser(customer){ loggeduser.text = "Hi, " + customer }
+        function onLoggeduser(customer){ loggeduser.text = "<i>Hi</i>, <b>" + customer + "</b>" }
         function onFeaturemode(activity){ modename.text = activity + " Window" }
-        function onAccbalance(cash){ acbal.text = "Available: " + cash ; aNum = cash }
+        function onAccbalance(cash){ acbal.text = "<i>Available:</i> <b>" + cash + "</b>" ; aNum = cash }
         function onIncorrect(number) { if (number === 2) { warnDialog2.open() ; transferDialog.close() ; transferDialogBio.close() } }
     }
     Text {
         id: modename
-        x: parent.width - 210
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: -40
         width: 150
         height: 20
         text: qsTr(" Window")
-        font.pixelSize: 18
+        font.pixelSize: 22
         anchors.top: parent.top
-        anchors.topMargin: 125
+        anchors.topMargin: 80
         font.family: "Verdana"
         font.styleName: "Regular"
         font.italic: true
         font.bold: true
-
+    }
+    Rectangle {
+        radius: 3
+        /*color: "transparent"
+        color: "#e1e1e0"*/
+        color: "black"
+        width: 120
+        height: 30
+        anchors.top: parent.top
+        anchors.topMargin: 170
+        anchors.left: amount.left
+        /*anchors.left: parent.left
+        anchors.leftMargin: 40*/
+        Text {
+            id: userinfo
+            color: "white"
+            width: 100
+            height: 20
+            text: qsTr("USER INFO")
+            font.pixelSize: 16
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            /*anchors.horizontalCenter: parent.horizontalCenter*/
+            font.family: "Verdana"
+            font.styleName: "Regular"
+            font.bold: true
+        }
         Text {
             id: loggeduser
-            width: 150
+            width: 100
             height: 20
             text: qsTr("Hi, ")
             font.pixelSize: 16
-            anchors.top: parent.bottom
-            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: userinfo.right
+            anchors.leftMargin: 20
             font.family: "Verdana"
             font.styleName: "Regular"
-            font.italic: true
         }
         Text {
             id: acbal
@@ -421,11 +450,20 @@ Item {
             height: 20
             text: qsTr("Available ")
             font.pixelSize: 16
-            anchors.top: loggeduser.bottom
-            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: loggeduser.right
+            anchors.leftMargin: 20
             font.family: "Verdana"
             font.styleName: "Regular"
-            font.italic: true
         }
+    }
+    Component.onCompleted: {
+        image.scale = 0.7
+        image.anchors.horizontalCenterOffset = 215
+    }
+    function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = 0 }
+    function checkamount(amount) {
+        if (amount < 50.0) { warnDialog.open() ; amount_checkBox.checked = false ; transferDialog.close() ; transferDialogBio.close() }
+        if (amount > aNum) { insufDialog.open() ; amount_checkBox.checked = false ; transferDialog.close() ; transferDialogBio.close() }
     }
 }

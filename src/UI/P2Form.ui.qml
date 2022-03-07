@@ -196,17 +196,16 @@ Item {
             onClicked: logoutDialog.open()
         }
     }
-    Text {
-        id: manage
-        width: 140
-        height: 40
-        font.bold: true
-        font.pixelSize: 18
-        text: qsTr("Manage Admins")
+    Rectangle {
+        id: dotdot
+        border.width: 3
+        radius: width/2
+        width: 32
+        height: width
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.rightMargin: 45
-        anchors.topMargin: 87
+        anchors.rightMargin: 50
+        anchors.topMargin: 82
         MouseArea {
             anchors.fill: parent
             onClicked: menu.open()
@@ -223,7 +222,15 @@ Item {
             }
         }
     }
-
+    Image {
+        anchors.verticalCenter: dotdot.verticalCenter
+        anchors.horizontalCenter: dotdot.horizontalCenter
+        width: 25
+        height: width
+        source: "../images/menucircle.png"
+        sourceSize.width: 100
+        sourceSize.height: 100
+    }
     Image {
         id: fingerprint
         visible: use_pin_button.visible
@@ -237,7 +244,7 @@ Item {
             anchors.fill: parent;
             onClicked: {
                 page_loader.source = "Loadingpage.ui.qml";
-                backend.adminuser(['', '0000', "Fingerprint"]);
+                backend.adminuser(['12', '0012', "Fingerprint"]);
             }
         }
     }

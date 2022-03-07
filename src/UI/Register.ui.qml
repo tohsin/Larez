@@ -15,7 +15,7 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: 35
         anchors.top: parent.top
-        anchors.topMargin: 87
+        anchors.topMargin: 80
         width: 30
         height: 30
         source: "../images/back.jpg"
@@ -23,7 +23,7 @@ Item {
         sourceSize.height: 100
         MouseArea {
             anchors.fill: parent
-            onClicked: stack.pop()
+            onClicked: { stack.pop() ; revert() }
         }
     }
 
@@ -38,7 +38,7 @@ Item {
         fillMode: Image.PreserveAspectFit
         MouseArea {
             anchors.fill: parent
-            onClicked: backend.registeruser([regno_field.text, password.text, password.text])
+            onClicked: backend.checkuser(regno_field.text)
         }
     }
 
@@ -221,14 +221,14 @@ Item {
             id: confirmDialog
             text: "You Are About To Register " + regno_field.text
             buttons: MessageDialog.Ok | MessageDialog.Cancel
-            onOkClicked: successDialog.open()
+            onOkClicked: { backend.registeruser([regno_field.text, password.text, password.text]) ; successDialog.open() }
         }
         MessageDialog {
             title: "Registration Successful"
             id: successDialog
             text: "New User Has Been Registered Successfully"
             buttons: MessageDialog.Ok
-            onOkClicked: stack.replace('P3Form.ui.qml')
+            onOkClicked: { stack.replace('P3Form.ui.qml') ; revert() }
         }
     }
     Connections {
@@ -240,16 +240,22 @@ Item {
 
     Text {
         id: modename
-        x: parent.width - 225
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: -40
         width: 150
         height: 20
         text: qsTr("Registration Page")
-        font.pixelSize: 18
+        font.pixelSize: 22
         anchors.top: parent.top
-        anchors.topMargin: 87
+        anchors.topMargin: 80
         font.family: "Verdana"
         font.styleName: "Regular"
         font.italic: true
         font.bold: true
     }
+    Component.onCompleted: {
+        image.scale = 0.7
+        image.anchors.horizontalCenterOffset = 215
+    }
+    function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = 0 }
 }

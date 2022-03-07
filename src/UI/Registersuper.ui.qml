@@ -23,7 +23,7 @@ Item {
             sourceSize.height: 100
             MouseArea {
                 anchors.fill: parent
-                onClicked: page_loader.source = 'P2Form.ui.qml'
+                onClicked: { page_loader.source = 'P2Form.ui.qml' ; revert() }
             }
         }
 
@@ -197,7 +197,7 @@ Item {
                 id: successDialog
                 text: "New (Super) Admin Has Been Registered Successfully"
                 buttons: MessageDialog.Ok
-                onOkClicked: page_loader.source = "P2Form.ui.qml"
+                onOkClicked: { page_loader.source = "P2Form.ui.qml" ; revert() }
             }
             MessageDialog {
                 title: "Details You Entered Are Incomplete"
@@ -293,11 +293,12 @@ Item {
 
         Text {
             id: modename
-            x: parent.width - 235
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: -50
             width: 150
             height: 20
             text: qsTr("Admin Registration")
-            font.pixelSize: 18
+            font.pixelSize: 22
             anchors.top: parent.top
             anchors.topMargin: 87
             font.family: "Verdana"
@@ -604,18 +605,26 @@ Item {
         }
         Text {
             id: modename1
-            x: parent.width - 200
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: -80
             width: 150
             height: 20
             text: qsTr("Registration Verification")
-            font.pixelSize: 18
+            font.pixelSize: 21
             anchors.top: parent.top
             anchors.topMargin: 87
             font.family: "Verdana"
             font.styleName: "Regular"
             font.italic: true
             font.bold: true
-            wrapMode: Text.WordWrap
         }
     }
+    Component.onCompleted: {
+        image.scale = 0.7
+        image.anchors.horizontalCenterOffset = 215
+
+        logo.scale = 0.7
+        logo.anchors.horizontalCenterOffset = 215
+    }
+    function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = 0 }
 }

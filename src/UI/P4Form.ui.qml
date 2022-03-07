@@ -152,7 +152,7 @@ Item {
             anchors.fill: parent;
             onClicked: {
                 stack.push('Loadfeature.ui.qml')
-                backend.studentuser(['3', '0000', "Fingerprint"]);
+                backend.studentuser(['21', '0021', "Fingerprint"]);
             }
         }
     }

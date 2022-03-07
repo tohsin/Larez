@@ -9,9 +9,27 @@ Item {
     }
     Image {
         id: success
-        height: 300
+        height: 200
         width: height
-        anchors.centerIn: parent
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: -50
         source: "../images/success.png"
+    }
+    Text {
+        text: qsTr("Printing Customer Receipt...")
+        anchors.top: success.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.topMargin: 35
+        width: 140
+        height: 40
+        font.pixelSize: 22
+        font.bold: true
+        font.capitalization: Font.Capitalize
+        font.family: "Verdana"
+        font.styleName: "Regular"
+        horizontalAlignment: Text.AlignHCenter
+        font.italic: true
+        verticalAlignment: Text.AlignVCenter
     }
 }

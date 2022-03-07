@@ -64,7 +64,7 @@ Item {
         text: "You Are About To Make A Purchase with " + enter_amount.text + " Naira"
         informativeText: "Do You Want To Continue?"
         buttons: MessageDialog.Yes | MessageDialog.No
-        onYesClicked: { stack.push('Success.ui.qml'); click.running = true }
+        onYesClicked: { stack.push('Success.ui.qml'); click.running = true ; revert() }
     }
     MessageDialog {
         title: "Invalid Amount"
@@ -84,7 +84,7 @@ Item {
         text: "You Are About To Logout"
         informativeText: "Do You Want To Continue?"
         buttons: MessageDialog.Yes | MessageDialog.No
-        onYesClicked: { backend.userlogout() ; stack.pop() ; stack.pop() }
+        onYesClicked: { backend.userlogout() ; stack.pop() ; stack.pop() ; revert() }
     }
     MessageDialog {
         title: "Logout User"
@@ -168,6 +168,8 @@ Item {
             leftPadding: 9
             rightPadding: 35
             placeholderText: qsTr("Enter Amount")
+            validator: IntValidator {bottom: 1; top: 100000}
+            inputMethodHints: Qt.ImhDigitsOnly
         }
         Image {
             id:clearamount
@@ -197,26 +199,55 @@ Item {
 
     Text {
         id: modename
-        x: parent.width - 210
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: -40
         width: 150
         height: 20
-        text: " Window"
-        font.pixelSize: 18
+        text: qsTr(" Window")
+        font.pixelSize: 22
         anchors.top: parent.top
-        anchors.topMargin: 125
+        anchors.topMargin: 80
         font.family: "Verdana"
         font.styleName: "Regular"
         font.italic: true
         font.bold: true
-
+    }
+    Rectangle {
+        radius: 3
+        /*color: "transparent"
+        color: "#e1e1e0"*/
+        color: "black"
+        width: 110
+        height: 30
+        anchors.top: parent.top
+        anchors.topMargin: 170
+        anchors.left: amount.left
+        /*anchors.left: parent.left
+        anchors.leftMargin: 40*/
+        Text {
+            id: userinfo
+            color: "white"
+            width: 100
+            height: 20
+            text: qsTr("User Info:")
+            font.pixelSize: 16
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            /*anchors.horizontalCenter: parent.horizontalCenter*/
+            font.family: "Verdana"
+            font.styleName: "Regular"
+            font.bold: true
+        }
         Text {
             id: loggeduser
-            width: 150
+            width: 100
             height: 20
             text: "Hi, "
             font.pixelSize: 16
-            anchors.top: parent.bottom
-            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: userinfo.right
+            anchors.leftMargin: 15
             font.family: "Verdana"
             font.styleName: "Regular"
             font.italic: true
@@ -227,12 +258,17 @@ Item {
             height: 20
             text: "Available "
             font.pixelSize: 16
-            anchors.top: loggeduser.bottom
-            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: loggeduser.right
+            anchors.leftMargin: 20
             font.family: "Verdana"
             font.styleName: "Regular"
             font.italic: true
         }
     }
-
+    Component.onCompleted: {
+        image.scale = 0.7
+        image.anchors.horizontalCenterOffset = 215
+    }
+    function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = 0 }
 }

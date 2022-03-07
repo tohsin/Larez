@@ -134,7 +134,7 @@ Item {
             anchors.fill: parent;
             onClicked: {
                 page_loader.source = "Loadingpage.ui.qml";
-                backend.superuser(['', '', "Fingerprint"]);
+                backend.superuser(['11', '0011', "Fingerprint"]);
             }
         }
     }
