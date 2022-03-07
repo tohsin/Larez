@@ -9,8 +9,6 @@ import os
 import sys
 import datetime
 
-
-
 # EXPERIMENTAL
     
 class Backend(QObject):
@@ -95,7 +93,9 @@ class Backend(QObject):
         if self.supersheet['Name'].get(self.super) == None: self.loaded(self.pageindex[1]); self.incorrect.emit(1); self.log("1001", self.super)
         else:
             data = self.supersheet.loc[self.supersheet['Name'].get(self.super)]
-            if s_password == data.Pin: self.loaded(self.pageindex[2]); self.log("1101", self.super)
+            if s_password == data.Pin:
+                self.loaded(self.pageindex[2])
+                self.log("1101", self.super) if self.superlog == 'Pin' else self.log("1111", self.super)
             else: self.loaded(self.pageindex[1]); self.incorrect.emit(1); self.log("1001", self.super)
 
     @Slot(int)
@@ -114,7 +114,9 @@ class Backend(QObject):
         if self.adminsheet['Name'].get(self.admin) == None: self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1000", self.admin)
         else:
             data = self.adminsheet.loc[self.adminsheet['Name'].get(self.admin)]
-            if a_password == data.Pin: self.loaded(self.pageindex[3]); self.log("1100", self.admin)
+            if a_password == data.Pin:
+                self.loaded(self.pageindex[3])
+                self.log("1100", self.admin) if self.adminlog == 'Pin' else self.log("1110", self.admin)
             else: self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1000", self.admin)
 
     @Slot()
@@ -219,7 +221,9 @@ class Backend(QObject):
         else:
             data = self.customersheet.loc[self.customersheet['Name'].get(self.student)]
             self.availbal = data[2]
-            if u_password == data.Pin: self.loaded(self.pageindex[self.activity]); self.switchfeature(); self.log("1102", self.student)
+            if u_password == data.Pin:
+                self.loaded(self.pageindex[self.activity]); self.switchfeature()
+                self.log("1102", self.student) if self.studentlog == 'Pin' else self.log("1112", self.student)
             else: self.loaded('close'); self.incorrect.emit(1); self.log("1002", self.student)
 
     @Slot()
@@ -247,7 +251,8 @@ class Backend(QObject):
         self.amount = 0.0 if details[0] == '' else float(details[0])
         self.recipient = details[1]
         self.recipientlog = details[2]
-        if self.recipient not in self.customersheet: self.loaded('close'); self.incorrect.emit(2)
+        
+        if self.customersheet['Name'].get(self.recipient) == None: self.loaded('close'); self.incorrect.emit(2)
         # ANSWER BELOW
         """self.amount = 0.0 if details[0] == '' else float(details[0])
         if self.recipientlog == "Fingerprint":
@@ -256,7 +261,13 @@ class Backend(QObject):
             else: self.loaded('close'); self.incorrect.emit(2)
         elif self.recipientlog == "Typed":
             if self.recipient not in self.customersheet: self.loaded('close'); self.incorrect.emit(2)"""
-        
+
+    @Slot(str)
+    def checkuser(self, name):
+        if self.customersheet['Name'].get(name) != None:
+            self.invalid.emit(1); self.log("40-2", name)
+        else: self.proceed.emit(1)
+            
     @Slot(list)
     def registeruser(self, details):
         import csv
@@ -268,14 +279,11 @@ class Backend(QObject):
         details.insert(2, 0)
         details.append(datetime.datetime.now().__str__()[:19])
 
-        if self.customersheet['Name'].get(self.student) == None:
-            self.proceed.emit(1)
-            self.customersheet.loc[self.student] = details
-            with open ('userdummy.csv', 'a+') as file:
-                csv_writer = csv.writer(file)
-                csv_writer.writerow(details)
-            self.log("41-2", self.student)
-        else: self.invalid.emit(1); self.log("40-2", self.student)
+        self.customersheet.loc[self.student] = details
+        with open ('userdummy.csv', 'a+') as file:
+            csv_writer = csv.writer(file)
+            csv_writer.writerow(details)
+        self.log("41-2", self.student)
 
     @Slot(int)
     def transactiondone(self, code):
