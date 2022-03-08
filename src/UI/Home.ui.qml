@@ -3,8 +3,8 @@ import QtQuick.Controls 6.2
 
 ApplicationWindow {
     id: window
-    width: 600
-    /*width: (9/16) * height*/
+    /*width: 600*/
+    width: (9/16) * height
     height: 800
     visible: true
     visibility: "Windowed"

@@ -63,14 +63,16 @@ Item {
         id: features
         FocusScope {
             id: focusScope
-            x: 61
-            y: 401
+            anchors.horizontalCenter: parent.horizontalCenter
+            y: 501
             width: 491
             height: 160
+            scale: 0.85
 
             Image {
                 id: purc
-                x: 3
+                anchors.right: tran.left
+                anchors.rightMargin: 60
                 y: 5
                 width: 100
                 height: 100
@@ -105,8 +107,6 @@ Item {
                     anchors.leftMargin: -10
                     anchors.topMargin: 0
                     hoverEnabled: true
-
-
                     onClicked: {
                         stack.push("P4Form.ui.qml");
                         backend.feature(pur.text);
@@ -118,7 +118,7 @@ Item {
 
             Image {
                 id: tran
-                x: 189
+                anchors.horizontalCenter: parent.horizontalCenter
                 y: 5
                 width: 100
                 height: 100
@@ -154,8 +154,6 @@ Item {
                     anchors.leftMargin: -10
                     anchors.topMargin: 0
                     hoverEnabled: true
-
-
                     onClicked: {
                         stack.push("P4Form.ui.qml");
                         backend.feature(trans.text);
@@ -167,7 +165,8 @@ Item {
 
             Image {
                 id: regi
-                x: 386
+                anchors.left: tran.right
+                anchors.leftMargin: purc.anchors.rightMargin
                 y: 5
                 width: 100
                 height: 100
@@ -202,8 +201,6 @@ Item {
                     anchors.leftMargin: -10
                     anchors.topMargin: 0
                     hoverEnabled: true
-
-
                     onClicked: {
                         stack.push("Register.ui.qml");
                         backend.feature(reg.text);

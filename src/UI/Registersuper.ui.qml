@@ -303,7 +303,6 @@ Item {
             anchors.topMargin: 87
             font.family: "Verdana"
             font.styleName: "Regular"
-            font.italic: true
             font.bold: true
         }
     }
@@ -616,16 +615,17 @@ Item {
             anchors.topMargin: 87
             font.family: "Verdana"
             font.styleName: "Regular"
-            font.italic: true
             font.bold: true
         }
     }
     Component.onCompleted: {
-        image.scale = 0.7
-        image.anchors.horizontalCenterOffset = 215
+        image.scale = 0.6
+        image.anchors.horizontalCenterOffset = 180
+        image.anchors.topMargin = 20
 
-        logo.scale = 0.7
-        logo.anchors.horizontalCenterOffset = 215
+        logo.scale = 0.6
+        logo.anchors.horizontalCenterOffset = 180
+        logo.anchors.topMargin = 20
     }
     function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = 0 }
 }

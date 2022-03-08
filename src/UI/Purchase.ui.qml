@@ -191,9 +191,9 @@ Item {
     Connections {
         target: backend
 
-        function onLoggeduser(customer){ loggeduser.text = "Hi, " + customer }
+        function onLoggeduser(customer){ loggeduser.text = "<b>" + customer + "</b>" }
         function onFeaturemode(activity){ modename.text = activity + " Window" }
-        function onAccbalance(cash){ acbal.text = "Available: " + cash ; aNum = cash }
+        function onAccbalance(cash){ acbal.text = "<b>" + cash + "</b>" ; aNum = cash }
     }
 
     Text {
@@ -208,35 +208,30 @@ Item {
         anchors.topMargin: 80
         font.family: "Verdana"
         font.styleName: "Regular"
-        font.italic: true
         font.bold: true
     }
     Rectangle {
-        radius: 3
-        /*color: "transparent"
-        color: "#e1e1e0"*/
-        color: "black"
-        width: 110
-        height: 30
+        id: profilebox
+        radius: height / 2
+        /*color: "transparent"*/
+        color: "#e1e1e0"
+        /*color: "black"*/
+        width: 160
+        height: 40
         anchors.top: parent.top
         anchors.topMargin: 170
-        anchors.left: amount.left
-        /*anchors.left: parent.left
-        anchors.leftMargin: 40*/
-        Text {
-            id: userinfo
-            color: "white"
-            width: 100
-            height: 20
-            text: qsTr("User Info:")
-            font.pixelSize: 16
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: -100
+        Image {
+            id: profile
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: 10
-            /*anchors.horizontalCenter: parent.horizontalCenter*/
-            font.family: "Verdana"
-            font.styleName: "Regular"
-            font.bold: true
+            anchors.leftMargin: 20
+            source: '../images/profile.png'
+            height: 25
+            width: height
+            sourceSize.width: 100
+            sourceSize.height: 100
         }
         Text {
             id: loggeduser
@@ -245,11 +240,34 @@ Item {
             text: "Hi, "
             font.pixelSize: 16
             anchors.verticalCenter: parent.verticalCenter
-            anchors.left: userinfo.right
-            anchors.leftMargin: 15
+            anchors.left: profile.right
+            anchors.leftMargin: 10
             font.family: "Verdana"
             font.styleName: "Regular"
-            font.italic: true
+        }
+    }
+    Rectangle {
+        id: creditbox
+        radius: height / 2
+        color: "transparent"
+        /*color: "#e1e1e0"*/
+        /*color: "black"*/
+        width: 160
+        height: 40
+        anchors.top: parent.top
+        anchors.topMargin: 170
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: -(profilebox.anchors.horizontalCenterOffset)
+        Image {
+            id: credit
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 20
+            source: '../images/credit.png'
+            height: 35
+            width: height
+            sourceSize.width: 100
+            sourceSize.height: 100
         }
         Text {
             id: acbal
@@ -258,16 +276,16 @@ Item {
             text: "Available "
             font.pixelSize: 16
             anchors.verticalCenter: parent.verticalCenter
-            anchors.left: loggeduser.right
-            anchors.leftMargin: 20
+            anchors.left: credit.right
+            anchors.leftMargin: 10
             font.family: "Verdana"
             font.styleName: "Regular"
-            font.italic: true
         }
     }
     Component.onCompleted: {
-        image.scale = 0.7
-        image.anchors.horizontalCenterOffset = 215
+        image.scale = 0.6
+        image.anchors.horizontalCenterOffset = 180
+        image.anchors.topMargin = 20
     }
     function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = 0 }
 }

@@ -400,7 +400,6 @@ Item {
         anchors.topMargin: 80
         font.family: "Verdana"
         font.styleName: "Regular"
-        font.italic: true
         font.bold: true
     }
     Rectangle {
@@ -450,14 +449,15 @@ Item {
             font.pixelSize: 16
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: loggeduser.right
-            anchors.leftMargin: 20
+            anchors.leftMargin: -20
             font.family: "Verdana"
             font.styleName: "Regular"
         }
     }
     Component.onCompleted: {
-        image.scale = 0.7
-        image.anchors.horizontalCenterOffset = 215
+        image.scale = 0.6
+        image.anchors.horizontalCenterOffset = 180
+        image.anchors.topMargin = 20
     }
     function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = 0 }
     function checkamount(amount) {
