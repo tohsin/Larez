@@ -36,7 +36,7 @@ class Backend(QObject):
     #customersheet = {'3': '0000'}
     pageindex = {
         1: "P1Form.ui.qml", 2: "P2Form.ui.qml", 3: "P3Form.ui.qml",
-        'Purchase': 'Purchase.ui.qml', 'Transfer': 'Transfer.ui.qml',
+        'Purchase': 'Purchasemulti2.ui.qml', 'Transfer': 'Transfermulti.ui.qml',
         'Register': 'Register.ui.qml'
         }
 
@@ -51,11 +51,12 @@ class Backend(QObject):
     """
     incorrect = Signal(int)
     invalid = Signal(int) 
-    finishedprocess = Signal(str) 
+    finishedprocess = Signal(str)
     loggeduser = Signal(str) 
     accbalance = Signal(float)
     featuremode = Signal(str)
     proceed = Signal(int)
+    totalexp = Signal(float)
 
     """
     Slots are used to communicate with Python from QML
@@ -236,12 +237,27 @@ class Backend(QObject):
         self.activity = activity
         if activity == "Register": self.featuremode.emit("Registration")
 
+    @Slot(int)
+    def menubranch(self, stem):
+        self.loaded(self.pageindex[stem])
+
     @Slot()
     def switchfeature(self):
         self.loggeduser.emit(self.student)
         self.featuremode.emit(self.activity)
         self.accbalance.emit(self.availbal)
         
+    @Slot(list)
+    def purchaseamounts(self, amounts):
+        total = 0
+        for amount in amounts:
+            tempnum = 0
+            if (amount.strip()).isnumeric():
+                tempnum = int(amount.strip())
+                if 0 < tempnum < 50: self.incorrect.emit(1) ; return
+                total += tempnum
+        else: self.totalexp.emit(round(total, 2))
+
     @Slot(float)
     def purchasefeature(self, amount):
         self.amount = amount
@@ -386,8 +402,14 @@ if __name__ == "__main__":
     engine = QQmlApplicationEngine()    
     back = Backend()
     engine.rootContext().setContextProperty("backend", back)
+    print('> ', end= '')
+    #engine.load('UI/Purchasemulti2.ui.qml')
+    #engine.load('UI/Dialog.ui.qml') # kind of done with thia
+    #engine.load('UI/Menu.ui.qml')
+    print("loaded")
     engine.load('UI/Home.ui.qml')
     back.test_gspread()
     engine.quit.connect(app.quit)
-    engine.load('UI/P3Form.ui.qml')
+    #engine.load('UI/P3Form.ui.qml')
     sys.exit(app.exec())
+
