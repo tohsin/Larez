@@ -4,12 +4,11 @@ import Qt.labs.platform 1.1
 
 Item {
     id: window
-
-    FocusScope {
-        id: white_rectangle
-        anchors.fill: parent
+    Rectangle {
+        id: time ; width: 10 ; height: 10 ; visible: false
     }
 
+    // Navigation Buttons -- Back button
     Image {
         id: back_button
         anchors.left: parent.left
@@ -27,6 +26,7 @@ Item {
         }
     }
 
+    // Registration Field -- Fingerprint, "Place finger to scan" Information
     Image {
         id: fingerprint
         y: 500
@@ -38,10 +38,12 @@ Item {
         fillMode: Image.PreserveAspectFit
         MouseArea {
             anchors.fill: parent
-            onClicked: backend.checkuser(regno_field.text)
+            onClicked: {
+                if ( regno_field.text === "" | password.text === "" ) { displaydialog(2)
+                } else { backend.checkuser(regno_field.text) }
+            }
         }
     }
-
     Text {
         id: place_finger
         x: 297
@@ -58,6 +60,7 @@ Item {
         anchors.horizontalCenter: fingerprint.horizontalCenter
     }
 
+    // Registration Field contd -- Reg No Text box
     Text {
         id: regno
         y: 245
@@ -116,6 +119,7 @@ Item {
             }
         }
     }
+    // Registration Field contd -- Pin Text box
     Text {
         id: pin
         x: 60
@@ -209,34 +213,15 @@ Item {
                 onClicked: { fingerprint.visible = false ; goback.visible = false ; enterfingerprint.visible = true }
             }
         }
-        MessageDialog {
-            title: "Invalid Username"
-            id: invalidDialog
-            text: "Reg No is either already in use or doesn't exist"
-            buttons: MessageDialog.Ok
-        }
-        MessageDialog {
-            title: "User Registration"
-            id: confirmDialog
-            text: "You Are About To Register " + regno_field.text
-            buttons: MessageDialog.Ok | MessageDialog.Cancel
-            onOkClicked: { backend.registeruser([regno_field.text, password.text, password.text]) ; successDialog.open() }
-        }
-        MessageDialog {
-            title: "Registration Successful"
-            id: successDialog
-            text: "New User Has Been Registered Successfully"
-            buttons: MessageDialog.Ok
-            onOkClicked: { stack.replace('P3Form.ui.qml') ; revert() }
-        }
     }
     Connections {
         target: backend
 
-        function onInvalid(number) { if (number === 1) { invalidDialog.open() } }
-        function onProceed(value) { if (value == 1) { confirmDialog.open() } }
+        function onInvalid(number) { if (number === 1) { displaydialog(1) } }
+        function onProceed(value) { if (value == 1) { displaybigdialog(2,1) } }
     }
 
+    // Page Information -- Feature name
     Text {
         id: modename
         anchors.horizontalCenter: parent.horizontalCenter
@@ -257,4 +242,359 @@ Item {
         image.anchors.topMargin = 20
     }
     function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = 0 }
+
+    // Small Dialog Display Timer
+    SequentialAnimation {
+        id: dialog_timer
+        PropertyAnimation {
+            target: time
+            property: "width"
+            duration: 4000
+            to: 100
+        }
+        ScriptAction { script: { dialog_small.anchors.bottomMargin = -100 ; time.width = 10 } }
+    }
+
+    // Dialog Box functions
+    function displaydialog(functionnum) {
+        dialog_small.anchors.bottomMargin = 10
+        dialog_timer.running = true
+        // 1 invalidDialog
+        if (functionnum === 1) { information2.text = qsTr("Reg No is either already in use or doesn't exist") }
+        // 2 incompleteDialog
+        if (functionnum === 2) { information2.text = qsTr("Details You Entered Are Incomplete. Fill the empty fields") }
+
+    }
+    function closebigdialog() { dialog_big.visible = false ; f1_switch.checked = f2_switch.checked = false }
+
+    function displaybigdialog(buttonnum, functionnum) {
+        if (buttonnum === 0) { dialog_big.visible = true ; button_number.checked = false ; good_picture.visible = true }
+        if (buttonnum === 1) { dialog_big.visible = true ; button_number.checked = true }
+        if (buttonnum === 2) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = false }
+
+        // 1 confirmDialog
+        if (functionnum === 1) {
+            information.text = qsTr("You Are About To Register " + regno_field.text + ". Do You Want To Continue?")
+            f1_switch.checked = true
+            right_button.clicked.connect(closebigdialog)
+        }
+        // 2 successDialog
+        if (functionnum === 2) {
+            information.text = qsTr("New User Has Been Registered Successfully")
+            f2_switch.checked = true
+        }
+    }
+
+    /*MessageDialog {
+        title: "User Registration"
+        id: confirmDialog
+        text: "You Are About To Register " + regno_field.text
+        buttons: MessageDialog.Ok | MessageDialog.Cancel
+        onOkClicked: { backend.registeruser([regno_field.text, password.text, password.text]) ; successDialog.open() }
+    }
+    MessageDialog {
+        title: "Registration Successful"
+        id: successDialog
+        text: "New User Has Been Registered Successfully"
+        buttons: MessageDialog.Ok
+        onOkClicked: { stack.replace('P3Form.ui.qml') ; revert() }
+    }*/
+    // Small Dialog Box Components
+    Rectangle {
+        id: dialog_small
+        visible: true
+        color: "#f0f0f0"
+        border.width: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: -100
+        width: 400
+        height: 80
+        radius: 15
+        Behavior on anchors.bottomMargin { PropertyAnimation { duration: 100 } }
+        Text {
+            id: information2
+            anchors.left: bad_picture2.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: center_border2.left
+            font.family: "Verdana"
+            font.styleName: "Regular"
+            height: parent.height
+            font.pixelSize: 14
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            color: "black"
+            wrapMode: Text.WordWrap
+            fontSizeMode: Text.Fit
+            font.capitalization: Font.Capitalize
+            text: qsTr("Dialog Information")
+        }
+        Image {
+            id: bad_picture2
+            anchors.left: parent.left
+            anchors.leftMargin: 15
+            anchors.verticalCenter: parent.verticalCenter
+            width: 25
+            height: width
+            sourceSize.width: 50
+            sourceSize.height: 50
+            source: "../images/warning.png"
+            fillMode: Image.PreserveAspectFit
+        }
+        Rectangle {
+            id: center_border2
+            color: "dimgray"
+            opacity: 0.7
+            width: 2
+            anchors.top: parent.top
+            anchors.topMargin: 10
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 10
+            anchors.right: parent.right
+            anchors.rightMargin: 60
+        }
+        MouseArea {
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            anchors.left: center_border2.right
+            height: parent.height
+            onClicked: dialog_small.anchors.bottomMargin = -100
+            Text {
+                id: ok2
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                font.family: "Verdana"
+                font.styleName: "Regular"
+                width: 152
+                height: parent.height
+                font.pixelSize: 14
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                color: "black"
+                text: qsTr("Ok")
+            }
+        }
+    }
+
+    // Big Dialog Box Components
+    Item {
+        id: dialog_big
+        anchors.fill: parent
+        visible: false
+        Rectangle {
+            id: shadow
+            color: "dimgray"
+            anchors.fill: parent
+            radius: 8
+            opacity: 0.4
+            MouseArea {
+                anchors.fill: parent
+                onClicked: closebigdialog()
+            }
+        }
+        Rectangle {
+            id: box
+            color: "white"
+            anchors.centerIn: parent
+            width: 400
+            height: 200
+            radius: 10
+            Text {
+                id: information
+                anchors.top: good_picture.bottom
+                anchors.topMargin: 20
+                anchors.left: parent.left
+                anchors.leftMargin: 20
+                anchors.bottom: center_border.top
+                font.family: "Verdana"
+                font.styleName: "Regular"
+                width: parent.width - 40
+                font.pixelSize: 14
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignTop
+                color: "black"
+                wrapMode: Text.WordWrap
+                /*fontSizeMode: Text.Fit*/
+                font.capitalization: Font.Capitalize
+                text: qsTr("Dialog Information")
+            }
+            Image {
+                id: good_picture
+                visible: true
+                anchors.top: parent.top
+                anchors.topMargin: 15
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 30
+                height: width
+                sourceSize.width: 50
+                sourceSize.height: 50
+                source: "../images/check.png"
+                fillMode: Image.PreserveAspectFit
+            }
+            Rectangle {
+                id: top_border
+                color: "dimgray"
+                opacity: 0.7
+                height: 1
+                width: box.width * 4 / 5
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 50
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            Rectangle {
+                id: center_border
+                visible: button_number.checked
+                color: "dimgray"
+                opacity: 0.7
+                width: 1
+                anchors.top: top_border.bottom
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 5
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            /*Rectangle {
+                id: b1
+                height: 40
+                width: 140
+                color: "#f0f0f0"
+                radius: 3
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 20
+                anchors.left: parent.left
+                anchors.leftMargin: 30
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: { top_border.visible = !top_border.visible ; center_border.visible = !center_border.visible ; ok.visible = !ok.visible ; no.visible = !no.visible ; left_f1.visible = false}
+                }
+            }
+            Rectangle {
+                height: b1.height
+                width: b1.width
+                color: b1.color
+                radius: b1.radius
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: b1.anchors.bottomMargin
+                anchors.right: parent.right
+                anchors.rightMargin: b1.anchors.leftMargin
+            }*/
+            Item {
+                visible: button_number.checked
+                anchors.top: top_border.bottom
+                anchors.right: center_border.left
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                Text {
+                    id: yes
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    font.family: "Verdana"
+                    font.styleName: "Regular"
+                    width: 152
+                    height: parent.height
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: "black"
+                    text: qsTr("Yes")
+                }
+            }
+            MouseArea {
+                id: left_f1
+                visible: button_number.checked & f1_switch.checked
+                anchors.top: top_border.bottom
+                anchors.right: center_border.left
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                hoverEnabled: true
+                onEntered: { yes.font.pixelSize = 16 ; yes.font.bold = true }
+                onExited: { yes.font.pixelSize = 15 ; yes.font.bold = false }
+                onClicked: { backend.registeruser([regno_field.text, password.text, password.text]) ; displaybigdialog(0,2) ; exitbutton.visible = true}
+            }
+            MouseArea {
+                id: left_f2
+                visible: button_number.checked & f2_switch.checked
+                anchors.top: top_border.bottom
+                anchors.right: center_border.left
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                hoverEnabled: true
+                onEntered: { yes.font.pixelSize = 16 ; yes.font.bold = true }
+                onExited: { yes.font.pixelSize = 15 ; yes.font.bold = false }
+            }
+            MouseArea {
+                id: right_button
+                visible: button_number.checked
+                anchors.top: top_border.bottom
+                anchors.left: center_border.right
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                hoverEnabled: true
+                onEntered: { no.font.pixelSize = 16 ; no.font.bold = true }
+                onExited: { no.font.pixelSize = 15 ; no.font.bold = false }
+                onClicked: dialog_big.visible = false
+                Text {
+                    id: no
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    font.family: "Verdana"
+                    font.styleName: "Regular"
+                    width: 152
+                    height: parent.height
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: "black"
+                    text: qsTr("No")
+                }
+            }
+            MouseArea {
+                id: center_button
+                visible: !button_number.checked
+                anchors.top: top_border.bottom
+                anchors.right: parent.right
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                hoverEnabled: true
+                onEntered: { ok.font.pixelSize = 16 ; ok.font.bold = true }
+                onExited: { ok.font.pixelSize = 15 ; ok.font.bold = false }
+                Text {
+                    id: ok
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    font.family: "Verdana"
+                    font.styleName: "Regular"
+                    width: 152
+                    height: parent.height
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: "black"
+                    text: qsTr("Ok")
+                }
+            }
+        }
+
+        // Switches for Logic
+        Switch {
+            id: button_number
+            visible: false
+            checked: true
+        }
+        Switch {
+            id: f1_switch
+            visible: false
+            checked: false
+        }
+        Switch {
+            id: f2_switch
+            visible: false
+            checked: false
+        }
+    }
+    MouseArea {
+        id: exitbutton
+        visible: false
+        anchors.fill: parent
+        onClicked: { stack.replace('P3Form.ui.qml') ; revert() }
+    }
 }

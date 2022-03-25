@@ -5,15 +5,18 @@ import Qt.labs.platform 1.1
 Item {
     id: window
     property var code: ""
-    FocusScope {
-        id: white_rectangle
-        anchors.fill: parent
+    property var correctpage: ""
+    Rectangle {
+        id: time ; width: 10 ; height: 10 ; visible: false
     }
+
     Switch {
         id: switch1
         checked: false
         visible: false
     }
+
+    // Navigation Buttons -- Back button, Use Pin, Submit, Use Fingerprint
     Image {
         id: back_button
         anchors.left: parent.left
@@ -27,7 +30,7 @@ Item {
         sourceSize.height: 100
         MouseArea {
             anchors.fill: parent
-            onClicked: { page_loader.source = 'P2Form.ui.qml' ; revert() }
+            onClicked: { page_loader.source = correctpage ; revert() }
         }
     }
     Rectangle {
@@ -86,10 +89,8 @@ Item {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                if ( regno_field.text === "" | ver_field.text === "" | password.text === "" ) { incompleteDialog.open() }
-                else {
-                    backend.removesuper([regno_field.text, ver_field.text, "Pin", password.text]);
-                }
+                if ( regno_field.text === "" | ver_field.text === "" | password.text === "" ) { displaydialog(2) }
+                else { backend.removesuper([regno_field.text, ver_field.text, "Pin", password.text]) }
             }
         }
     }
@@ -123,6 +124,7 @@ Item {
         }
     }
 
+    // Verification Details -- Fingerprint, "Place finger" Information
     Image {
         id: fingerprint
         y: 380
@@ -135,14 +137,11 @@ Item {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                if ( regno_field.text === "" | ver_field.text === "" | password.text === "" ) { incompleteDialog.open() }
-                else {
-                    backend.removesuper([regno_field.text, ver_field.text, "Fingerprint", "Bio - C1"])
-                }
+                if ( regno_field.text === "" | ver_field.text === "" | password.text === "" ) { displaydialog(2) }
+                else { backend.removesuper([regno_field.text, ver_field.text, "Fingerprint", "Bio - C1"]) }
             }
         }
     }
-
     Text {
         id: place_finger
         x: 297
@@ -159,6 +158,7 @@ Item {
         anchors.horizontalCenter: fingerprint.horizontalCenter
     }
 
+    // Removed Super Details -- Name Text box & Check box
     Text {
         id: removee
         y: 170
@@ -243,6 +243,8 @@ Item {
             }
         }
     }
+
+    // Verification Typed Elements -- Username & Pin Text box
     Text {
         id: verify
         visible: regno_checkBox.checked
@@ -319,6 +321,7 @@ Item {
             }
         }
     }
+    // Verification Typed Elements contd -- Pin Text box
     Text {
         id: pin
         visible: regno_checkBox.checked & switch1.checked
@@ -378,50 +381,19 @@ Item {
                 onClicked: password.text = ""
             }
         }
-        MessageDialog {
-            title: "Invalid Username"
-            id: invalidDialog
-            text: "Username Doesn't Exist"
-            buttons: MessageDialog.Ok
-        }
-        MessageDialog {
-            title: "Removal Successful"
-            id: successDialog
-            text: "New (Super) Admin Has Been Removed Successfully"
-            buttons: MessageDialog.Ok
-            onOkClicked: { page_loader.source = "P2Form.ui.qml" ; revert() }
-        }
-        MessageDialog {
-            title: "Admin Removal"
-            id: confirmDialog
-            text: "You are about to remove (Super) Admin " + regno_field.text
-            buttons: MessageDialog.Ok | MessageDialog.Cancel
-            onOkClicked: successDialog.open()
-        }
-        MessageDialog {
-            title: "Details You Entered Are Incomplete"
-            id: incompleteDialog
-            text: "Fill the empty fields"
-            buttons: MessageDialog.Ok
-            onOkClicked: { incompleteDialog.close() }
-        }
-        MessageDialog {
-            title: "Incorrect Details Entered"
-            id: incorrectDialog
-            text: "Invalid Verification Username or Password"
-            buttons: MessageDialog.Ok
-        }
     }
     Connections {
         target: backend
 
         function onInvalid(number) {
-            if (number === 1) { invalidDialog.open() ; regno_checkBox.checked = false }
+            if (number === 1) { displaydialog(1) ; regno_checkBox.checked = false }
         }
-        function onIncorrect(number) { if (number === 3) { incorrectDialog.open() } }
-        function onProceed(value) { if (value == 1) { confirmDialog.open() } }
+        function onIncorrect(number) { if (number === 3) { displaydialog(3) } }
+        function onProceed(value) { if (value == 1) { displaybigdialog(2,1) } }
+        function onFinishedprocess(pagetoload){ correctpage = pagetoload }
     }
 
+    // Page Information -- Feature Name
     Text {
         id: modename
         anchors.horizontalCenter: parent.horizontalCenter
@@ -442,4 +414,382 @@ Item {
         image.anchors.topMargin = 20
     }
     function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = 0 }
+
+    // Small Dialog Display Timer
+    SequentialAnimation {
+        id: dialog_timer
+        PropertyAnimation {
+            target: time
+            property: "width"
+            duration: 4000
+            to: 100
+        }
+        ScriptAction { script: { dialog_small.anchors.bottomMargin = -100 ; time.width = 10 } }
+    }
+
+    // Dialog Box functions
+    function displaydialog(functionnum) {
+        dialog_small.anchors.bottomMargin = 10
+        dialog_timer.running = true
+        // 1 invalidDialog
+        if (functionnum === 1) { information2.text = qsTr("Username To Remove Doesn't Exist") }
+
+        // 2 incompleteDialog
+        if (functionnum === 2) { information2.text = qsTr("Details You Entered Are Incomplete. Fill the empty fields") }
+
+        // 3 incorrectDialog
+        if (functionnum === 3) { information2.text = qsTr("Invalid Verification Username or Password") }
+
+    }
+    function closebigdialog() { dialog_big.visible = false ; f1_switch.checked = f2_switch.checked = false }
+
+    function displaybigdialog(buttonnum, functionnum) {
+        if (buttonnum === 0) { dialog_big.visible = true ; button_number.checked = false ; good_picture.visible = true }
+        if (buttonnum === 1) { dialog_big.visible = true ; button_number.checked = true }
+        if (buttonnum === 2) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = false }
+
+        // 1 confirmDialog
+        if (functionnum === 1) {
+            information.text = qsTr("You are about to remove (Super) Admin " + regno_field.text + ". Do You Want To Continue?")
+            f1_switch.checked = true
+            right_button.clicked.connect(closebigdialog)
+        }
+        // 2 successDialog
+        if (functionnum === 2) {
+            information.text = qsTr("(Super) Admin Has Been Removed Successfully")
+            f2_switch.checked = true
+        }
+    }
+
+    /*MessageDialog {
+        title: "Invalid Username"
+        id: invalidDialog
+        text: "Username Doesn't Exist"
+        buttons: MessageDialog.Ok
+    }
+    MessageDialog {
+        title: "Removal Successful"
+        id: successDialog
+        text: "New (Super) Admin Has Been Removed Successfully"
+        buttons: MessageDialog.Ok
+        onOkClicked: { page_loader.source = correctpage ; revert() }
+    }
+    MessageDialog {
+        title: "Admin Removal"
+        id: confirmDialog
+        text: "You are about to remove (Super) Admin " + regno_field.text
+        buttons: MessageDialog.Ok | MessageDialog.Cancel
+        onOkClicked: successDialog.open()
+    }
+    MessageDialog {
+        title: "Details You Entered Are Incomplete"
+        id: incompleteDialog
+        text: "Fill the empty fields"
+        buttons: MessageDialog.Ok
+        onOkClicked: { incompleteDialog.close() }
+    }
+    MessageDialog {
+        title: "Incorrect Details Entered"
+        id: incorrectDialog
+        text: "Invalid Verification Username or Password"
+        buttons: MessageDialog.Ok
+    }*/
+    // Small Dialog Box Components
+    Rectangle {
+        id: dialog_small
+        visible: true
+        color: "#f0f0f0"
+        border.width: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: -100
+        width: 400
+        height: 80
+        radius: 15
+        Behavior on anchors.bottomMargin { PropertyAnimation { duration: 100 } }
+        Text {
+            id: information2
+            anchors.left: bad_picture2.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: center_border2.left
+            font.family: "Verdana"
+            font.styleName: "Regular"
+            height: parent.height
+            font.pixelSize: 14
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            color: "black"
+            wrapMode: Text.WordWrap
+            fontSizeMode: Text.Fit
+            font.capitalization: Font.Capitalize
+            text: qsTr("Dialog Information")
+        }
+        Image {
+            id: bad_picture2
+            anchors.left: parent.left
+            anchors.leftMargin: 15
+            anchors.verticalCenter: parent.verticalCenter
+            width: 25
+            height: width
+            sourceSize.width: 50
+            sourceSize.height: 50
+            source: "../images/warning.png"
+            fillMode: Image.PreserveAspectFit
+        }
+        Rectangle {
+            id: center_border2
+            color: "dimgray"
+            opacity: 0.7
+            width: 2
+            anchors.top: parent.top
+            anchors.topMargin: 10
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 10
+            anchors.right: parent.right
+            anchors.rightMargin: 60
+        }
+        MouseArea {
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            anchors.left: center_border2.right
+            height: parent.height
+            onClicked: dialog_small.anchors.bottomMargin = -100
+            Text {
+                id: ok2
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                font.family: "Verdana"
+                font.styleName: "Regular"
+                width: 152
+                height: parent.height
+                font.pixelSize: 14
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                color: "black"
+                text: qsTr("Ok")
+            }
+        }
+    }
+
+    // Big Dialog Box Components
+    Item {
+        id: dialog_big
+        anchors.fill: parent
+        visible: false
+        Rectangle {
+            id: shadow
+            color: "dimgray"
+            anchors.fill: parent
+            radius: 8
+            opacity: 0.4
+            MouseArea {
+                anchors.fill: parent
+                onClicked: closebigdialog()
+            }
+        }
+        Rectangle {
+            id: box
+            color: "white"
+            anchors.centerIn: parent
+            width: 400
+            height: 200
+            radius: 10
+            Text {
+                id: information
+                anchors.top: good_picture.bottom
+                anchors.topMargin: 20
+                anchors.left: parent.left
+                anchors.leftMargin: 20
+                anchors.bottom: center_border.top
+                font.family: "Verdana"
+                font.styleName: "Regular"
+                width: parent.width - 40
+                font.pixelSize: 14
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignTop
+                color: "black"
+                wrapMode: Text.WordWrap
+                /*fontSizeMode: Text.Fit*/
+                font.capitalization: Font.Capitalize
+                text: qsTr("Dialog Information")
+            }
+            Image {
+                id: good_picture
+                visible: true
+                anchors.top: parent.top
+                anchors.topMargin: 15
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 30
+                height: width
+                sourceSize.width: 50
+                sourceSize.height: 50
+                source: "../images/check.png"
+                fillMode: Image.PreserveAspectFit
+            }
+            Rectangle {
+                id: top_border
+                color: "dimgray"
+                opacity: 0.7
+                height: 1
+                width: box.width * 4 / 5
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 50
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            Rectangle {
+                id: center_border
+                visible: button_number.checked
+                color: "dimgray"
+                opacity: 0.7
+                width: 1
+                anchors.top: top_border.bottom
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 5
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            /*Rectangle {
+                id: b1
+                height: 40
+                width: 140
+                color: "#f0f0f0"
+                radius: 3
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 20
+                anchors.left: parent.left
+                anchors.leftMargin: 30
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: { top_border.visible = !top_border.visible ; center_border.visible = !center_border.visible ; ok.visible = !ok.visible ; no.visible = !no.visible ; left_f1.visible = false}
+                }
+            }
+            Rectangle {
+                height: b1.height
+                width: b1.width
+                color: b1.color
+                radius: b1.radius
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: b1.anchors.bottomMargin
+                anchors.right: parent.right
+                anchors.rightMargin: b1.anchors.leftMargin
+            }*/
+            Item {
+                visible: button_number.checked
+                anchors.top: top_border.bottom
+                anchors.right: center_border.left
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                Text {
+                    id: yes
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    font.family: "Verdana"
+                    font.styleName: "Regular"
+                    width: 152
+                    height: parent.height
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: "black"
+                    text: qsTr("Yes")
+                }
+            }
+            MouseArea {
+                id: left_f1
+                visible: button_number.checked & f1_switch.checked
+                anchors.top: top_border.bottom
+                anchors.right: center_border.left
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                hoverEnabled: true
+                onEntered: { yes.font.pixelSize = 16 ; yes.font.bold = true }
+                onExited: { yes.font.pixelSize = 15 ; yes.font.bold = false }
+                onClicked: { displaybigdialog(0,2) ; exitbutton.visible = true }
+            }
+            MouseArea {
+                id: left_f2
+                visible: button_number.checked & f2_switch.checked
+                anchors.top: top_border.bottom
+                anchors.right: center_border.left
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                hoverEnabled: true
+                onEntered: { yes.font.pixelSize = 16 ; yes.font.bold = true }
+                onExited: { yes.font.pixelSize = 15 ; yes.font.bold = false }
+            }
+            MouseArea {
+                id: right_button
+                visible: button_number.checked
+                anchors.top: top_border.bottom
+                anchors.left: center_border.right
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                hoverEnabled: true
+                onEntered: { no.font.pixelSize = 16 ; no.font.bold = true }
+                onExited: { no.font.pixelSize = 15 ; no.font.bold = false }
+                onClicked: dialog_big.visible = false
+                Text {
+                    id: no
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    font.family: "Verdana"
+                    font.styleName: "Regular"
+                    width: 152
+                    height: parent.height
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: "black"
+                    text: qsTr("No")
+                }
+            }
+            MouseArea {
+                id: center_button
+                visible: !button_number.checked
+                anchors.top: top_border.bottom
+                anchors.right: parent.right
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                hoverEnabled: true
+                onEntered: { ok.font.pixelSize = 16 ; ok.font.bold = true }
+                onExited: { ok.font.pixelSize = 15 ; ok.font.bold = false }
+                Text {
+                    id: ok
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    font.family: "Verdana"
+                    font.styleName: "Regular"
+                    width: 152
+                    height: parent.height
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: "black"
+                    text: qsTr("Ok")
+                }
+            }
+        }
+
+        // Switches for Logic
+        Switch {
+            id: button_number
+            visible: false
+            checked: true
+        }
+        Switch {
+            id: f1_switch
+            visible: false
+            checked: false
+        }
+        Switch {
+            id: f2_switch
+            visible: false
+            checked: false
+        }
+    }
+    MouseArea {
+        id: exitbutton
+        visible: false
+        anchors.fill: parent
+        onClicked: { page_loader.source = correctpage ; revert() }
+    }
 }

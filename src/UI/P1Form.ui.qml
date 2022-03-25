@@ -5,106 +5,135 @@ import Qt.labs.platform 1.1
 Item {
     id: window
     anchors.fill: parent
-    FocusScope {
-        id: white_rectangle
-        anchors.fill: parent
+    Rectangle {
+        id: time ; width: 10 ; height: 10 ; visible: false
+    }
 
-        Rectangle {
-            id: log_in_button
-            visible: switch1.checked
-            width: 114
+    // Navigation Buttons -- Log in, Use Pin, Use Fingerprint, Menu bar
+    Rectangle {
+        id: log_in_button
+        visible: switch1.checked
+        width: 114
+        height: 40
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 120
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: 100
+        color: "black"
+        radius: 8
+        Text {
+            width: 150
             height: 40
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 120
+            color: "white"
+            text: qsTr("Log In")
+            anchors.verticalCenter: parent.verticalCenter
+            font.pixelSize: 15
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.bold: true
+            font.family: "Verdana"
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.horizontalCenterOffset: 100
-            color: "black"
-            radius: 8
-            Text {
-                width: 150
-                height: 40
-                color: "white"
-                text: qsTr("Log In")
-                anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 15
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                font.bold: true
-                font.family: "Verdana"
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    page_loader.source = 'Loadingpage.ui.qml';
-                    backend.superuser([username.text, password.text , "Pin"]);
-                }
-            }
         }
-        Rectangle {
-            id: use_pin_button
-            color: "#ffffff"
-            radius: 8
-            border.width: 3
-            width: 114
-            height: 40
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 120
-            visible: !switch1.checked
-            anchors.horizontalCenterOffset: 0
-            anchors.horizontalCenter: parent.horizontalCenter
-            Text {
-                width: 150
-                height: 40
-                text: qsTr("Use Pin")
-                anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 15
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                font.bold: true
-                font.family: "Verdana"
-                anchors.horizontalCenter: parent.horizontalCenter
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                page_loader.source = 'Loadingpage.ui.qml';
+                backend.superuser([username.text, password.text , "Pin"]);
             }
-            MouseArea {
-                anchors.fill: parent
-                onClicked: switch1.checked = !switch1.checked
-            }
-        }
-        Rectangle {
-            id: use_fingerprint_button
-            color: "#ffffff"
-            radius: 8
-            border.width: 3
-            width: 156
-            height: 40
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 120
-            visible: switch1.checked
-            anchors.horizontalCenterOffset: -100
-            anchors.horizontalCenter: parent.horizontalCenter
-            Text {
-                width: 160
-                height: 40
-                text: qsTr("Use Fingerprint")
-                anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 15
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                font.bold: true
-                font.family: "Verdana"
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-            MouseArea {
-                anchors.fill: parent
-                onClicked: switch1.checked = !switch1.checked
-            }
-        }
-        Switch {
-            id: switch1
-            checked: false
-            visible: false
         }
     }
+    Rectangle {
+        id: use_pin_button
+        color: "#ffffff"
+        radius: 8
+        border.width: 3
+        width: 114
+        height: 40
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 120
+        visible: !switch1.checked
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+        Text {
+            width: 150
+            height: 40
+            text: qsTr("Use Pin")
+            anchors.verticalCenter: parent.verticalCenter
+            font.pixelSize: 15
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.bold: true
+            font.family: "Verdana"
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: switch1.checked = !switch1.checked
+        }
+    }
+    Rectangle {
+        id: use_fingerprint_button
+        color: "#ffffff"
+        radius: 8
+        border.width: 3
+        width: 156
+        height: 40
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 120
+        visible: switch1.checked
+        anchors.horizontalCenterOffset: -100
+        anchors.horizontalCenter: parent.horizontalCenter
+        Text {
+            width: 160
+            height: 40
+            text: qsTr("Use Fingerprint")
+            anchors.verticalCenter: parent.verticalCenter
+            font.pixelSize: 15
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.bold: true
+            font.family: "Verdana"
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: switch1.checked = !switch1.checked
+        }
+    }
+    Switch {
+        id: switch1
+        checked: false
+        visible: false
+    }
+
+    // Menu Button -- Circle, 3 Dots
+    Rectangle {
+        id: dotdot
+        border.width: 3
+        radius: width/2
+        width: 32
+        height: width
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.rightMargin: 50
+        anchors.topMargin: 82
+        MouseArea {
+            id: menuarea
+            anchors.fill: parent
+            onClicked: { background.visible = true ; menu.scale = 1 ; menuarea.visible = false }
+        }
+    }
+    Image {
+        anchors.verticalCenter: dotdot.verticalCenter
+        anchors.horizontalCenter: dotdot.horizontalCenter
+        width: 25
+        height: width
+        source: "../images/menucircle.png"
+        sourceSize.width: 100
+        sourceSize.height: 100
+    }
+
+    // Biometric Elements -- User Rank, Fingerprint picture, "Place Finger" text
     Text {
         id: biometric
         visible: !switch1.checked
@@ -154,6 +183,7 @@ Item {
         anchors.horizontalCenter: fingerprint.horizontalCenter
     }
 
+    // Typed Elements -- Rank, Username & Pin Text box
     Text {
         id: superadmin
         visible: switch1.checked
@@ -214,6 +244,7 @@ Item {
             }
         }
     }
+    // Typed Elements contd. -- Pin Text box
     Text {
         id: pin
         visible: switch1.checked
@@ -274,18 +305,204 @@ Item {
                 onClicked: password.text = ""
             }
         }
-        MessageDialog {
-            title: "Incorrect Details Entered"
-            id: incorrectDialog
-            text: "Invalid Username or Password"
-            buttons: MessageDialog.Ok
+    }
+
+    // Small Dialog Display Timer
+    SequentialAnimation {
+        id: dialog_timer
+        PropertyAnimation {
+            target: time
+            property: "width"
+            duration: 4000
+            to: 100
         }
+        ScriptAction { script: { dialog_small.anchors.bottomMargin = -100 ; time.width = 10 } }
+    }
+    // Dialog Box functions
+    function displaydialog(functionnum) {
+        dialog_small.anchors.bottomMargin = 10
+        dialog_timer.running = true
+        // 1 incorrectDialog
+        if (functionnum === 1) { information2.text = qsTr("Invalid Username or Password") }
+    }
+    // Small Dialog Box Components
+    Rectangle {
+        id: dialog_small
+        visible: true
+        color: "#f0f0f0"
+        border.width: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: -100
+        width: 400
+        height: 80
+        radius: 15
+        Behavior on anchors.bottomMargin { PropertyAnimation { duration: 100 } }
+        Text {
+            id: information2
+            anchors.left: bad_picture2.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: center_border2.left
+            font.family: "Verdana"
+            font.styleName: "Regular"
+            height: parent.height
+            font.pixelSize: 14
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            color: "black"
+            wrapMode: Text.WordWrap
+            fontSizeMode: Text.Fit
+            font.capitalization: Font.Capitalize
+            text: qsTr("Dialog Information")
+        }
+        Image {
+            id: bad_picture2
+            anchors.left: parent.left
+            anchors.leftMargin: 15
+            anchors.verticalCenter: parent.verticalCenter
+            width: 25
+            height: width
+            sourceSize.width: 50
+            sourceSize.height: 50
+            source: "../images/warning.png"
+            fillMode: Image.PreserveAspectFit
+        }
+        Rectangle {
+            id: center_border2
+            color: "dimgray"
+            opacity: 0.7
+            width: 2
+            anchors.top: parent.top
+            anchors.topMargin: 10
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 10
+            anchors.right: parent.right
+            anchors.rightMargin: 60
+        }
+        MouseArea {
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            anchors.left: center_border2.right
+            height: parent.height
+            onClicked: dialog_small.anchors.bottomMargin = -100
+            Text {
+                id: ok2
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                font.family: "Verdana"
+                font.styleName: "Regular"
+                width: 152
+                height: parent.height
+                font.pixelSize: 14
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                color: "black"
+                text: qsTr("Ok")
+            }
+        }
+    }
 
-        Connections {
-            target: backend
+    Connections {
+        target: backend
 
-            function onIncorrect(number) {
-                if (number === 1) { incorrectDialog.open() }
+        function onIncorrect(number) {
+            if (number === 1) { displaydialog(1) }
+        }
+    }
+
+    // Menu Bar Items Components
+    Rectangle {
+        id: background
+        anchors.fill: parent
+        color: "dimgray"
+        opacity: 0.5
+        visible: false
+        MouseArea {
+            anchors.fill: parent
+            onClicked: { menu.scale = 0 ; background.visible = false ; menuarea.visible = true }
+        }
+    }
+    Rectangle {
+        id: menu
+        color: "#f8f8f8"
+        anchors.right: dotdot.right
+        anchors.top: dotdot.bottom
+        anchors.topMargin: 10
+        width: 150
+        height: menu.radius + first_menu.height + second_menu.height + menu.radius
+        radius: 5
+        scale: 0
+        transformOrigin: Item.TopRight
+        Behavior on scale { PropertyAnimation { duration: 100 } }
+        Rectangle {
+            id: first_menu
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.topMargin: menu.radius
+            anchors.right: parent.right
+            height: 35 - menu.radius
+            color: menu.color
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onEntered: first_menu.color = "#e8e8e8"
+                onExited: first_menu.color = menu.color
+                onClicked: { page_loader.source = "Registersuper.ui.qml" ; backend.menubranch(1) }
+            }
+            Text {
+                id: newadmin
+                anchors.verticalCenter: first_menu.verticalCenter
+                anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
+                height: 30
+                font.family: "Verdana"
+                width: parent.width
+                font.pixelSize: 14
+                text: qsTr("New Admin")
+                leftPadding: 15
+            }
+        }
+        Rectangle {
+            id: first_radius
+            radius: menu.radius
+            height: menu.radius * 2
+            width: first_menu.width
+            anchors.top: menu.top
+            color: first_menu.color
+        }
+        Rectangle {
+            id: second_radius
+            radius: menu.radius
+            height: menu.radius * 2
+            width: first_menu.width
+            anchors.bottom: menu.bottom
+            color: second_menu.color
+        }
+        Rectangle {
+            id: second_menu
+            anchors.left: parent.left
+            anchors.top: first_menu.bottom
+            anchors.right: parent.right
+            height: first_menu.height
+            color: menu.color
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onEntered: second_menu.color = "#e8e8e8"
+                onExited: second_menu.color = menu.color
+                onClicked: { page_loader.source = "Removesuper.ui.qml" ; backend.menubranch(1) }
+            }
+            Text {
+                id: removeadmin
+                anchors.right: parent.right
+                anchors.verticalCenter: second_menu.verticalCenter
+                verticalAlignment: Text.AlignVCenter
+                height: 30
+                font.family: "Verdana"
+                width: parent.width
+                font.pixelSize: 14
+                text: qsTr("Remove Admin")
+                leftPadding: newadmin.leftPadding
             }
         }
     }
@@ -297,8 +514,3 @@ Designer {
 D{i:9}D{i:7}
 }
 ##^##*/
-
-/*
-TOC
-
-*/

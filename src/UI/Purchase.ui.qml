@@ -75,7 +75,7 @@ Item {
     MessageDialog {
         title: "Invalid Amount"
         id: insufDialog
-        text: "Amount You Entered Supercedes Your Available Balance"
+        text: "Amount You Entered Exceeds Your Available Balance"
         buttons: MessageDialog.Ok
     }
     MessageDialog {
@@ -96,6 +96,7 @@ Item {
     }
 
     Image {
+        id: menubar
         anchors.left: parent.left
         anchors.leftMargin: 40
         anchors.top: parent.top
@@ -103,12 +104,13 @@ Item {
         source: '../images/menubutton.png'
         height: 25
         width: height + 2
-        id: menubar
         MouseArea {
+            id: menuarea
             anchors.fill: parent
-            onClicked: menu.open()
+            onClicked: { background.visible = true ; menu.scale = 1 ; menuarea.visible = false }
         }
-        Menu {
+
+        /*Menu {
             id: menu
             MenuItem {
                 text: qsTr("Logout User") ;
@@ -123,7 +125,7 @@ Item {
                 text: qsTr("Switch to Registration Mode")
                 onTriggered: userlogoutDialog1.open()
             }
-        }
+        }*/
     }
 
     Text {
@@ -288,4 +290,127 @@ Item {
         image.anchors.topMargin = 20
     }
     function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = 0 }
+
+    Rectangle {
+        id: background
+        anchors.fill: parent
+        color: "dimgray"
+        opacity: 0.5
+        visible: false
+        MouseArea {
+            anchors.fill: parent
+            onClicked: { menu.scale = 0 ; background.visible = false ; menuarea.visible = true }
+        }
+    }
+    Rectangle {
+        id: menu
+        color: "#f8f8f8"
+        anchors.left: menubar.left
+        anchors.top: menubar.top
+        anchors.topMargin: 35
+        width: 250
+        height: menu.radius + first_menu.height + second_menu.height + third_menu.height + menu.radius
+        radius: 5
+        scale: 0
+        transformOrigin: Item.TopLeft
+        Behavior on scale { PropertyAnimation { duration: 100 } }
+        Rectangle {
+            id: first_menu
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.topMargin: menu.radius
+            anchors.right: parent.right
+            height: 35 - menu.radius
+            color: menu.color
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onEntered: first_menu.color = "#e8e8e8"
+                onExited: first_menu.color = menu.color
+                onClicked: userlogoutDialog.open()
+            }
+            Text {
+                id: logout
+                anchors.verticalCenter: first_menu.verticalCenter
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+                height: 30
+                font.family: "Verdana"
+                width: parent.width
+                font.pixelSize: 14
+                text: qsTr("Logout User")
+                leftPadding: 30
+            }
+        }
+        Rectangle {
+            id: first_radius
+            radius: menu.radius
+            height: menu.radius * 2
+            width: first_menu.width
+            anchors.top: menu.top
+            color: first_menu.color
+        }
+        Rectangle {
+            id: second_radius
+            radius: menu.radius
+            height: menu.radius * 2
+            width: first_menu.width
+            anchors.bottom: menu.bottom
+            color: third_menu.color
+        }
+        Rectangle {
+            id: second_menu
+            anchors.left: parent.left
+            anchors.top: first_menu.bottom
+            anchors.right: parent.right
+            height: 35
+            color: menu.color
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onEntered: second_menu.color = "#e8e8e8"
+                onExited: second_menu.color = menu.color
+                onClicked: { backend.feature("Transfer") ; stack.replace("Transfer.ui.qml") ; backend.switchfeature() }
+            }
+            Text {
+                id: new_user
+                anchors.left: parent.left
+                anchors.verticalCenter: second_menu.verticalCenter
+                verticalAlignment: Text.AlignVCenter
+                height: 30
+                font.family: "Verdana"
+                width: parent.width
+                font.pixelSize: 14
+                text: qsTr("Switch to Transfer Mode")
+                leftPadding: logout.leftPadding
+            }
+        }
+        Rectangle {
+            id: third_menu
+            anchors.left: parent.left
+            anchors.top: second_menu.bottom
+            anchors.right: parent.right
+            height: first_menu.height
+            color: menu.color
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onEntered: third_menu.color = "#e8e8e8"
+                onExited: third_menu.color = menu.color
+                onClicked: userlogoutDialog1.open()
+            }
+            Text {
+                id: remove_user
+                anchors.verticalCenter: third_menu.verticalCenter
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+                height: 30
+                font.family: "Verdana"
+                width: parent.width
+                font.pixelSize: 14
+                text: qsTr("Switch to Registration Mode")
+                leftPadding: logout.leftPadding
+            }
+        }
+    }
 }

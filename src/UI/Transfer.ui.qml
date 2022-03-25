@@ -51,7 +51,7 @@ Item {
     MessageDialog {
         title: "Invalid Amount"
         id: insufDialog
-        text: "Amount You Entered Supercedes Your Available Balance"
+        text: "Amount You Entered Exceeds Your Available Balance"
         buttons: MessageDialog.Ok
     }
     MessageDialog {
