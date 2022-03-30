@@ -1,6 +1,5 @@
 import QtQuick 2.14
 import QtQuick.Controls 6.2
-import Qt.labs.platform 1.1
 
 Item {
     id: window
@@ -15,30 +14,29 @@ Item {
         opacity: 0.6
     }
     Rectangle {
-        id: white_rectangle
+        id: box
         visible: true
-        color: "white"
+        color: "#f6f6f6"
         anchors.centerIn: parent
-        width: height * 2
-        height: parent.height / 4
+        width: height
+        height: parent.height / 2
         radius: 8
     }
-
-    Rectangle {
-        id: time
-        width: 1
-        height: 15
-        visible: true
-        color: "black"
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: -15
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
+    AnimatedImage {
+        id: pic
+        source: "../images/loading.gif"
+        width: 250
+        height: (6/8) * width
+        anchors.horizontalCenter: box.horizontalCenter
+        anchors.bottom: box.bottom
+        anchors.bottomMargin: 85
+        cache: false
     }
     Text {
         id: loading
-        anchors.top: time.bottom
-        anchors.horizontalCenter: time.horizontalCenter
+        anchors.topMargin: 100
+        anchors.top: box.top
+        anchors.horizontalCenter: box.horizontalCenter
         font.family: "Verdana"
         font.styleName: "Regular"
         width: 152
@@ -48,25 +46,7 @@ Item {
         verticalAlignment: Text.AlignBottom
         color: "black"
         text: qsTr("Loading...")
-    }
-    SequentialAnimation {
-        id: click
-        loops: Animation.Infinite
-        PropertyAnimation {
-            target: time
-            property: "width"
-            duration: 1000
-            to: 100
-        }
-        PropertyAnimation {
-            target: time
-            property: "width"
-            duration: 1000
-            to: 1
-        }
-    }
-    Component.onCompleted: {
-        click.running = true ;
+        font.bold: true
     }
     Connections {
         target: backend
@@ -74,7 +54,6 @@ Item {
         function onFinishedprocess(correctpage) {
             if (correctpage === 'close') { stack.pop() }
             else { stack.replace(correctpage) }
-            /*onYesClicked: { stack.push('Success.ui.qml'); click.running = true } "for when the load screen pushed the success page"*/
         }
     }
 }

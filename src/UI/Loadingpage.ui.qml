@@ -1,18 +1,9 @@
 import QtQuick 2.14
 import QtQuick.Controls 6.2
 
-Window {
+Item {
     id: window
-    width: Screen.width
-    height: Screen.height
-    visible: true
-    visibility: "Windowed"
-    x: (Screen.width - width) / 2
-    y: (Screen.height - height) / 2
-    color: "transparent"
-    property var correctpage: ""
-
-    flags: Qt.FramelessWindowHint
+    property string correctpage: ""
 
     Rectangle {
         id: shadow
@@ -23,30 +14,39 @@ Window {
         opacity: 0.6
     }
     Rectangle {
-        id: white_rectangle
+        id: box
         visible: true
-        color: "white"
+        color: "#f6f6f6"
         anchors.centerIn: parent
         width: height
         height: parent.height / 2
         radius: 8
     }
-
-    Rectangle {
-        id: time
-        width: 1
-        height: 10
-        visible: true
-        color: "black"
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: -15
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
+    AnimatedImage {
+        id: pic
+        source: "../images/loading.gif"
+        width: 250
+        height: (6/8) * width
+        anchors.horizontalCenter: box.horizontalCenter
+        anchors.bottom: box.bottom
+        anchors.bottomMargin: 85
+        cache: false
     }
+    /*AnimatedImage {
+        id: pic
+        source: "../images/loading2.gif"
+        width: 450
+        height: (6/8) * width
+        anchors.horizontalCenter: box.horizontalCenter
+        anchors.bottom: box.bottom
+        anchors.bottomMargin: 85
+        cache: false
+    }*/
     Text {
         id: loading
-        anchors.top: time.bottom
-        anchors.horizontalCenter: time.horizontalCenter
+        anchors.topMargin: 100
+        anchors.top: box.top
+        anchors.horizontalCenter: box.horizontalCenter
         font.family: "Verdana"
         font.styleName: "Regular"
         width: 152
@@ -56,26 +56,7 @@ Window {
         verticalAlignment: Text.AlignBottom
         color: "black"
         text: qsTr("Loading...")
-    }
-    SequentialAnimation {
-        id: click
-        loops: Animation.Infinite
-        PropertyAnimation {
-            target: time
-            property: "width"
-            duration: 1000
-            to: 100
-        }
-        PropertyAnimation {
-            target: time
-            property: "width"
-            duration: 1000
-            to: 1
-        }
-    }
-
-    Component.onCompleted: {
-        click.running = true ;
+        font.bold: true
     }
     Connections {
         target: backend
@@ -85,4 +66,3 @@ Window {
         }
     }
 }
-
