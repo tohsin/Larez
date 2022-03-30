@@ -11,10 +11,16 @@ Item {
 
     // Navigation Buttons -- Use Pin, Log in, Use Fingerprint, Back button
     Rectangle {
+        anchors.top: use_pin_button.top ; anchors.topMargin: -0.5 ; visible: use_pin_button.visible
+        anchors.left: use_pin_button.left ; anchors.leftMargin: -1
+        height: use_pin_button.height + 3.5 ; width: use_pin_button.width + 1.5 ; radius: use_pin_button.radius + 1
+        color: "#e0e0e0"
+    }
+    Rectangle {
         id: use_pin_button
         color: "#ffffff"
         radius: 8
-        border.width: 3
+        //border.width: 3
         width: 114
         height: 40
         anchors.bottom: parent.bottom
@@ -38,6 +44,12 @@ Item {
             anchors.fill: parent
             onClicked: switch1.checked = !switch1.checked
         }
+    }
+    Rectangle {
+        anchors.top: log_in_button.top ; anchors.topMargin: 0.5 ; visible: log_in_button.visible
+        anchors.left: log_in_button.left ; anchors.leftMargin: -1
+        height: log_in_button.height + 2.5 ; width: log_in_button.width + 1.5 ; radius: log_in_button.radius + 1
+        color: "#e0e0e0"
     }
     Rectangle {
         id: log_in_button
@@ -72,10 +84,16 @@ Item {
         }
     }
     Rectangle {
+        anchors.top: use_fingerprint_button.top ; anchors.topMargin: 0.5 ; visible: use_fingerprint_button.visible
+        anchors.left: use_fingerprint_button.left ; anchors.leftMargin: -1
+        height: use_fingerprint_button.height + 2.5 ; width: use_fingerprint_button.width + 1.5 ; radius: use_fingerprint_button.radius + 1
+        color: "#e0e0e0"
+    }
+    Rectangle {
         id: use_fingerprint_button
         color: "#ffffff"
         radius: 8
-        border.width: 3
+        //border.width: 3
         width: 156
         height: 40
         anchors.bottom: parent.bottom
@@ -215,19 +233,6 @@ Item {
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
         font.styleName: "Regular"
-
-        Rectangle {
-            id: username_box
-            height: 40
-            color: "#ffffff"
-            radius: 5
-            border.width: 1
-            anchors.left: parent.left
-            anchors.top: parent.bottom
-            anchors.right: parent.right
-            anchors.rightMargin: 60
-        }
-
         TextField {
             id: username
             height: username_box.height - 2
@@ -242,6 +247,20 @@ Item {
             leftPadding: 9
             rightPadding: 35
             placeholderText: qsTr("Username")
+            Rectangle {
+                anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
+            }
+        }
+        Rectangle {
+            id: username_box
+            height: 40
+            color: "transparent"
+            radius: 5
+            border.width: 1
+            anchors.left: parent.left
+            anchors.top: parent.bottom
+            anchors.right: parent.right
+            anchors.rightMargin: 60
         }
         Image {
             id:clearusername
@@ -275,18 +294,6 @@ Item {
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
         font.styleName: "Regular"
-
-        Rectangle {
-            id: password_box
-            width: username_box.width
-            height: username_box.height
-            color: "#ffffff"
-            radius: 5
-            border.width: 1
-            anchors.left: parent.left
-            anchors.top: parent.bottom
-        }
-
         TextField {
             id: password
             echoMode: TextInput.Password
@@ -302,6 +309,19 @@ Item {
             leftPadding: 9
             rightPadding: 35
             placeholderText: qsTr("Pin")
+            Rectangle {
+                anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
+            }
+        }
+        Rectangle {
+            id: password_box
+            width: username_box.width
+            height: username_box.height
+            color: "transparent"
+            radius: 5
+            border.width: 1
+            anchors.left: parent.left
+            anchors.top: parent.bottom
         }
 
         Image {
@@ -349,6 +369,7 @@ Item {
         // 1 logoutDialog
         if (functionnum === 1) {
             information.text = qsTr("Going Back Will Logout the Super Admin. Do You Want to Continue?")
+            header.text = qsTr("Logout")
             right_button.clicked.connect(closebigdialog)
         }
     }
@@ -371,6 +392,8 @@ Item {
             anchors.left: bad_picture2.right
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: center_border2.left
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
             font.family: "Verdana"
             font.styleName: "Regular"
             height: parent.height
@@ -454,12 +477,30 @@ Item {
             height: 200
             radius: 10
             Text {
+                id: header
+                anchors.top: parent.top
+                anchors.topMargin: 15
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.leftMargin: 20
+                height: 40
+                font.family: "Verdana"
+                font.styleName: "Regular"
+                width: parent.width - 40
+                font.pixelSize: 17
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                color: "black"
+                font.capitalization: Font.Capitalize
+                font.bold: true
+                text: qsTr("Dialog Header")
+            }
+            Text {
                 id: information
                 anchors.top: good_picture.bottom
                 anchors.topMargin: 20
                 anchors.left: parent.left
                 anchors.leftMargin: 20
-                anchors.bottom: center_border.top
+                anchors.bottom: b1.top
                 font.family: "Verdana"
                 font.styleName: "Regular"
                 width: parent.width - 40
@@ -477,8 +518,9 @@ Item {
                 visible: true
                 anchors.top: parent.top
                 anchors.topMargin: 15
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: 30
+                anchors.left: parent.left
+                anchors.leftMargin: 18
+                width: 35
                 height: width
                 sourceSize.width: 50
                 sourceSize.height: 50
@@ -486,62 +528,22 @@ Item {
                 fillMode: Image.PreserveAspectFit
             }
             Rectangle {
-                id: top_border
-                color: "dimgray"
-                opacity: 0.7
-                height: 1
-                width: box.width * 4 / 5
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 50
-                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: b1.top ; anchors.topMargin: 0.5 ; visible: b1.visible
+                anchors.left: b1.left ; anchors.leftMargin: -1
+                height: b1.height + 2.5 ; width: b1.width + 1.5 ; radius: b1.radius + 1
+                color: "#e0e0e0"
             }
             Rectangle {
-                id: center_border
-                visible: button_number.checked
-                color: "dimgray"
-                opacity: 0.7
-                width: 1
-                anchors.top: top_border.bottom
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 5
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-            /*Rectangle {
                 id: b1
-                height: 40
+                visible: button_number.checked
+                height: 43
                 width: 140
-                color: "#f0f0f0"
-                radius: 3
+                color: "black"
+                radius: 8
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 20
                 anchors.left: parent.left
                 anchors.leftMargin: 30
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: { top_border.visible = !top_border.visible ; center_border.visible = !center_border.visible ; ok.visible = !ok.visible ; no.visible = !no.visible ; left_button.visible = false}
-                }
-            }
-            Rectangle {
-                height: b1.height
-                width: b1.width
-                color: b1.color
-                radius: b1.radius
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: b1.anchors.bottomMargin
-                anchors.right: parent.right
-                anchors.rightMargin: b1.anchors.leftMargin
-            }*/
-            MouseArea {
-                id: left_button
-                visible: button_number.checked
-                anchors.top: top_border.bottom
-                anchors.right: center_border.left
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
-                hoverEnabled: true
-                onEntered: { yes.font.pixelSize = 16 ; yes.font.bold = true }
-                onExited: { yes.font.pixelSize = 15 ; yes.font.bold = false }
-                onClicked: { page_loader.source = 'P1Form.ui.qml'; backend.superadminlogout(0) }
                 Text {
                     id: yes
                     anchors.verticalCenter: parent.verticalCenter
@@ -550,23 +552,48 @@ Item {
                     font.styleName: "Regular"
                     width: 152
                     height: parent.height
-                    font.pixelSize: 15
+                    font.pixelSize: 16
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    color: "black"
+                    color: "white"
                     text: qsTr("Yes")
+                    font.bold: true
                 }
+            }
+            MouseArea {
+                id: left_button
+                visible: button_number.checked
+                anchors.fill: b1
+                hoverEnabled: true
+                onEntered: { b1.color = "#a0a0a0" }
+                onExited: { b1.color = "black" }
+                onClicked: { page_loader.source = 'P1Form.ui.qml'; backend.superadminlogout(0) }
+            }
+            Rectangle {
+                anchors.top: b2.top ; anchors.topMargin: 0.5 ; visible: b2.visible
+                anchors.left: b2.left ; anchors.leftMargin: -1
+                height: b2.height + 2.5 ; width: b2.width + 1.5 ; radius: b2.radius + 1
+                color: "#e0e0e0"
+            }
+            Rectangle {
+                id: b2
+                visible: button_number.checked
+                height: b1.height
+                width: b1.width
+                color: "white"
+                radius: b1.radius
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: b1.anchors.bottomMargin
+                anchors.right: parent.right
+                anchors.rightMargin: b1.anchors.leftMargin
             }
             MouseArea {
                 id: right_button
                 visible: button_number.checked
-                anchors.top: top_border.bottom
-                anchors.left: center_border.right
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
+                anchors.fill: b2
                 hoverEnabled: true
-                onEntered: { no.font.pixelSize = 16 ; no.font.bold = true }
-                onExited: { no.font.pixelSize = 15 ; no.font.bold = false }
+                onEntered: { no.color = "#a0a0a0" }
+                onExited: { no.color = "black" }
                 onClicked: dialog_big.visible = false
                 Text {
                     id: no
@@ -576,11 +603,12 @@ Item {
                     font.styleName: "Regular"
                     width: 152
                     height: parent.height
-                    font.pixelSize: 15
+                    font.pixelSize: 16
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: "black"
                     text: qsTr("No")
+                    font.bold: true
                 }
             }
         }

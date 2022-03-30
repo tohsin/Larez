@@ -1,6 +1,5 @@
 import QtQuick 2.14
 import QtQuick.Controls 6.2
-import Qt.labs.platform 1.1
 
 Item {
     id: window
@@ -10,6 +9,12 @@ Item {
     }
 
     // Navigation Buttons -- Log in, Use Pin, Use Fingerprint, Menu bar
+    Rectangle {
+        anchors.top: log_in_button.top ; anchors.topMargin: 0.5 ; visible: log_in_button.visible
+        anchors.left: log_in_button.left ; anchors.leftMargin: -1
+        height: log_in_button.height + 2.5 ; width: log_in_button.width + 1.5 ; radius: log_in_button.radius + 1
+        color: "#e0e0e0"
+    }
     Rectangle {
         id: log_in_button
         visible: switch1.checked
@@ -43,10 +48,16 @@ Item {
         }
     }
     Rectangle {
+        anchors.top: use_pin_button.top ; anchors.topMargin: -0.5 ; visible: use_pin_button.visible
+        anchors.left: use_pin_button.left ; anchors.leftMargin: -1
+        height: use_pin_button.height + 3.5 ; width: use_pin_button.width + 1.5 ; radius: use_pin_button.radius + 1
+        color: "#e0e0e0"
+    }
+    Rectangle {
         id: use_pin_button
         color: "#ffffff"
         radius: 8
-        border.width: 3
+        //border.width: 3
         width: 114
         height: 40
         anchors.bottom: parent.bottom
@@ -72,10 +83,16 @@ Item {
         }
     }
     Rectangle {
+        anchors.top: use_fingerprint_button.top ; anchors.topMargin: 0.5 ; visible: use_fingerprint_button.visible
+        anchors.left: use_fingerprint_button.left ; anchors.leftMargin: -1
+        height: use_fingerprint_button.height + 2.5 ; width: use_fingerprint_button.width + 1.5 ; radius: use_fingerprint_button.radius + 1
+        color: "#e0e0e0"
+    }
+    Rectangle {
         id: use_fingerprint_button
         color: "#ffffff"
         radius: 8
-        border.width: 3
+        //border.width: 3
         width: 156
         height: 40
         anchors.bottom: parent.bottom
@@ -199,19 +216,6 @@ Item {
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
         font.styleName: "Regular"
-
-        Rectangle {
-            id: username_box
-            height: 40
-            color: "#ffffff"
-            radius: 5
-            border.width: 1
-            anchors.left: parent.left
-            anchors.top: parent.bottom
-            anchors.right: parent.right
-            anchors.rightMargin: 60
-        }
-
         TextField {
             id: username
             width: username_box.width
@@ -226,6 +230,20 @@ Item {
             anchors.right: username_box.right
             anchors.rightMargin: 1
             anchors.leftMargin: 1
+            Rectangle {
+                anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
+            }
+        }        
+        Rectangle {
+            id: username_box
+            height: 40
+            color: "transparent"
+            radius: 5
+            border.width: 1
+            anchors.left: parent.left
+            anchors.top: parent.bottom
+            anchors.right: parent.right
+            anchors.rightMargin: 60
         }
         Image {
             id:clearusername
@@ -260,19 +278,6 @@ Item {
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
         font.styleName: "Regular"
-
-        Rectangle {
-            id: password_box
-            width: username_box.width
-            height: username_box.height
-            color: "#ffffff"
-            radius: 5
-            border.width: 1
-            anchors.left: parent.left
-            anchors.top: parent.bottom
-            anchors.topMargin: 0
-            anchors.leftMargin: 0
-        }
         TextField {
             id: password
             echoMode: TextInput.Password
@@ -288,6 +293,19 @@ Item {
             anchors.right: password_box.right
             anchors.rightMargin: 1
             anchors.leftMargin: 1
+            Rectangle {
+                anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
+            }
+        }
+        Rectangle {
+            id: password_box
+            width: username_box.width
+            height: username_box.height
+            color: "transparent"
+            radius: 5
+            border.width: 1
+            anchors.left: parent.left
+            anchors.top: parent.bottom
         }
         Image {
             id:clearpin
@@ -343,6 +361,8 @@ Item {
             anchors.left: bad_picture2.right
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: center_border2.left
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
             font.family: "Verdana"
             font.styleName: "Regular"
             height: parent.height
