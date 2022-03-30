@@ -1,6 +1,5 @@
 import QtQuick 2.14
 import QtQuick.Controls 6.2
-import Qt.labs.platform 1.1
 
 Item {
     id: window
