@@ -1,6 +1,5 @@
 import QtQuick 2.14
 import QtQuick.Controls 6.2
-import Qt.labs.platform 1.1
 
 Item {
     id: window
@@ -33,7 +32,7 @@ Item {
             duration: 2000
             to: 100
         }
-        ScriptAction {script: { backend.purchasefeature(aTotal) ; stack.replace('P3Form.ui.qml') ; backend.transactiondone(0) } }
+        ScriptAction {script: { writeoff() ; stack.replace('P3Form.ui.qml') } }
     }
     // Small Dialog Display Timer
     SequentialAnimation {
@@ -48,6 +47,12 @@ Item {
     }
 
     // Navigation Buttons -- Submit button, Menu bar
+    Rectangle {
+        anchors.top: submit_button.top ; anchors.topMargin: 0.5 ; visible: submit_button.visible
+        anchors.left: submit_button.left ; anchors.leftMargin: -1
+        height: submit_button.height + 2.5 ; width: submit_button.width + 1.5 ; radius: submit_button.radius + 1
+        color: "#e0e0e0"
+    }
     Rectangle {
         id: submit_button
         color: "black"
@@ -73,7 +78,7 @@ Item {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: backend.purchaseamounts([enter_amount.text, enter_amount2.text, enter_amount3.text, enter_amount4.text, enter_amount5.text])
+            onClicked: createsum()
         }
     }
 
@@ -124,19 +129,6 @@ Item {
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
-
-            Rectangle {
-                id: amount_box
-                height: 40
-                color: "#ffffff"
-                radius: 5
-                border.width: 1
-                anchors.left: parent.left
-                anchors.top: parent.bottom
-                anchors.right: parent.right
-                anchors.rightMargin: 60
-            }
-
             TextField {
                 id: enter_amount
                 height: amount_box.height - 2
@@ -156,6 +148,20 @@ Item {
                     top: 100000
                 }
                 inputMethodHints: Qt.ImhDigitsOnly
+                Rectangle {
+                    anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
+                }
+            }
+            Rectangle {
+                id: amount_box
+                height: 40
+                color: "transparent"
+                radius: 5
+                border.width: 1
+                anchors.left: parent.left
+                anchors.top: parent.bottom
+                anchors.right: parent.right
+                anchors.rightMargin: 60
             }
             Image {
                 id: clearamount
@@ -235,19 +241,6 @@ Item {
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
-
-            Rectangle {
-                id: amount_box2
-                height: 40
-                color: "#ffffff"
-                radius: 5
-                border.width: 1
-                anchors.left: parent.left
-                anchors.top: parent.bottom
-                anchors.right: parent.right
-                anchors.rightMargin: 60
-            }
-
             TextField {
                 id: enter_amount2
                 height: amount_box2.height - 2
@@ -267,6 +260,20 @@ Item {
                     top: 100000
                 }
                 inputMethodHints: Qt.ImhDigitsOnly
+                Rectangle {
+                    anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
+                }
+            }
+            Rectangle {
+                id: amount_box2
+                height: 40
+                color: "transparent"
+                radius: 5
+                border.width: 1
+                anchors.left: parent.left
+                anchors.top: parent.bottom
+                anchors.right: parent.right
+                anchors.rightMargin: 60
             }
             Image {
                 id: clearamount2
@@ -386,20 +393,7 @@ Item {
             fontSizeMode: Text.Fit
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
-            font.styleName: "Regular"
-
-            Rectangle {
-                id: amount_box3
-                height: 40
-                color: "#ffffff"
-                radius: 5
-                border.width: 1
-                anchors.left: parent.left
-                anchors.top: parent.bottom
-                anchors.right: parent.right
-                anchors.rightMargin: 60
-            }
-
+            font.styleName: "Regular"           
             TextField {
                 id: enter_amount3
                 height: amount_box3.height - 2
@@ -419,6 +413,20 @@ Item {
                     top: 100000
                 }
                 inputMethodHints: Qt.ImhDigitsOnly
+                Rectangle {
+                    anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
+                }
+            }
+            Rectangle {
+                id: amount_box3
+                height: 40
+                color: "transparent"
+                radius: 5
+                border.width: 1
+                anchors.left: parent.left
+                anchors.top: parent.bottom
+                anchors.right: parent.right
+                anchors.rightMargin: 60
             }
             Image {
                 id: clearamount3
@@ -538,19 +546,6 @@ Item {
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
-
-            Rectangle {
-                id: amount_box4
-                height: 40
-                color: "#ffffff"
-                radius: 5
-                border.width: 1
-                anchors.left: parent.left
-                anchors.top: parent.bottom
-                anchors.right: parent.right
-                anchors.rightMargin: 60
-            }
-
             TextField {
                 id: enter_amount4
                 height: amount_box4.height - 2
@@ -570,6 +565,20 @@ Item {
                     top: 100000
                 }
                 inputMethodHints: Qt.ImhDigitsOnly
+                Rectangle {
+                    anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
+                }
+            }
+            Rectangle {
+                id: amount_box4
+                height: 40
+                color: "transparent"
+                radius: 5
+                border.width: 1
+                anchors.left: parent.left
+                anchors.top: parent.bottom
+                anchors.right: parent.right
+                anchors.rightMargin: 60
             }
             Image {
                 id: clearamount4
@@ -684,19 +693,6 @@ Item {
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
-
-            Rectangle {
-                id: amount_box5
-                height: 40
-                color: "#ffffff"
-                radius: 5
-                border.width: 1
-                anchors.left: parent.left
-                anchors.top: parent.bottom
-                anchors.right: parent.right
-                anchors.rightMargin: 60
-            }
-
             TextField {
                 id: enter_amount5
                 height: amount_box5.height - 2
@@ -716,6 +712,20 @@ Item {
                     top: 100000
                 }
                 inputMethodHints: Qt.ImhDigitsOnly
+                Rectangle {
+                    anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
+                }
+            }
+            Rectangle {
+                id: amount_box5
+                height: 40
+                color: "transparent"
+                radius: 5
+                border.width: 1
+                anchors.left: parent.left
+                anchors.top: parent.bottom
+                anchors.right: parent.right
+                anchors.rightMargin: 60
             }
             Image {
                 id: clearamount5
@@ -773,31 +783,28 @@ Item {
     function closebigdialog() { dialog_big.visible = false ; f1_switch.checked = f2_switch.checked = f3_switch.checked = false }
 
     function displaybigdialog(buttonnum, functionnum) {
-        if (buttonnum === 0) { dialog_big.visible = true ; button_number.checked = false ; good_picture.visible = false }
+        if (buttonnum === 0) { dialog_big.visible = true ; button_number.checked = false ; good_picture.visible = true }
         if (buttonnum === 1) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = true }
         if (buttonnum === 2) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = false }
 
         // 1 PurchaseDialog
-        function onepush() { stack.push('Success.ui.qml') ; click.running = true ; revert() }
         if (functionnum === 1) {
             information.text = qsTr("You Are About To Make A Purchase with " + aTotal + " Naira. Do You Want To Continue?")
-            //left_button.clicked.connect(onepush)
+            header.text = qsTr("Purchase")
             f1_switch.checked = true
             right_button.clicked.connect(closebigdialog)
         }
         // 2 userLogoutDialog
-        function twopush() { backend.userlogout() ; stack.pop() ; stack.pop() ; revert() }
         if (functionnum === 2) {
             information.text = qsTr("You Are About To Logout. Do You Want To Continue?")
-            //left_button.clicked.connect(twopush)
+            header.text = qsTr("Logout")
             f2_switch.checked = true
             right_button.clicked.connect(closebigdialog)
         }
         // 3 LogoutToRegistrationDialog
-        function threepush() { backend.userlogout() ; backend.feature("Register") ; stack.pop() ; stack.replace("Register.ui.qml") ; backend.switchfeature() }
         if (functionnum === 3) {
             information.text = qsTr("Switching to Registration Will Log You Out Of Your Current Session. Do You Want To Continue?")
-            //left_button.clicked.connect(threepush)
+            header.text = qsTr("Leaving Page")
             f3_switch.checked = true
             right_button.clicked.connect(closebigdialog)
         }
@@ -914,28 +921,6 @@ Item {
         }
     }
 
-    // Switches for visibility for each purchase text box
-    Switch {
-        id: multi_switch2
-        visible: false
-        checked: false
-    }
-    Switch {
-        id: multi_switch3
-        visible: false
-        checked: false
-    }
-    Switch {
-        id: multi_switch4
-        visible: false
-        checked: false
-    }
-    Switch {
-        id: multi_switch5
-        visible: false
-        checked: false
-    }
-
     Component.onCompleted: {
         image.scale = 0.6
         image.anchors.horizontalCenterOffset = 180
@@ -1028,7 +1013,7 @@ Item {
                 hoverEnabled: true
                 onEntered: second_menu.color = "#e8e8e8"
                 onExited: second_menu.color = menu.color
-                onClicked: { backend.feature("Transfer") ; stack.replace("Transfer.ui.qml") ; backend.switchfeature() }
+                onClicked: { backend.feature("Transfer") ; stack.replace("Transfermulti2.ui.qml") ; backend.switchfeature() }
             }
             Text {
                 id: transfer_menu
@@ -1090,6 +1075,8 @@ Item {
             anchors.left: bad_picture2.right
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: center_border2.left
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
             font.family: "Verdana"
             font.styleName: "Regular"
             height: parent.height
@@ -1173,12 +1160,30 @@ Item {
             height: 200
             radius: 10
             Text {
+                id: header
+                anchors.top: parent.top
+                anchors.topMargin: 15
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.leftMargin: 20
+                height: 40
+                font.family: "Verdana"
+                font.styleName: "Regular"
+                width: parent.width - 40
+                font.pixelSize: 17
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                color: "black"
+                font.capitalization: Font.Capitalize
+                font.bold: true
+                text: qsTr("Dialog Header")
+            }
+            Text {
                 id: information
                 anchors.top: good_picture.bottom
                 anchors.topMargin: 20
                 anchors.left: parent.left
                 anchors.leftMargin: 20
-                anchors.bottom: center_border.top
+                anchors.bottom: b1.top
                 font.family: "Verdana"
                 font.styleName: "Regular"
                 width: parent.width - 40
@@ -1196,8 +1201,9 @@ Item {
                 visible: true
                 anchors.top: parent.top
                 anchors.topMargin: 15
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: 30
+                anchors.left: parent.left
+                anchors.leftMargin: 18
+                width: 35
                 height: width
                 sourceSize.width: 50
                 sourceSize.height: 50
@@ -1205,57 +1211,22 @@ Item {
                 fillMode: Image.PreserveAspectFit
             }
             Rectangle {
-                id: top_border
-                color: "dimgray"
-                opacity: 0.7
-                height: 1
-                width: box.width * 4 / 5
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 50
-                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: b1.top ; anchors.topMargin: 0.5 ; visible: b1.visible
+                anchors.left: b1.left ; anchors.leftMargin: -1
+                height: b1.height + 2.5 ; width: b1.width + 1.5 ; radius: b1.radius + 1
+                color: "#e0e0e0"
             }
             Rectangle {
-                id: center_border
-                visible: button_number.checked
-                color: "dimgray"
-                opacity: 0.7
-                width: 1
-                anchors.top: top_border.bottom
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 5
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-            /*Rectangle {
                 id: b1
-                height: 40
+                visible: button_number.checked
+                height: 43
                 width: 140
-                color: "#f0f0f0"
-                radius: 3
+                color: "black"
+                radius: 8
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 20
                 anchors.left: parent.left
                 anchors.leftMargin: 30
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: { top_border.visible = !top_border.visible ; center_border.visible = !center_border.visible ; ok.visible = !ok.visible ; no.visible = !no.visible ; left_f1.visible = false}
-                }
-            }
-            Rectangle {
-                height: b1.height
-                width: b1.width
-                color: b1.color
-                radius: b1.radius
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: b1.anchors.bottomMargin
-                anchors.right: parent.right
-                anchors.rightMargin: b1.anchors.leftMargin
-            }*/
-            Item {
-                visible: button_number.checked
-                anchors.top: top_border.bottom
-                anchors.right: center_border.left
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
                 Text {
                     id: yes
                     anchors.verticalCenter: parent.verticalCenter
@@ -1264,59 +1235,66 @@ Item {
                     font.styleName: "Regular"
                     width: 152
                     height: parent.height
-                    font.pixelSize: 15
+                    font.pixelSize: 16
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    color: "black"
+                    color: "white"
                     text: qsTr("Yes")
+                    font.bold: true
                 }
             }
             MouseArea {
                 id: left_f1
                 visible: button_number.checked & f1_switch.checked
-                anchors.top: top_border.bottom
-                anchors.right: center_border.left
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
+                anchors.fill: b1
                 hoverEnabled: true
-                onEntered: { yes.font.pixelSize = 16 ; yes.font.bold = true }
-                onExited: { yes.font.pixelSize = 15 ; yes.font.bold = false }
+                onEntered: { b1.color = "#a0a0a0" }
+                onExited: { b1.color = "black" }
                 onClicked: { stack.push('Success.ui.qml') ; click.running = true ; revert() }
             }
             MouseArea {
                 id: left_f2
                 visible: button_number.checked & f2_switch.checked
-                anchors.top: top_border.bottom
-                anchors.right: center_border.left
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
+                anchors.fill: b1
                 hoverEnabled: true
-                onEntered: { yes.font.pixelSize = 16 ; yes.font.bold = true }
-                onExited: { yes.font.pixelSize = 15 ; yes.font.bold = false }
+                onEntered: { b1.color = "#a0a0a0" }
+                onExited: { b1.color = "black" }
                 onClicked: { backend.userlogout() ; stack.pop() ; stack.pop() ; revert() }
             }
             MouseArea {
                 id: left_f3
                 visible: button_number.checked & f3_switch.checked
-                anchors.top: top_border.bottom
-                anchors.right: center_border.left
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
+                anchors.fill: b1
                 hoverEnabled: true
-                onEntered: { yes.font.pixelSize = 16 ; yes.font.bold = true }
-                onExited: { yes.font.pixelSize = 15 ; yes.font.bold = false }
+                onEntered: { b1.color = "#a0a0a0" }
+                onExited: { b1.color = "black" }
                 onClicked: { backend.userlogout() ; backend.feature("Register") ; stack.pop() ; stack.replace("Register.ui.qml") ; backend.switchfeature() }
+            }
+            Rectangle {
+                anchors.top: b2.top ; anchors.topMargin: 0.5 ; visible: b2.visible
+                anchors.left: b2.left ; anchors.leftMargin: -1
+                height: b2.height + 2.5 ; width: b2.width + 1.5 ; radius: b2.radius + 1
+                color: "#e0e0e0"
+            }
+            Rectangle {
+                id: b2
+                visible: button_number.checked
+                height: b1.height
+                width: b1.width
+                color: "white"
+                radius: b1.radius
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: b1.anchors.bottomMargin
+                anchors.right: parent.right
+                anchors.rightMargin: b1.anchors.leftMargin
             }
             MouseArea {
                 id: right_button
                 visible: button_number.checked
-                anchors.top: top_border.bottom
-                anchors.left: center_border.right
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
+                anchors.fill: b2
                 hoverEnabled: true
-                onEntered: { no.font.pixelSize = 16 ; no.font.bold = true }
-                onExited: { no.font.pixelSize = 15 ; no.font.bold = false }
+                onEntered: { no.color = "#a0a0a0" }
+                onExited: { no.color = "black" }
                 onClicked: dialog_big.visible = false
                 Text {
                     id: no
@@ -1326,42 +1304,17 @@ Item {
                     font.styleName: "Regular"
                     width: 152
                     height: parent.height
-                    font.pixelSize: 15
+                    font.pixelSize: 16
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: "black"
                     text: qsTr("No")
-                }
-            }
-            MouseArea {
-                id: center_button
-                visible: !button_number.checked
-                anchors.top: top_border.bottom
-                anchors.right: parent.right
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
-                hoverEnabled: true
-                onEntered: { ok.font.pixelSize = 16 ; ok.font.bold = true }
-                onExited: { ok.font.pixelSize = 15 ; ok.font.bold = false }
-                onClicked: dialog_big.visible = false
-                Text {
-                    id: ok
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    font.family: "Verdana"
-                    font.styleName: "Regular"
-                    width: 152
-                    height: parent.height
-                    font.pixelSize: 15
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    color: "black"
-                    text: qsTr("Ok")
+                    font.bold: true
                 }
             }
         }
 
-        // Switches for Logic
+        // Switches for Logic, Visibility for each purchase text box
         Switch {
             id: button_number
             visible: false
@@ -1382,7 +1335,26 @@ Item {
             visible: false
             checked: false
         }
-
+        Switch {
+            id: multi_switch2
+            visible: false
+            checked: false
+        }
+        Switch {
+            id: multi_switch3
+            visible: false
+            checked: false
+        }
+        Switch {
+            id: multi_switch4
+            visible: false
+            checked: false
+        }
+        Switch {
+            id: multi_switch5
+            visible: false
+            checked: false
+        }
     }
 
     function switchoff(num, code) {
@@ -1398,5 +1370,17 @@ Item {
                 }
             }
         }
+    }
+    function writeoff() {
+        if (enter_amount.text !== "") { backend.purchasefeature(enter_amount.text) ; backend.transactiondone(0) }
+        for (let i = 2 ; i <= 5 ; i++) {
+            if (switchmap[i].checked === true & textmap[i].text !== "") { backend.purchasefeature(textmap[i].text) ; backend.transactiondone(0) }
+        }
+    }
+    function createsum() {
+        for (let i = 2 ; i <= 5 ; i++) {
+            if (switchmap[i].checked !== true) { textmap[i].text = "" }
+        }
+        backend.purchaseamounts([enter_amount.text, enter_amount2.text, enter_amount3.text, enter_amount4.text, enter_amount5.text])
     }
 }

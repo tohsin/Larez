@@ -1,6 +1,5 @@
 import QtQuick 2.14
 import QtQuick.Controls 6.2
-import Qt.labs.platform 1.1
 
 Item {
     id: window
@@ -29,7 +28,7 @@ Item {
     // Registration Field -- Fingerprint, "Place finger to scan" Information
     Image {
         id: fingerprint
-        y: 500
+        y: 550
         width: 140
         height: 140
         visible: false
@@ -63,7 +62,7 @@ Item {
     // Registration Field contd -- Reg No Text box
     Text {
         id: regno
-        y: 245
+        y: 160
         height: 41
         anchors.left: parent.left
         anchors.leftMargin: 60
@@ -74,19 +73,7 @@ Item {
         fontSizeMode: Text.Fit
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
-        font.styleName: "Regular"
-
-        Rectangle {
-            id: regno_box
-            height: 40
-            color: "#ffffff"
-            radius: 5
-            border.width: 1
-            anchors.left: parent.left
-            anchors.top: parent.bottom
-            anchors.right: parent.right
-            anchors.rightMargin: 60
-        }
+        font.styleName: "Regular"        
         TextField {
             id: regno_field
             height: regno_box.height - 2
@@ -101,6 +88,20 @@ Item {
             leftPadding: 9
             rightPadding: 35
             placeholderText: qsTr("Reg No. / Username")
+            Rectangle {
+                anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
+            }
+        }
+        Rectangle {
+            id: regno_box
+            height: 40
+            color: "transparent"
+            radius: 5
+            border.width: 1
+            anchors.left: parent.left
+            anchors.top: parent.bottom
+            anchors.right: parent.right
+            anchors.rightMargin: 60
         }
         Image {
             id: clearregno
@@ -119,11 +120,72 @@ Item {
             }
         }
     }
+    // Registration Field contd -- Acc Name Text box
+    Text {
+        id: accname
+        y: 300
+        height: 41
+        anchors.left: parent.left
+        anchors.leftMargin: 60
+        anchors.right: parent.right
+        text: qsTr("Account Name")
+        font.pixelSize: 20
+        verticalAlignment: Text.AlignVCenter
+        fontSizeMode: Text.Fit
+        font.capitalization: Font.AllUppercase
+        font.family: "Verdana"
+        font.styleName: "Regular"        
+        TextField {
+            id: accname_field
+            height: accname_box.height - 2
+            anchors.verticalCenter: accname_box.verticalCenter
+            anchors.left: accname_box.left
+            anchors.right: accname_box.right
+            anchors.rightMargin: 1
+            anchors.leftMargin: 1
+            baselineOffset: 15
+            font.pointSize: 12
+            topPadding: 7
+            leftPadding: 9
+            rightPadding: 35
+            placeholderText: qsTr("Account Name")
+            Rectangle {
+                anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
+            }
+        }
+        Rectangle {
+            id: accname_box
+            height: 40
+            color: "transparent"
+            radius: 5
+            border.width: 1
+            anchors.left: parent.left
+            anchors.top: parent.bottom
+            anchors.right: parent.right
+            anchors.rightMargin: 60
+        }
+        Image {
+            id: clearaccname
+            height: 14
+            width: height
+            anchors.verticalCenter: accname_box.verticalCenter
+            anchors.right: accname_box.right
+            anchors.rightMargin: 10
+            source: "../images/closebutton.png"
+            sourceSize.width: 20
+            sourceSize.height: 20
+            MouseArea {
+                id: clacc
+                anchors.fill: parent
+                onClicked: accname_field.text = ""
+            }
+        }
+    }
     // Registration Field contd -- Pin Text box
     Text {
         id: pin
         x: 60
-        y: 400
+        y: 430
         width: 152
         height: 41
         text: qsTr("Pin")
@@ -132,20 +194,7 @@ Item {
         fontSizeMode: Text.Fit
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
-        font.styleName: "Regular"
-
-        Rectangle {
-            id: password_box
-            width: regno_box.width
-            height: regno_box.height
-            color: "#ffffff"
-            radius: 5
-            border.width: 1
-            anchors.left: parent.left
-            anchors.top: parent.bottom
-            anchors.topMargin: 0
-            anchors.leftMargin: 0
-        }
+        font.styleName: "Regular"        
         TextField {
             id: password
             echoMode: TextInput.Password
@@ -161,6 +210,21 @@ Item {
             leftPadding: 9
             rightPadding: 35
             placeholderText: qsTr("Pin")
+            Rectangle {
+                anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
+            }
+        }
+        Rectangle {
+            id: password_box
+            width: regno_box.width
+            height: regno_box.height
+            color: "transparent"
+            radius: 5
+            border.width: 1
+            anchors.left: parent.left
+            anchors.top: parent.bottom
+            anchors.topMargin: 0
+            anchors.leftMargin: 0
         }
         Image {
             id: clearpin
@@ -218,7 +282,7 @@ Item {
         target: backend
 
         function onInvalid(number) { if (number === 1) { displaydialog(1) } }
-        function onProceed(value) { if (value == 1) { displaybigdialog(2,1) } }
+        function onProceed(value) { if (value === 1) { displaybigdialog(1,1) } }
     }
 
     // Page Information -- Feature name
@@ -265,40 +329,27 @@ Item {
         if (functionnum === 2) { information2.text = qsTr("Details You Entered Are Incomplete. Fill the empty fields") }
 
     }
-    function closebigdialog() { dialog_big.visible = false ; f1_switch.checked = f2_switch.checked = false }
+    function closebigdialog() { dialog_big.visible = false ; f1_switch.checked  = false }
 
     function displaybigdialog(buttonnum, functionnum) {
         if (buttonnum === 0) { dialog_big.visible = true ; button_number.checked = false ; good_picture.visible = true }
-        if (buttonnum === 1) { dialog_big.visible = true ; button_number.checked = true }
+        if (buttonnum === 1) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = true }
         if (buttonnum === 2) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = false }
 
         // 1 confirmDialog
         if (functionnum === 1) {
             information.text = qsTr("You Are About To Register " + regno_field.text + ". Do You Want To Continue?")
+            header.text = qsTr("Registering User")
             f1_switch.checked = true
             right_button.clicked.connect(closebigdialog)
         }
         // 2 successDialog
         if (functionnum === 2) {
             information.text = qsTr("New User Has Been Registered Successfully")
-            f2_switch.checked = true
+            header.text = qsTr("Registration Successful")
         }
     }
 
-    /*MessageDialog {
-        title: "User Registration"
-        id: confirmDialog
-        text: "You Are About To Register " + regno_field.text
-        buttons: MessageDialog.Ok | MessageDialog.Cancel
-        onOkClicked: { backend.registeruser([regno_field.text, password.text, password.text]) ; successDialog.open() }
-    }
-    MessageDialog {
-        title: "Registration Successful"
-        id: successDialog
-        text: "New User Has Been Registered Successfully"
-        buttons: MessageDialog.Ok
-        onOkClicked: { stack.replace('P3Form.ui.qml') ; revert() }
-    }*/
     // Small Dialog Box Components
     Rectangle {
         id: dialog_small
@@ -317,6 +368,8 @@ Item {
             anchors.left: bad_picture2.right
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: center_border2.left
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
             font.family: "Verdana"
             font.styleName: "Regular"
             height: parent.height
@@ -400,12 +453,30 @@ Item {
             height: 200
             radius: 10
             Text {
+                id: header
+                anchors.top: parent.top
+                anchors.topMargin: 15
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.leftMargin: 20
+                height: 40
+                font.family: "Verdana"
+                font.styleName: "Regular"
+                width: parent.width - 40
+                font.pixelSize: 17
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                color: "black"
+                font.capitalization: Font.Capitalize
+                font.bold: true
+                text: qsTr("Dialog Header")
+            }
+            Text {
                 id: information
                 anchors.top: good_picture.bottom
                 anchors.topMargin: 20
                 anchors.left: parent.left
                 anchors.leftMargin: 20
-                anchors.bottom: center_border.top
+                anchors.bottom: b1.top
                 font.family: "Verdana"
                 font.styleName: "Regular"
                 width: parent.width - 40
@@ -423,8 +494,9 @@ Item {
                 visible: true
                 anchors.top: parent.top
                 anchors.topMargin: 15
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: 30
+                anchors.left: parent.left
+                anchors.leftMargin: 18
+                width: 35
                 height: width
                 sourceSize.width: 50
                 sourceSize.height: 50
@@ -432,57 +504,22 @@ Item {
                 fillMode: Image.PreserveAspectFit
             }
             Rectangle {
-                id: top_border
-                color: "dimgray"
-                opacity: 0.7
-                height: 1
-                width: box.width * 4 / 5
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 50
-                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: b1.top ; anchors.topMargin: 0.5 ; visible: b1.visible
+                anchors.left: b1.left ; anchors.leftMargin: -1
+                height: b1.height + 2.5 ; width: b1.width + 1.5 ; radius: b1.radius + 1
+                color: "#e0e0e0"
             }
             Rectangle {
-                id: center_border
-                visible: button_number.checked
-                color: "dimgray"
-                opacity: 0.7
-                width: 1
-                anchors.top: top_border.bottom
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 5
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-            /*Rectangle {
                 id: b1
-                height: 40
+                visible: button_number.checked
+                height: 43
                 width: 140
-                color: "#f0f0f0"
-                radius: 3
+                color: "black"
+                radius: 8
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 20
                 anchors.left: parent.left
                 anchors.leftMargin: 30
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: { top_border.visible = !top_border.visible ; center_border.visible = !center_border.visible ; ok.visible = !ok.visible ; no.visible = !no.visible ; left_f1.visible = false}
-                }
-            }
-            Rectangle {
-                height: b1.height
-                width: b1.width
-                color: b1.color
-                radius: b1.radius
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: b1.anchors.bottomMargin
-                anchors.right: parent.right
-                anchors.rightMargin: b1.anchors.leftMargin
-            }*/
-            Item {
-                visible: button_number.checked
-                anchors.top: top_border.bottom
-                anchors.right: center_border.left
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
                 Text {
                     id: yes
                     anchors.verticalCenter: parent.verticalCenter
@@ -491,46 +528,48 @@ Item {
                     font.styleName: "Regular"
                     width: 152
                     height: parent.height
-                    font.pixelSize: 15
+                    font.pixelSize: 16
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    color: "black"
+                    color: "white"
                     text: qsTr("Yes")
+                    font.bold: true
                 }
             }
             MouseArea {
                 id: left_f1
                 visible: button_number.checked & f1_switch.checked
-                anchors.top: top_border.bottom
-                anchors.right: center_border.left
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
+                anchors.fill: b1
                 hoverEnabled: true
-                onEntered: { yes.font.pixelSize = 16 ; yes.font.bold = true }
-                onExited: { yes.font.pixelSize = 15 ; yes.font.bold = false }
-                onClicked: { backend.registeruser([regno_field.text, password.text, password.text]) ; displaybigdialog(0,2) ; exitbutton.visible = true}
+                onEntered: { b1.color = "#a0a0a0" }
+                onExited: { b1.color = "black" }
+                onClicked: { backend.registeruser([regno_field.text, accname_field.text, password.text, password.text]) ; displaybigdialog(0,2) ; exitbutton.visible = true}
             }
-            MouseArea {
-                id: left_f2
-                visible: button_number.checked & f2_switch.checked
-                anchors.top: top_border.bottom
-                anchors.right: center_border.left
-                anchors.left: parent.left
+            Rectangle {
+                anchors.top: b2.top ; anchors.topMargin: 0.5 ; visible: b2.visible
+                anchors.left: b2.left ; anchors.leftMargin: -1
+                height: b2.height + 2.5 ; width: b2.width + 1.5 ; radius: b2.radius + 1
+                color: "#e0e0e0"
+            }
+            Rectangle {
+                id: b2
+                visible: button_number.checked
+                height: b1.height
+                width: b1.width
+                color: "white"
+                radius: b1.radius
                 anchors.bottom: parent.bottom
-                hoverEnabled: true
-                onEntered: { yes.font.pixelSize = 16 ; yes.font.bold = true }
-                onExited: { yes.font.pixelSize = 15 ; yes.font.bold = false }
+                anchors.bottomMargin: b1.anchors.bottomMargin
+                anchors.right: parent.right
+                anchors.rightMargin: b1.anchors.leftMargin
             }
             MouseArea {
                 id: right_button
                 visible: button_number.checked
-                anchors.top: top_border.bottom
-                anchors.left: center_border.right
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
+                anchors.fill: b2
                 hoverEnabled: true
-                onEntered: { no.font.pixelSize = 16 ; no.font.bold = true }
-                onExited: { no.font.pixelSize = 15 ; no.font.bold = false }
+                onEntered: { no.color = "#a0a0a0" }
+                onExited: { no.color = "black" }
                 onClicked: dialog_big.visible = false
                 Text {
                     id: no
@@ -540,23 +579,38 @@ Item {
                     font.styleName: "Regular"
                     width: 152
                     height: parent.height
-                    font.pixelSize: 15
+                    font.pixelSize: 16
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: "black"
                     text: qsTr("No")
+                    font.bold: true
                 }
+            }
+            Rectangle {
+                anchors.top: b3.top ; anchors.topMargin: -0.5 ; visible: b3.visible
+                anchors.left: b3.left ; anchors.leftMargin: -1
+                height: b3.height + 3.5 ; width: b3.width + 1.5 ; radius: b3.radius + 1
+                color: "#e0e0e0"
+            }
+            Rectangle {
+                id: b3
+                visible: !button_number.checked
+                height: 43
+                width: 280
+                color: "white"
+                radius: 8
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 20
+                anchors.horizontalCenter: parent.horizontalCenter
             }
             MouseArea {
                 id: center_button
                 visible: !button_number.checked
-                anchors.top: top_border.bottom
-                anchors.right: parent.right
-                anchors.left: parent.left
-                anchors.bottom: parent.bottom
+                anchors.fill: b3
                 hoverEnabled: true
-                onEntered: { ok.font.pixelSize = 16 ; ok.font.bold = true }
-                onExited: { ok.font.pixelSize = 15 ; ok.font.bold = false }
+                onEntered: { ok.color = "#a0a0a0" }
+                onExited: { ok.color = "black" }
                 Text {
                     id: ok
                     anchors.verticalCenter: parent.verticalCenter
@@ -565,11 +619,12 @@ Item {
                     font.styleName: "Regular"
                     width: 152
                     height: parent.height
-                    font.pixelSize: 15
+                    font.pixelSize: 16
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: "black"
                     text: qsTr("Ok")
+                    font.bold: true
                 }
             }
         }
@@ -582,11 +637,6 @@ Item {
         }
         Switch {
             id: f1_switch
-            visible: false
-            checked: false
-        }
-        Switch {
-            id: f2_switch
             visible: false
             checked: false
         }

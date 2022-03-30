@@ -10,10 +10,16 @@ Item {
 
     // Navigation Buttons -- Use Pin, Log in, Use fingerprint, Back button, Switch for Pin/Fingerprint
     Rectangle {
+        anchors.top: use_pin_button.top ; anchors.topMargin: -0.5 ; visible: use_pin_button.visible
+        anchors.left: use_pin_button.left ; anchors.leftMargin: -1
+        height: use_pin_button.height + 3.5 ; width: use_pin_button.width + 1.5 ; radius: use_pin_button.radius + 1
+        color: "#e0e0e0"
+    }
+    Rectangle {
         id: use_pin_button
         color: "#ffffff"
         radius: 8
-        border.width: 3
+        //border.width: 3
         width: 114
         height: 40
         anchors.bottom: parent.bottom
@@ -37,6 +43,12 @@ Item {
             anchors.fill: parent
             onClicked: switch1.checked = !switch1.checked
         }
+    }
+    Rectangle {
+        anchors.top: log_in_button.top ; anchors.topMargin: 0.5 ; visible: log_in_button.visible
+        anchors.left: log_in_button.left ; anchors.leftMargin: -1
+        height: log_in_button.height + 2.5 ; width: log_in_button.width + 1.5 ; radius: log_in_button.radius + 1
+        color: "#e0e0e0"
     }
     Rectangle {
         id: log_in_button
@@ -71,10 +83,16 @@ Item {
         }
     }
     Rectangle {
+        anchors.top: use_fingerprint_button.top ; anchors.topMargin: 0.5 ; visible: use_fingerprint_button.visible
+        anchors.left: use_fingerprint_button.left ; anchors.leftMargin: -1
+        height: use_fingerprint_button.height + 2.5 ; width: use_fingerprint_button.width + 1.5 ; radius: use_fingerprint_button.radius + 1
+        color: "#e0e0e0"
+    }
+    Rectangle {
         id: use_fingerprint_button
         color: "#ffffff"
         radius: 8
-        border.width: 3
+        //border.width: 3
         width: 156
         height: 40
         anchors.bottom: parent.bottom
@@ -187,19 +205,6 @@ Item {
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
         font.styleName: "Regular"
-
-        Rectangle {
-            id: username_box
-            height: 40
-            color: "#ffffff"
-            radius: 5
-            border.width: 1
-            anchors.left: parent.left
-            anchors.top: parent.bottom
-            anchors.right: parent.right
-            anchors.rightMargin: 60
-        }
-
         TextField {
             id: username
             height: username_box.height - 2
@@ -214,6 +219,20 @@ Item {
             leftPadding: 9
             rightPadding: 35
             placeholderText: qsTr("Reg No. / Username")
+            Rectangle {
+                anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
+            }
+        }
+        Rectangle {
+            id: username_box
+            height: 40
+            color: "transparent"
+            radius: 5
+            border.width: 1
+            anchors.left: parent.left
+            anchors.top: parent.bottom
+            anchors.right: parent.right
+            anchors.rightMargin: 60
         }
         Image {
             id:clearusername
@@ -247,21 +266,7 @@ Item {
         fontSizeMode: Text.Fit
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
-        font.styleName: "Regular"
-
-        Rectangle {
-            id: password_box
-            width: username_box.width
-            height: username_box.height
-            color: "#ffffff"
-            radius: 5
-            border.width: 1
-            anchors.left: parent.left
-            anchors.top: parent.bottom
-            anchors.topMargin: 0
-            anchors.leftMargin: 0
-            visible: use_fingerprint_button.visible
-        }
+        font.styleName: "Regular"        
         TextField {
             id: password
             echoMode: TextInput.Password
@@ -272,12 +277,27 @@ Item {
             anchors.right: password_box.right
             anchors.rightMargin: 1
             anchors.leftMargin: 1
-            baselineOffset: 15
             font.pointSize: 12
             topPadding: 7
             leftPadding: 9
             rightPadding: 35
             placeholderText: qsTr("Pin")
+            Rectangle {
+                anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
+            }
+        }
+        Rectangle {
+            id: password_box
+            width: username_box.width
+            height: username_box.height
+            color: "transparent"
+            radius: 5
+            border.width: 1
+            anchors.left: parent.left
+            anchors.top: parent.bottom
+            anchors.topMargin: 0
+            anchors.leftMargin: 0
+            visible: use_fingerprint_button.visible
         }
         Image {
             id:clearpin
@@ -342,6 +362,8 @@ Item {
             anchors.left: bad_picture2.right
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: center_border2.left
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
             font.family: "Verdana"
             font.styleName: "Regular"
             height: parent.height
