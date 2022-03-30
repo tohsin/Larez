@@ -24,6 +24,7 @@ class Backend(QObject):
         self.activity = ""
         self.recipient = ""
         self.recipientlog = ""
+        self.accname = ""
         self.amount = 0
 
     googlesheet = None
@@ -36,7 +37,7 @@ class Backend(QObject):
     #customersheet = {'3': '0000'}
     pageindex = {
         1: "P1Form.ui.qml", 2: "P2Form.ui.qml", 3: "P3Form.ui.qml",
-        'Purchase': 'Purchasemulti2.ui.qml', 'Transfer': 'Transfermulti.ui.qml',
+        'Purchase': 'Purchasemulti2.ui.qml', 'Transfer': 'Transfermulti2.ui.qml',
         'Register': 'Register.ui.qml'
         }
 
@@ -48,6 +49,9 @@ class Backend(QObject):
     4. Loggeduser: Emitted when user changes mode from purchase to transfer and vice versa. Transfers login detail across modes
     5. Accbalance: Communicates user's account balance when mode changes and displays it. Emitted with 'Loggeduser Signal' in No. 4
     6. Featuremode: Displays the current activity window. Emitted with 'Loggeduser Signal' in No. 4
+    7. Proceed: Gives go ahead to continue transaction
+    8. Totalexp: Used in purchase page to sum up total expense
+    9. Accountname: Used in feature pages (purchases & transfer) to identify customer and beneficiary's of transfers
     """
     incorrect = Signal(int)
     invalid = Signal(int) 
@@ -57,6 +61,7 @@ class Backend(QObject):
     featuremode = Signal(str)
     proceed = Signal(int)
     totalexp = Signal(float)
+    accountname = Signal(list)
 
     """
     Slots are used to communicate with Python from QML
@@ -65,24 +70,28 @@ class Backend(QObject):
     3. Superadminlogout: Called when a Super Admin is logged out.
     4. Adminuser: Runs during an Admin log in. See Description of 'Superuser Slot' in No. 2 for extra detail
     5. Adminlogout: Called when an Admin is logged out.
-    6. Studentuser: Runs during a User/Student log in. See Description of 'Superuser Slot' in No. 2 for extra detail
-    7. Userlogout: Called when a User/Student is logged out.
-    8. Registersuper: Called when Registering a Super Admin or Admin
-    9. Removesuper: Called when Removing a Super Admin or Admin
-    10. Feature: Called to assign the variable which tells the program what activity was chosen. Helps to Display and Load the correct page
-    11. Switchfeature: Called to emit Signals which display Activity window, Logged user's name, and Account balance. See 'Loggeduser Signal' in No. 4 of Signal List
-    12. Purchasefeature: Called to assign the variable which tells the program what amount was spent
-    13. Transferfeature: Called to assign the variables which tell the program what amount was transferred, the Recipient, and Recipient's means of identification
-    14. Registeruser: Called to assign the variables which tell the program Reg No., Password, and Fingerprint of New User
-    15. Transactiondone: Called after a Purchase or Transfer was attempted regardless if it was successful or not
+    6. Checksuper: Used when Removing/Registering to certify they exist/don't exist respectively
+    7. Registersuper: Called when Registering a Super Admin or Admin
+    8. Removesuper: Called when Removing a Super Admin or Admin
+    9. Studentuser: Runs during a User/Student log in. See Description of 'Superuser Slot' in No. 2 for extra detail
+    10. Userlogout: Called when a User/Student is logged out.
+    11. Feature: Called to assign the variable which tells the program what activity was chosen. Helps to Display and Load the correct page
+    12. Menubranch: Tells the code what page the menu branched out from
+    13. Switchfeature: Called to emit Signals which display Activity window, Logged user's name, and Account balance. See 'Loggeduser Signal' in No. 4 of Signal List
+    14. Purchaseamounts: Used to sum the multiple purchase values. Calls totalexp Signal
+    15. Purchasefeature: Called to assign the variable which tells the program what amount was spent
+    16. Transferrecipient: Checks if the beneficiary of a transaction exists
+    17. Transferfeature: Called to assign the variables which tell the program what amount was transferred, the Recipient, and Recipient's means of identification
+    18. Checkuser: Called when registering a new user to be sure reg no doesn't already exist
+    19. Registeruser: Called to assign the variables which tell the program Reg No., Password, and Fingerprint of New User
+    20. Transactiondone: Called after a Purchase or Transfer was attempted regardless if it was successful or not
     """
 
     @Slot()
     def closeapp(self):
         if self.report: print("The following transactions occurred in this session")
         for items in self.report: print(items)
-        
-    
+            
     @Slot(list)
     def superuser(self, s_user):
         #self.userdetails(s_user, 0) #ANSWER
@@ -137,14 +146,15 @@ class Backend(QObject):
     def registersuper(self, details):
         import csv
         # self.userdetails(details, 3) # ANSWER
-        information = details[:4]
+        information = details[:5]
         entry = details[0]
-        auth = details[1]
-        password = details[2]
-        fingerprint = details[3]
-        supername = details[4]
-        superpin = details[5]
-        superlog = details[6]
+        accname = details[1]
+        auth = details[2]
+        password = details[3]
+        fingerprint = details[4]
+        supername = details[5]
+        superpin = details[6]
+        superlog = details[7]
         #Super verify
         if self.supersheet['Name'].get(supername) == None:
             self.log('40-1', f"{entry} Unfound {supername}") if auth == 'Super Admin' else self.log('40-0', f"{entry} Unfound {supername}")
@@ -221,7 +231,8 @@ class Backend(QObject):
         if self.customersheet['Name'].get(self.student) == None: self.loaded('close'); self.incorrect.emit(1); self.log("1002", self.student)
         else:
             data = self.customersheet.loc[self.customersheet['Name'].get(self.student)]
-            self.availbal = data[2]
+            self.availbal = data.Amount
+            self.accname = data[1]
             if u_password == data.Pin:
                 self.loaded(self.pageindex[self.activity]); self.switchfeature()
                 self.log("1102", self.student) if self.studentlog == 'Pin' else self.log("1112", self.student)
@@ -243,7 +254,7 @@ class Backend(QObject):
 
     @Slot()
     def switchfeature(self):
-        self.loggeduser.emit(self.student)
+        self.loggeduser.emit(self.accname)
         self.featuremode.emit(self.activity)
         self.accbalance.emit(self.availbal)
         
@@ -256,11 +267,19 @@ class Backend(QObject):
                 tempnum = int(amount.strip())
                 if 0 < tempnum < 50: self.incorrect.emit(1) ; return
                 total += tempnum
-        else: self.totalexp.emit(round(total, 2))
+        else:
+            self.incorrect.emit(1) if round(total, 2) == 0 else self.totalexp.emit(round(total, 2))
 
     @Slot(float)
     def purchasefeature(self, amount):
         self.amount = amount
+
+    @Slot(list)
+    def transferrecipient(self, info): # info = [fingerpicture/username, code]
+        if self.customersheet['Name'].get(info[0]) == None: self.incorrect.emit(2)
+        else:
+            recipient = self.customersheet.loc[info[0]]['Account Name']
+            self.accountname.emit([recipient, info[1]])  # ; self.displayuser.emit(username)
 
     @Slot(list)
     def transferfeature(self, details): # details = [amount, fingerpicture/ username, "Fingerprint/ Typed"]
@@ -268,7 +287,7 @@ class Backend(QObject):
         self.recipient = details[1]
         self.recipientlog = details[2]
         
-        if self.customersheet['Name'].get(self.recipient) == None: self.loaded('close'); self.incorrect.emit(2)
+        # if self.customersheet['Name'].get(self.recipient) == None: self.loaded('close'); self.incorrect.emit(2)
         # ANSWER BELOW
         """self.amount = 0.0 if details[0] == '' else float(details[0])
         if self.recipientlog == "Fingerprint":
@@ -285,14 +304,12 @@ class Backend(QObject):
         else: self.proceed.emit(1)
             
     @Slot(list)
-    def registeruser(self, details):
+    def registeruser(self, details): # details = [reg no, acc name, password, fingerpicture]
         import csv
         # self.userdetails(details, 32) # ANSWER
         self.student = details[0]
-        password = details[1]
-        fingerprint = details[2]
-        details.insert(1, 'User')
-        details.insert(2, 0)
+        details.insert(2, 'User')
+        details.insert(3, 0)
         details.append(datetime.datetime.now().__str__()[:19])
 
         self.customersheet.loc[self.student] = details
@@ -311,10 +328,11 @@ class Backend(QObject):
    
     """
     Script Functions
-    1. Test_gspread: Retrieves Googlesheet from cloud
-    2. Loaded: Called to close Loading page after a process has completed
-    3. Log: Called after an activity has been executed successfully or failingly
+    1. Test_gspread: Retrieves Googlesheet from cloud and loads information into physical memory
+    2. Pdtolist: After removing a (super) admin, the function converts the dataframe to a list for writing to csv file
+    3. Loaded: Called to close Loading page after a process has completed
     4. Writeout: Executed activity is written to external log file. 'Log Function' calls 'Writout'
+    5. Log: Called after an activity has been executed successfully or failingly
     """
     
     def test_gspread(self):
@@ -328,7 +346,7 @@ class Backend(QObject):
         #print(self.googlesheet.get_entireTableUser())
         self.finishedprocess.emit(self.pageindex[1])
 
-        #Experimental
+        # Experimental
         spreadsheet = read_csv('admindummy.csv', dtype = str)
         spreadsheet.set_index(spreadsheet['Name'], inplace = True)
         self.supersheet = spreadsheet.loc[spreadsheet['Rank']=='Super Admin']
@@ -402,11 +420,6 @@ if __name__ == "__main__":
     engine = QQmlApplicationEngine()    
     back = Backend()
     engine.rootContext().setContextProperty("backend", back)
-    print('> ', end= '')
-    #engine.load('UI/Purchasemulti2.ui.qml')
-    #engine.load('UI/Dialog.ui.qml') # kind of done with thia
-    #engine.load('UI/Menu.ui.qml')
-    print("loaded")
     engine.load('UI/Home.ui.qml')
     back.test_gspread()
     engine.quit.connect(app.quit)
