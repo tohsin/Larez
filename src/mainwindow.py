@@ -29,16 +29,11 @@ class Backend(QObject):
 
     googlesheet = None
     report = []
-    #supersheet = {'100': '0000'}
-    #supersheet = {'': ''}
-    #adminsheet = {'200': '0000'}
-    #adminsheet = {'': '0000'}
-    #customersheet = {'': '0000'}
-    #customersheet = {'3': '0000'}
     pageindex = {
         1: "P1Form.ui.qml", 2: "P2Form.ui.qml", 3: "P3Form.ui.qml",
+        'supersetting': 'Superview.ui.qml', 'adminsetting': 'Adminview.ui.qml',
         'Purchase': 'Purchasemulti2.ui.qml', 'Transfer': 'Transfermulti2.ui.qml',
-        'Register': 'Register.ui.qml'
+        'Deposit': 'Deposit.ui.qml', 'Register': 'Register.ui.qml'
         }
 
     """
@@ -65,33 +60,27 @@ class Backend(QObject):
 
     """
     Slots are used to communicate with Python from QML
-    1. Closeapp: Runs when close button is clicked. It prints the activity log for that current session and closes the application
-    2. Superuser: Runs during a Super Admin log in. It passes the information entered and, at the end, emits appropriate Signal(s) based on the outcome of the login attempt
-    3. Superadminlogout: Called when a Super Admin is logged out.
-    4. Adminuser: Runs during an Admin log in. See Description of 'Superuser Slot' in No. 2 for extra detail
-    5. Adminlogout: Called when an Admin is logged out.
-    6. Checksuper: Used when Removing/Registering to certify they exist/don't exist respectively
-    7. Registersuper: Called when Registering a Super Admin or Admin
-    8. Removesuper: Called when Removing a Super Admin or Admin
-    9. Studentuser: Runs during a User/Student log in. See Description of 'Superuser Slot' in No. 2 for extra detail
-    10. Userlogout: Called when a User/Student is logged out.
-    11. Feature: Called to assign the variable which tells the program what activity was chosen. Helps to Display and Load the correct page
-    12. Menubranch: Tells the code what page the menu branched out from
-    13. Switchfeature: Called to emit Signals which display Activity window, Logged user's name, and Account balance. See 'Loggeduser Signal' in No. 4 of Signal List
-    14. Purchaseamounts: Used to sum the multiple purchase values. Calls totalexp Signal
-    15. Purchasefeature: Called to assign the variable which tells the program what amount was spent
-    16. Transferrecipient: Checks if the beneficiary of a transaction exists
-    17. Transferfeature: Called to assign the variables which tell the program what amount was transferred, the Recipient, and Recipient's means of identification
-    18. Checkuser: Called when registering a new user to be sure reg no doesn't already exist
-    19. Registeruser: Called to assign the variables which tell the program Reg No., Password, and Fingerprint of New User
-    20. Transactiondone: Called after a Purchase or Transfer was attempted regardless if it was successful or not
+    1. Superuser: Runs during a Super Admin log in. It passes the information entered and, at the end, emits appropriate Signal(s) based on the outcome of the login attempt
+    2. Superadminlogout: Called when a Super Admin is logged out.
+    3. Adminuser: Runs during an Admin log in. See Description of 'Superuser Slot' in No. 2 for extra detail
+    4. Adminlogout: Called when an Admin is logged out.
+    5. Checksuper: Used when Removing/Registering to certify they exist/don't exist respectively
+    6. Registersuper: Called when Registering a Super Admin or Admin
+    7. Removesuper: Called when Removing a Super Admin or Admin
+    8. Studentuser: Runs during a User/Student log in. See Description of 'Superuser Slot' in No. 2 for extra detail
+    9. Userlogout: Called when a User/Student is logged out.
+    10. Feature: Called to assign the variable which tells the program what activity was chosen. Helps to Display and Load the correct page
+    11. Menubranch: Tells the code what page the menu branched out from
+    12. Switchfeature: Called to emit Signals which display Activity window, Logged user's name, and Account balance. See 'Loggeduser Signal' in No. 4 of Signal List
+    13. Purchaseamounts: Used to sum the multiple purchase values. Calls totalexp Signal
+    14. Purchasefeature: Called to assign the variable which tells the program what amount was spent
+    15. Transferrecipient: Checks if the beneficiary of a transaction exists
+    16. Transferfeature: Called to assign the variables which tell the program what amount was transferred, the Recipient, and Recipient's means of identification
+    17. Checkuser: Called when registering a new user to be sure reg no doesn't already exist
+    18. Registeruser: Called to assign the variables which tell the program Reg No., Password, and Fingerprint of New User
+    19. Transactiondone: Called after a Purchase or Transfer was attempted regardless if it was successful or not
     """
 
-    @Slot()
-    def closeapp(self):
-        if self.report: print("The following transactions occurred in this session")
-        for items in self.report: print(items)
-            
     @Slot(list)
     def superuser(self, s_user):
         #self.userdetails(s_user, 0) #ANSWER
@@ -104,7 +93,7 @@ class Backend(QObject):
         else:
             data = self.supersheet.loc[self.supersheet['Name'].get(self.super)]
             if s_password == data.Pin:
-                self.loaded(self.pageindex[2])
+                self.loaded(self.pageindex[2]) if s_user[3] == 0 else self.loaded(self.pageindex['supersetting']); self.accountname.emit([data['Account Name'], data.Station])
                 self.log("1101", self.super) if self.superlog == 'Pin' else self.log("1111", self.super)
             else: self.loaded(self.pageindex[1]); self.incorrect.emit(1); self.log("1001", self.super)
 
@@ -125,7 +114,7 @@ class Backend(QObject):
         else:
             data = self.adminsheet.loc[self.adminsheet['Name'].get(self.admin)]
             if a_password == data.Pin:
-                self.loaded(self.pageindex[3])
+                self.loaded(self.pageindex[3]) if a_user[3] == 0 else self.loaded(self.pageindex['adminsetting']); self.accountname.emit([data['Account Name'], data.Station])
                 self.log("1100", self.admin) if self.adminlog == 'Pin' else self.log("1110", self.admin)
             else: self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1000", self.admin)
 
@@ -138,6 +127,7 @@ class Backend(QObject):
     def checksuper(self, details):
         entry = details[0]
         auth = details[1]
+        # Condition fails if name is found in corresponding adminlist
         if ((auth == 'Super Admin') & (self.supersheet['Name'].get(entry) != None)) | ((auth == 'Admin') & (self.adminsheet['Name'].get(entry) != None)):
             self.invalid.emit(1); self.log("40-1", entry) if auth == 'Super Admin' else self.log("40-0", entry)
         else: self.proceed.emit(2)
@@ -146,35 +136,41 @@ class Backend(QObject):
     def registersuper(self, details):
         import csv
         # self.userdetails(details, 3) # ANSWER
-        information = details[:5]
+        information = details[:6]
         entry = details[0]
         accname = details[1]
         auth = details[2]
-        password = details[3]
-        fingerprint = details[4]
-        supername = details[5]
-        superpin = details[6]
-        superlog = details[7]
-        #Super verify
-        if self.supersheet['Name'].get(supername) == None:
-            self.log('40-1', f"{entry} Unfound {supername}") if auth == 'Super Admin' else self.log('40-0', f"{entry} Unfound {supername}")
-            self.incorrect.emit(3); return
-        else:
-            data = self.supersheet.loc[self.supersheet['Name'].get(supername)]
-            if superpin != data.Pin:
-                self.log('40-1', f"{entry} Unverified {supername}") if auth == 'Super Admin' else self.log('40-0', f"{entry} Unverified {supername}")
+        station = details[3]
+        password = details[4]
+        fingerprint = details[5]
+        if details[-1] != "Verified": # Super Admin has not been verified already
+            supername = details[6]
+            superpin = details[7]
+            superlog = details[8]
+            #Super verify
+            if self.supersheet['Name'].get(supername) == None:
+                self.log('40-1', f"{entry} Unfound {supername}") if auth == 'Super Admin' else self.log('40-0', f"{entry} Unfound {supername}")
                 self.incorrect.emit(3); return
+            else:
+                data = self.supersheet.loc[self.supersheet['Name'].get(supername)]
+                if superpin != data.Pin:
+                    self.log('40-1', f"{entry} Unverified {supername}") if auth == 'Super Admin' else self.log('40-0', f"{entry} Unverified {supername}")
+                    self.incorrect.emit(3); return
         
         information.append(datetime.datetime.now().__str__()[:19])
 
         if auth == 'Super Admin': self.supersheet.loc[entry] = information
         else: self.adminsheet.loc[entry] = information
-        self.proceed.emit(1)
+
+        if details[-1] != "Verified": self.proceed.emit(1) # Run if super is not verified already
         with open ('admindummy.csv', 'a') as file:
             csv_writer = csv.writer(file)
             csv_writer.writerow(information)
         self.log("41-1", entry) if auth == 'Super Admin' else self.log("41-0", entry)
-        if (auth == 'Super Admin') & (self.adminsheet['Name'].get(entry) != None): self.log("41-1", f"{entry} by Super: {supername} - {superlog}")        
+        # Regular Admin registering as Super Admin
+        if (auth == 'Super Admin') & (self.adminsheet['Name'].get(entry) != None):
+            if details[-1] != "Verified": self.log("41-1", f"{entry} by Super: {supername} - {superlog}")
+            else: self.log("41-1", f"{entry} by Super: {self.super} - {self.superlog}")
     
     @Slot(list)
     def removesuper(self, details):
@@ -211,8 +207,8 @@ class Backend(QObject):
                 csv_writer.writerow(data)
                 
             self.proceed.emit(1)
-            formatted_list = self.pdtolist()
-            removerank = data[1]
+            formatted_list = self.pdtolist('Admins')
+            removerank = data[2]
             
             with open ('admindummy.csv', 'w') as file:
                 csv_writer = csv.writer(file)
@@ -250,6 +246,8 @@ class Backend(QObject):
 
     @Slot(int)
     def menubranch(self, stem):
+        if stem == 4: self.loaded(self.pageindex['supersetting']) ; return
+        elif stem == 5: self.loaded(self.pageindex['adminsetting']) ; return
         self.loaded(self.pageindex[stem])
 
     @Slot()
@@ -278,13 +276,13 @@ class Backend(QObject):
     def transferrecipient(self, info): # info = [fingerpicture/username, code]
         if self.customersheet['Name'].get(info[0]) == None: self.incorrect.emit(2)
         else:
-            recipient = self.customersheet.loc[info[0]]['Account Name']
+            recipient = self.customersheet.loc[info[0]]['Account Name']            
             self.accountname.emit([recipient, info[1]])  # ; self.displayuser.emit(username)
 
     @Slot(list)
     def transferfeature(self, details): # details = [amount, fingerpicture/ username, "Fingerprint/ Typed"]
         self.amount = 0.0 if details[0] == '' else float(details[0])
-        self.recipient = details[1]
+        self.recipient = details[1]        
         self.recipientlog = details[2]
         
         # if self.customersheet['Name'].get(self.recipient) == None: self.loaded('close'); self.incorrect.emit(2)
@@ -296,6 +294,42 @@ class Backend(QObject):
             else: self.loaded('close'); self.incorrect.emit(2)
         elif self.recipientlog == "Typed":
             if self.recipient not in self.customersheet: self.loaded('close'); self.incorrect.emit(2)"""
+
+    @Slot(list)
+    def deposit(self, details):
+        import csv
+        # Super/Admin verify
+        amount = float(details[0])
+        supername = details[1]
+        superpin = details[2]
+        superlog = details[3]
+        #Super verify
+        if self.supersheet['Name'].get(supername) != None: # Super Verified
+            data = self.supersheet.loc[self.supersheet['Name'].get(supername)]
+            auth = '1'
+            if superpin != data.Pin:
+                self.log(['7','0',auth,supername,f"Unverified {superlog}"], amount)
+                self.incorrect.emit(3); return
+        elif self.adminsheet['Name'].get(supername) != None: # Admin Verified
+            data = self.adminsheet.loc[self.adminsheet['Name'].get(supername)]
+            auth = '0'
+            if superpin != data.Pin:
+                self.log(['7','0',auth,supername,f"Unverified {superlog}"], amount)
+                self.incorrect.emit(3); return
+        else:
+            self.log(['7','0','3',supername,f"Unverified {superlog}"], amount)
+            self.incorrect.emit(3); return
+
+        self.availbal += round(amount, 2)
+        self.customersheet.at[self.student, 'Amount'] = self.availbal
+        self.proceed.emit(1)
+        formatted_list = self.pdtolist('Users')
+
+        with open ('userdummy.csv', 'w') as file:
+            csv_writer = csv.writer(file)
+            csv_writer.writerows(formatted_list)
+        self.log(['7','1',auth,supername,superlog], amount)
+        # Inserts code to add amount
 
     @Slot(str)
     def checkuser(self, name):
@@ -320,19 +354,34 @@ class Backend(QObject):
 
     @Slot(int)
     def transactiondone(self, code):
-        if code == 0:
-            self.log("2112", self.student) if self.studentlog == "Fingerprint" else self.log("2102", self.student)            
-        elif code == 1:
+        import csv
+        self.availbal = self.customersheet.loc[self.student]['Amount']
+        self.availbal -= round(self.amount, 2)
+        self.customersheet.at[self.student, 'Amount'] = self.availbal
+
+        if code == 0: # Purchase
+            self.log("2112", self.student) if self.studentlog == "Fingerprint" else self.log("2102", self.student)
+        elif code == 1: # Transfer
             self.log("3112", self.student) if self.studentlog == "Fingerprint" else self.log("3102", self.student)
+            recipientbal = self.customersheet.loc[self.recipient]['Amount']
+            recipientbal += round(self.amount, 2)
+            self.customersheet.at[self.recipient, 'Amount'] = recipientbal
+
         # self.googlesheet('users')[self.student].writedata['amount'] = self.availbal - self.amount #For deducting from account
+        formatted_list = self.pdtolist('Users')
+
+        with open ('userdummy.csv', 'w') as file:
+            csv_writer = csv.writer(file)
+            csv_writer.writerows(formatted_list)
    
     """
     Script Functions
     1. Test_gspread: Retrieves Googlesheet from cloud and loads information into physical memory
-    2. Pdtolist: After removing a (super) admin, the function converts the dataframe to a list for writing to csv file
+    2. Pdtolist: After removing a (super) admin Or after a transaction, the function converts the dataframe to a list for writing to csv file
     3. Loaded: Called to close Loading page after a process has completed
     4. Writeout: Executed activity is written to external log file. 'Log Function' calls 'Writout'
     5. Log: Called after an activity has been executed successfully or failingly
+    6. Closeapp: Runs when close button is clicked. It prints the activity log for that current session and closes the application
     """
     
     def test_gspread(self):
@@ -341,9 +390,9 @@ class Backend(QObject):
         a function for loading the sheet to a panda file, it's in gspread documentation
         """
         from pandas import read_csv 
-        self.googlesheet = Sheet()
+        '''self.googlesheet = Sheet()
         if self.googlesheet: print(f'Loaded: {len(self.googlesheet.table)-1} entries')
-        #print(self.googlesheet.get_entireTableUser())
+        #print(self.googlesheet.get_entireTableUser())'''
         self.finishedprocess.emit(self.pageindex[1])
 
         # Experimental
@@ -371,12 +420,18 @@ class Backend(QObject):
             deleteddf.loc[index] = [data.Name, data.Rank, data.Pin, data.Fingerprint]
             df.drop(index, inplace = True)
         """
-    def pdtolist(self):
-        superlist = [list(self.supersheet.iloc[i]) for i in range(len(self.supersheet))]
-        adminlist = [list(self.adminsheet.iloc[i]) for i in range(len(self.adminsheet))]
-        superlist.insert(0, list(self.supersheet.columns))
-        finallist = superlist + adminlist
-        return finallist
+    def pdtolist(self, instruction):
+        if instruction == 'Admins':
+            superlist = [list(self.supersheet.iloc[i]) for i in range(len(self.supersheet))]
+            adminlist = [list(self.adminsheet.iloc[i]) for i in range(len(self.adminsheet))]
+            superlist.insert(0, list(self.supersheet.columns))
+            finallist = superlist + adminlist
+            return finallist
+        elif instruction == 'Users':
+            userlist = [list(self.customersheet.iloc[i]) for i in range(len(self.customersheet))]
+            userlist.insert(0, list(self.customersheet.columns))
+            return userlist
+
         
     def loaded(self, code):
         ''' Called after process has finished'''
@@ -390,7 +445,7 @@ class Backend(QObject):
     def log(self, code, name):
         passkey = {'1': 'Success', '0': 'Fail'}
         biokey = {'1': 'Biometric', '0': 'Pin'}
-        userkey = {'1': 'Super Admin', '0': 'Admin', '2': 'User'}
+        userkey = {'1': 'Super Admin', '0': 'Admin', '2': 'User', '3': 'Unfound'}
         if code[0] == '1':
             message = f"Login {passkey[code[1]]}: {userkey[code[3]]} {name} used {biokey[code[2]]} by {datetime.datetime.now().__str__()[:19]}\n"
         elif code[0] == '2':
@@ -403,8 +458,14 @@ class Backend(QObject):
             message = f"Logout {passkey[code[1]]}: {userkey[code[3]]} {name} by {datetime.datetime.now().__str__()[:19]}\n"
         elif code[0] == '6':
             message = f"Removal {passkey[code[1]]}: {code[2]} {name} removed by Super Admin {code[3]} with {code[4]} at {datetime.datetime.now().__str__()[:19]}\n"
+        elif code[0] == '7':
+            message = f"Deposit {passkey[code[1]]}: {self.student} deposited {name} confirmed by {userkey[code[2]]} {code[3]} with {code[4]} at {datetime.datetime.now().__str__()[:19]}\n"
         self.writeout(message)
         self.report.append(message)
+
+    def closeapp(self):
+        if self.report: print("The following transactions occurred in this session")
+        for items in self.report: print(items)
         
     def reset_variables(self):
         ''' Called after a log has been printed'''
@@ -420,9 +481,15 @@ if __name__ == "__main__":
     engine = QQmlApplicationEngine()    
     back = Backend()
     engine.rootContext().setContextProperty("backend", back)
+    print('> ', end= '')
+    #engine.load('UI/Deposit.ui.qml')
     engine.load('UI/Home.ui.qml')
+    print("loaded")
     back.test_gspread()
     engine.quit.connect(app.quit)
     #engine.load('UI/P3Form.ui.qml')
-    sys.exit(app.exec())
+    result = app.exec()
+    back.closeapp()
+    sys.exit(result)
+
 
