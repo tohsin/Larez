@@ -32,7 +32,7 @@ Item {
             duration: 2000
             to: 100
         }
-        ScriptAction {script: { writeoff() ; stack.replace('P3Form.ui.qml') } }
+        ScriptAction { script: { writeoff() ; stack.replace('P3Form.ui.qml') } }
     }
     // Small Dialog Display Timer
     SequentialAnimation {
@@ -61,7 +61,6 @@ Item {
         height: 40
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 120
-        anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         Text {
             width: 150
@@ -88,14 +87,14 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: 40
         anchors.top: parent.top
-        anchors.topMargin: 80
+        anchors.topMargin: 40
         source: '../images/menubutton.png'
         height: 25
         width: height + 2        
         MouseArea {
             id: menuarea
             anchors.fill: parent
-            onClicked: { background.visible = true ; menu.scale = 1 ; menuarea.visible = false }
+            onClicked: { background.visible = menu.visible = true ; menu.scale = 1 ; menuarea.visible = false }
         }
     }
 
@@ -105,30 +104,29 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: profilebox.bottom
-        anchors.topMargin: 15
+        anchors.topMargin: 25
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 180
         /*ScrollBar.vertical.interactive: true*/
         contentHeight: 300
         clip: true
-
         width: 200
         height: 200
 
         Text {
             id: amount
             anchors.top: parent.top
-            height: 41
+            height: 35
             anchors.left: parent.left
             anchors.leftMargin: 60
             anchors.right: parent.right
             text: qsTr("Amount")
-            font.pixelSize: 20
+            font.pixelSize: 18
             verticalAlignment: Text.AlignVCenter
-            fontSizeMode: Text.Fit
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
+            font.bold: true
             TextField {
                 id: enter_amount
                 height: amount_box.height - 2
@@ -140,7 +138,7 @@ Item {
                 baselineOffset: 15
                 font.pointSize: 12
                 topPadding: 7
-                leftPadding: 9
+                //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Enter Amount")
                 validator: IntValidator {
@@ -157,11 +155,19 @@ Item {
                 height: 40
                 color: "transparent"
                 radius: 5
-                border.width: 1
+                //border.width: 1
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
                 anchors.rightMargin: 60
+                Rectangle {
+                    color: "black"
+                    height: 1.5
+                    anchors.left: parent.left
+                    anchors.top: parent.bottom
+                    anchors.topMargin: 1
+                    anchors.right: parent.right
+                }
             }
             Image {
                 id: clearamount
@@ -235,9 +241,9 @@ Item {
             anchors.leftMargin: 60
             anchors.right: parent.right
             text: qsTr("Amount")
-            font.pixelSize: 20
+            font.pixelSize:18
             verticalAlignment: Text.AlignVCenter
-            fontSizeMode: Text.Fit
+            font.bold: true
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
@@ -252,7 +258,7 @@ Item {
                 baselineOffset: 15
                 font.pointSize: 12
                 topPadding: 7
-                leftPadding: 9
+                //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Enter Amount 2")
                 validator: IntValidator {
@@ -269,11 +275,19 @@ Item {
                 height: 40
                 color: "transparent"
                 radius: 5
-                border.width: 1
+                //border.width: 1
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
                 anchors.rightMargin: 60
+                Rectangle {
+                    color: "black"
+                    height: 1.5
+                    anchors.left: parent.left
+                    anchors.top: parent.bottom
+                    anchors.topMargin: 1
+                    anchors.right: parent.right
+                }
             }
             Image {
                 id: clearamount2
@@ -382,18 +396,18 @@ Item {
             id: amount3
             visible: multi_switch3.checked
             anchors.top: amount2.bottom
-            anchors.topMargin: 70
-            height: 41
+            anchors.topMargin: 75
+            height: 35
             anchors.left: parent.left
             anchors.leftMargin: 60
             anchors.right: parent.right
             text: qsTr("Amount")
-            font.pixelSize: 20
+            font.pixelSize: 18
             verticalAlignment: Text.AlignVCenter
-            fontSizeMode: Text.Fit
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
-            font.styleName: "Regular"           
+            font.styleName: "Regular"
+            font.bold: true
             TextField {
                 id: enter_amount3
                 height: amount_box3.height - 2
@@ -405,7 +419,7 @@ Item {
                 baselineOffset: 15
                 font.pointSize: 12
                 topPadding: 7
-                leftPadding: 9
+                //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Enter Amount 3")
                 validator: IntValidator {
@@ -422,11 +436,19 @@ Item {
                 height: 40
                 color: "transparent"
                 radius: 5
-                border.width: 1
+                //border.width: 1
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
                 anchors.rightMargin: 60
+                Rectangle {
+                    color: "black"
+                    height: 1.5
+                    anchors.left: parent.left
+                    anchors.top: parent.bottom
+                    anchors.topMargin: 1
+                    anchors.right: parent.right
+                }
             }
             Image {
                 id: clearamount3
@@ -534,18 +556,18 @@ Item {
             id: amount4
             visible: multi_switch4.checked
             anchors.top: amount3.bottom
-            anchors.topMargin: 70
-            height: 41
+            anchors.topMargin: 75
+            height: 35
             anchors.left: parent.left
             anchors.leftMargin: 60
             anchors.right: parent.right
             text: qsTr("Amount")
-            font.pixelSize: 20
+            font.pixelSize: 18
             verticalAlignment: Text.AlignVCenter
-            fontSizeMode: Text.Fit
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
+            font.bold: true
             TextField {
                 id: enter_amount4
                 height: amount_box4.height - 2
@@ -557,7 +579,7 @@ Item {
                 baselineOffset: 15
                 font.pointSize: 12
                 topPadding: 7
-                leftPadding: 9
+                //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Enter Amount 4")
                 validator: IntValidator {
@@ -574,11 +596,19 @@ Item {
                 height: 40
                 color: "transparent"
                 radius: 5
-                border.width: 1
+                //border.width: 1
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
                 anchors.rightMargin: 60
+                Rectangle {
+                    color: "black"
+                    height: 1.5
+                    anchors.left: parent.left
+                    anchors.top: parent.bottom
+                    anchors.topMargin: 1
+                    anchors.right: parent.right
+                }
             }
             Image {
                 id: clearamount4
@@ -681,18 +711,18 @@ Item {
             id: amount5
             visible: multi_switch5.checked
             anchors.top: amount4.bottom
-            anchors.topMargin: 70
-            height: 41
+            anchors.topMargin: 75
+            height: 35
             anchors.left: parent.left
             anchors.leftMargin: 60
             anchors.right: parent.right
             text: qsTr("Amount")
-            font.pixelSize: 20
+            font.pixelSize: 18
             verticalAlignment: Text.AlignVCenter
-            fontSizeMode: Text.Fit
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
+            font.bold: true
             TextField {
                 id: enter_amount5
                 height: amount_box5.height - 2
@@ -704,7 +734,7 @@ Item {
                 baselineOffset: 15
                 font.pointSize: 12
                 topPadding: 7
-                leftPadding: 9
+                //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Enter Amount 5")
                 validator: IntValidator {
@@ -721,11 +751,19 @@ Item {
                 height: 40
                 color: "transparent"
                 radius: 5
-                border.width: 1
+                //border.width: 1
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
                 anchors.rightMargin: 60
+                Rectangle {
+                    color: "black"
+                    height: 1.5
+                    anchors.left: parent.left
+                    anchors.top: parent.bottom
+                    anchors.topMargin: 1
+                    anchors.right: parent.right
+                }
             }
             Image {
                 id: clearamount5
@@ -773,6 +811,7 @@ Item {
 
     // Dialog Box functions
     function displaydialog(functionnum) {
+        dialog_timer.running = false ; time.width = 10
         dialog_small.anchors.bottomMargin = 10
         dialog_timer.running = true
         // 1 InsufDialog
@@ -783,9 +822,9 @@ Item {
     function closebigdialog() { dialog_big.visible = false ; f1_switch.checked = f2_switch.checked = f3_switch.checked = false }
 
     function displaybigdialog(buttonnum, functionnum) {
-        if (buttonnum === 0) { dialog_big.visible = true ; button_number.checked = false ; good_picture.visible = true }
+        if (buttonnum === 0) { dialog_big.visible = true ; button_number.checked = false ; good_picture.visible = false ; box.radius = 5 }
         if (buttonnum === 1) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = true }
-        if (buttonnum === 2) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = false }
+        if (buttonnum === 2) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = false ; box.radius = 10 }
 
         // 1 PurchaseDialog
         if (functionnum === 1) {
@@ -829,7 +868,7 @@ Item {
         function onTotalexp(num) {
             aTotal = num
             if (aTotal > aNum) { displaydialog(1)
-            } else { displaybigdialog(1,1) }
+            } else { displaybigdialog(2,1) }
         }
     }
 
@@ -841,9 +880,9 @@ Item {
         width: 150
         height: 20
         text: qsTr(" Window")
-        font.pixelSize: 22
+        font.pixelSize: 20
         anchors.top: parent.top
-        anchors.topMargin: 80
+        anchors.topMargin: 40
         font.family: "Verdana"
         font.styleName: "Regular"
         font.bold: true
@@ -851,13 +890,13 @@ Item {
     Rectangle {
         id: profilebox
         radius: height / 2
-        /*color: "transparent"*/
-        color: "#e1e1e0"
-        /*color: "black"*/
+        color: "transparent"
+        /*color: "#e1e1e0"
+        color: "black"*/
         width: 160
         height: 40
         anchors.top: parent.top
-        anchors.topMargin: 170
+        anchors.topMargin: 100
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.horizontalCenterOffset: -100
         Image {
@@ -892,8 +931,7 @@ Item {
         /*color: "black"*/
         width: 160
         height: 40
-        anchors.top: parent.top
-        anchors.topMargin: 170
+        anchors.top: profilebox.top
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.horizontalCenterOffset: -(profilebox.anchors.horizontalCenterOffset)
         Image {
@@ -924,11 +962,11 @@ Item {
     Component.onCompleted: {
         image.scale = 0.6
         image.anchors.horizontalCenterOffset = 180
-        image.anchors.topMargin = 20
+        image.anchors.topMargin = -25
     }
     function revert() {
         image.scale = 1
-        image.anchors.horizontalCenterOffset = 0
+        image.anchors.horizontalCenterOffset = image.anchors.topMargin = 0
     }
 
     // Menu Bar Component contd -- Background
@@ -940,7 +978,7 @@ Item {
         visible: false
         MouseArea {
             anchors.fill: parent
-            onClicked: { menu.scale = 0 ; background.visible = false ; menuarea.visible = true }
+            onClicked: { menu.scale = 0 ; background.visible = menu.visible = false ; menuarea.visible = true }
         }
     }
 
@@ -948,11 +986,12 @@ Item {
     Rectangle {
         id: menu
         color: "#f8f8f8"
+        visible: false
         anchors.left: menubar.left
         anchors.top: menubar.bottom
         anchors.topMargin: 10
         width: 250
-        height: menu.radius + first_menu.height + second_menu.height + third_menu.height + menu.radius
+        height: menu.radius + first_menu.height + second_menu.height + third_menu.height + fourth_menu.height + menu.radius
         radius: 5
         scale: 0
         transformOrigin: Item.TopLeft
@@ -999,7 +1038,7 @@ Item {
             height: menu.radius * 2
             width: first_menu.width
             anchors.bottom: menu.bottom
-            color: third_menu.color
+            color: fourth_menu.color
         }
         Rectangle {
             id: second_menu
@@ -1013,12 +1052,39 @@ Item {
                 hoverEnabled: true
                 onEntered: second_menu.color = "#e8e8e8"
                 onExited: second_menu.color = menu.color
+                onClicked: { backend.feature("Deposit") ; stack.replace("Deposit.ui.qml") ; backend.switchfeature() }
+            }
+            Text {
+                id: deposit_menu
+                anchors.left: parent.left
+                anchors.verticalCenter: second_menu.verticalCenter
+                verticalAlignment: Text.AlignVCenter
+                height: 30
+                font.family: "Verdana"
+                width: parent.width
+                font.pixelSize: 14
+                text: qsTr("Switch to Deposit Mode")
+                leftPadding: logout.leftPadding
+            }
+        }
+        Rectangle {
+            id: third_menu
+            anchors.left: parent.left
+            anchors.top: second_menu.bottom
+            anchors.right: parent.right
+            height: 35
+            color: menu.color
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onEntered: third_menu.color = "#e8e8e8"
+                onExited: third_menu.color = menu.color
                 onClicked: { backend.feature("Transfer") ; stack.replace("Transfermulti2.ui.qml") ; backend.switchfeature() }
             }
             Text {
                 id: transfer_menu
                 anchors.left: parent.left
-                anchors.verticalCenter: second_menu.verticalCenter
+                anchors.verticalCenter: third_menu.verticalCenter
                 verticalAlignment: Text.AlignVCenter
                 height: 30
                 font.family: "Verdana"
@@ -1029,22 +1095,22 @@ Item {
             }
         }
         Rectangle {
-            id: third_menu
+            id: fourth_menu
             anchors.left: parent.left
-            anchors.top: second_menu.bottom
+            anchors.top: third_menu.bottom
             anchors.right: parent.right
             height: first_menu.height
             color: menu.color
             MouseArea {
                 anchors.fill: parent
                 hoverEnabled: true
-                onEntered: third_menu.color = "#e8e8e8"
-                onExited: third_menu.color = menu.color
+                onEntered: fourth_menu.color = "#e8e8e8"
+                onExited: fourth_menu.color = menu.color
                 onClicked: displaybigdialog(2,3)
             }
             Text {
                 id: register_menu
-                anchors.verticalCenter: third_menu.verticalCenter
+                anchors.verticalCenter: fourth_menu.verticalCenter
                 anchors.left: parent.left
                 verticalAlignment: Text.AlignVCenter
                 height: 30
@@ -1118,7 +1184,7 @@ Item {
             anchors.right: parent.right
             anchors.left: center_border2.right
             height: parent.height
-            onClicked: dialog_small.anchors.bottomMargin = -100
+            onClicked: { dialog_small.anchors.bottomMargin = -100 ; time.width = 10 }
             Text {
                 id: ok2
                 anchors.verticalCenter: parent.verticalCenter
@@ -1159,6 +1225,32 @@ Item {
             width: 400
             height: 200
             radius: 10
+            /*Rectangle {
+                id: greenslip_horizontal
+                anchors.top: box.top ; height: box.radius * 2; width: box.width
+                anchors.left: box.left; radius: height/2 ; color: "darkgreen"
+            }
+            Rectangle {
+                anchors.horizontalCenter: greenslip.horizontalCenter ; anchors.bottom: greenslip.bottom; anchors.bottomMargin: -1
+                height: greenslip.radius ; width: greenslip.width ; color: "white"
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: greenslip.visible = !greenslip.visible
+                }
+            }
+            Rectangle {
+                id: greenslip_vertical
+                anchors.top: box.top ; height: box.height ; width: box.radius * 2
+                anchors.left: box.left; radius: box.radius ; color: "darkgreen"
+            }
+            Rectangle {
+                anchors.top: greenslip.top ; anchors.bottom: greenslip.bottom; anchors.right: greenslip.right
+                anchors.rightMargin: -1 ; width: greenslip.radius ; color: "white"
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: greenslip.visible = !greenslip.visible
+                }
+            }*/
             Text {
                 id: header
                 anchors.top: parent.top
@@ -1250,7 +1342,7 @@ Item {
                 hoverEnabled: true
                 onEntered: { b1.color = "#a0a0a0" }
                 onExited: { b1.color = "black" }
-                onClicked: { stack.push('Success.ui.qml') ; click.running = true ; revert() }
+                onClicked: { revert() ; stack.push('Success.ui.qml') ; click.running = true }
             }
             MouseArea {
                 id: left_f2
@@ -1259,7 +1351,7 @@ Item {
                 hoverEnabled: true
                 onEntered: { b1.color = "#a0a0a0" }
                 onExited: { b1.color = "black" }
-                onClicked: { backend.userlogout() ; stack.pop() ; stack.pop() ; revert() }
+                onClicked: { revert() ; backend.userlogout() ; stack.pop() ; stack.pop() }
             }
             MouseArea {
                 id: left_f3

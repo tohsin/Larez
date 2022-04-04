@@ -3,8 +3,9 @@ import QtQuick.Controls 6.2
 
 Item {
     id: window
-    property var code: ""
-    property var correctpage: ""
+    property string code: ""
+    property string correctpage: ""
+    property int stationpicked: 0
     Rectangle {
         id: time ; width: 10 ; height: 10 ; visible: false
     }
@@ -20,7 +21,7 @@ Item {
             anchors.left: parent.left
             anchors.leftMargin: 35
             anchors.top: parent.top
-            anchors.topMargin: 87
+            anchors.topMargin: 40
             width: 30
             height: 30
             source: "../images/back.jpg"
@@ -28,63 +29,65 @@ Item {
             sourceSize.height: 100
             MouseArea {
                 anchors.fill: parent
-                onClicked: { page_loader.source = correctpage ; revert() }
+                onClicked: { revert() ; page_loader.source = correctpage }
             }
         }
 
         // Registration Field -- Fingerprint, "Place finger to scan" Information
         Image {
             id: fingerprint
-            y: 550
+            opacity: 0
+            y: 570
             width: 140
             height: 140
             visible: admin_box.checked | super_box.checked
             source: "../images/whitefinger.jpg"
             anchors.horizontalCenter: parent.horizontalCenter
             fillMode: Image.PreserveAspectFit
+            Behavior on opacity { PropertyAnimation { duration: 500 } }
             MouseArea {
                 id: regfinger
                 anchors.fill: parent
-                onClicked: {
+                onClicked: {                    
                     if (super_box.checked === true) { code = "Super Admin"
                     } else { code = "Admin" }
-                    backend.checksuper([regno_field.text, code])
+
+                    if (stationpicked === 0) { displaydialog(4) }
+                    else { backend.checksuper([regno_field.text, code]) }
                 }
             }
         }
         Text {
             id: place_finger
+            opacity: fingerprint.opacity
             x: 297
             width: 262
             height: 50
             visible: fingerprint.visible
             text: qsTr("Place Finger on Scanner to Register Fingerprint")
             anchors.top: fingerprint.bottom
-            font.pixelSize: 20
+            font.pixelSize: 18
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignTop
-            font.italic: true
-            anchors.topMargin: 10
+            font.italic: true            
             anchors.horizontalCenter: fingerprint.horizontalCenter
         }
 
         // Registration Field contd -- Reg No Text box
         Text {
             id: regno
-            y: 160
+            anchors.top: parent.top ; anchors.topMargin: 120
             height: 41
             anchors.left: parent.left
             anchors.leftMargin: 60
             anchors.right: parent.right
             text: qsTr("Username")
-            font.pixelSize: 20
+            font.pixelSize: 19
             verticalAlignment: Text.AlignVCenter
-            wrapMode: Text.NoWrap
-            fontSizeMode: Text.Fit
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
-
+            font.bold: true
             TextField {
                 id: regno_field
                 height: regno_box.height - 2
@@ -96,7 +99,7 @@ Item {
                 baselineOffset: 15
                 font.pointSize: 12
                 topPadding: 7
-                leftPadding: 9
+                //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Username")
                 Rectangle {
@@ -108,11 +111,19 @@ Item {
                 height: 40
                 color: "transparent"
                 radius: 5
-                border.width: 1
+                //border.width: 1
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
                 anchors.rightMargin: 60
+                Rectangle {
+                    color: "black"
+                    height: 1.5
+                    anchors.left: parent.left
+                    anchors.top: parent.bottom
+                    anchors.topMargin: 1
+                    anchors.right: parent.right
+                }
             }
             Image {
                 id: clearregno
@@ -134,20 +145,18 @@ Item {
         // Registration Field contd -- Account Name Text box
         Text {
             id: accname
-            y: 300
+            anchors.top: parent.top ; anchors.topMargin: 240
             height: 41
             anchors.left: parent.left
             anchors.leftMargin: 60
             anchors.right: parent.right
             text: qsTr("Account Name")
-            font.pixelSize: 20
+            font.pixelSize: 19
             verticalAlignment: Text.AlignVCenter
-            wrapMode: Text.NoWrap
-            fontSizeMode: Text.Fit
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
-
+            font.bold: true
             TextField {
                 id: accname_field
                 height: accname_box.height - 2
@@ -159,7 +168,7 @@ Item {
                 baselineOffset: 15
                 font.pointSize: 12
                 topPadding: 7
-                leftPadding: 9
+                //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Account Name")
                 Rectangle {
@@ -171,11 +180,19 @@ Item {
                 height: 40
                 color: "transparent"
                 radius: 5
-                border.width: 1
+                //border.width: 1
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
                 anchors.rightMargin: 60
+                Rectangle {
+                    color: "black"
+                    height: 1.5
+                    anchors.left: parent.left
+                    anchors.top: parent.bottom
+                    anchors.topMargin: 1
+                    anchors.right: parent.right
+                }
             }
             Image {
                 id: clearaccname
@@ -194,6 +211,54 @@ Item {
                 }
             }
         }
+        // Registration Field contd -- Station
+        Text {
+            id: stationpicker
+            anchors.top: parent.top ; anchors.topMargin: 360
+            height: 41
+            anchors.left: parent.left
+            anchors.leftMargin: 60
+            anchors.right: parent.right
+            text: qsTr("Station")
+            font.pixelSize: 19
+            verticalAlignment: Text.AlignVCenter
+            font.capitalization: Font.AllUppercase
+            font.family: "Verdana"
+            font.styleName: "Regular"
+            font.bold: true
+            MouseArea {
+                anchors.fill: parent
+                onClicked: { background.visible = menu.visible = true ; menu.scale = 1 }
+            }
+            Text {
+                id: stationname
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left
+                anchors.leftMargin: 120
+                height: 41
+                font.pixelSize: 14
+                verticalAlignment: Text.AlignVCenter
+                text: qsTr("<i>Click to select station</i>")
+                font.family: "Verdana"
+                font.styleName: "Regular"
+            }
+            Image {
+                id: clearstation
+                height: 14
+                width: height
+                anchors.verticalCenter: stationname.verticalCenter
+                anchors.right: parent.right
+                anchors.rightMargin: 10 + 60
+                source: "../images/closebutton.png"
+                sourceSize.width: 20
+                sourceSize.height: 20
+                MouseArea {
+                    id: clstat
+                    anchors.fill: parent
+                    onClicked: { stationname.text = qsTr("<i>Click to select station</i>") ; stationpicked = 0 ; stationname.font.pixelSize = 14  }
+                }
+            }
+        }
         // Registration Field contd -- Pin Text box
         Text {
             id: pin
@@ -202,13 +267,12 @@ Item {
             width: 152
             height: 41
             text: qsTr("Pin")
-            font.pixelSize: 20
+            font.pixelSize: 19
             verticalAlignment: Text.AlignVCenter
-            fontSizeMode: Text.Fit
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
-
+            font.bold: true
             TextField {
                 id: password
                 echoMode: TextInput.Password
@@ -221,7 +285,7 @@ Item {
                 baselineOffset: 15
                 font.pointSize: 12
                 topPadding: 7
-                leftPadding: 9
+                //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Pin")
                 Rectangle {
@@ -234,11 +298,17 @@ Item {
                 height: regno_box.height
                 color: "transparent"
                 radius: 5
-                border.width: 1
+                //border.width: 1
                 anchors.left: parent.left
                 anchors.top: parent.bottom
-                anchors.topMargin: 0
-                anchors.leftMargin: 0
+                Rectangle {
+                    color: "black"
+                    height: 1.5
+                    anchors.left: parent.left
+                    anchors.top: parent.bottom
+                    anchors.topMargin: 1
+                    anchors.right: parent.right
+                }
             }
             Image {
                 id: clearpin
@@ -277,6 +347,7 @@ Item {
                 onCheckedChanged: {
                     if ( regno_field.text === "" | password.text === "" ) { displaydialog(2) }
                     if (super_box.checked === true & admin_box.checked === true) { admin_box.checked = false }
+                    if (super_box.checked === true) { fingerprint.opacity = 1 } else { fingerprint.opacity = 0 }
                 }
             }
 
@@ -305,6 +376,7 @@ Item {
                 onCheckedChanged: {
                     if ( regno_field.text === "" | password.text === "" ) { displaydialog(2) }
                     if (admin_box.checked === true & super_box.checked === true) { super_box.checked = false }
+                    if (admin_box.checked === true) { fingerprint.opacity = 1 } else { fingerprint.opacity = 0 }
                 }
             }
 
@@ -334,7 +406,7 @@ Item {
             text: qsTr("Admin Registration")
             font.pixelSize: 20
             anchors.top: parent.top
-            anchors.topMargin: 87
+            anchors.topMargin: 40
             font.family: "Verdana"
             font.styleName: "Regular"
             font.bold: true
@@ -357,7 +429,6 @@ Item {
                 height: 150
                 anchors.top: parent.top
                 source: "../images/culogo.jpg"
-                anchors.topMargin: 40
                 anchors.horizontalCenter: parent.horizontalCenter
                 fillMode: Image.PreserveAspectFit
             }
@@ -367,7 +438,7 @@ Item {
                 anchors.left: parent.left
                 anchors.leftMargin: 35
                 anchors.top: parent.top
-                anchors.topMargin: 87
+                anchors.topMargin: 40
                 width: 30
                 height: 30
                 source: "../images/back.jpg"
@@ -375,7 +446,7 @@ Item {
                 sourceSize.height: 100
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: { verwindow.visible = false ; regfinger.visible = true ; username1.text = '' ; password1.text = '' }
+                    onClicked: { verwindow.visible = false ; regfinger.visible = true ; username1.text = '' ; password1.text = '' ; fingerprint1.opacity = 0 }
                 }
             }
             // Navigation contd
@@ -392,8 +463,8 @@ Item {
                 height: 40
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 120
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.horizontalCenterOffset: 100
+                anchors.right: parent.right
+                anchors.rightMargin: 60
                 color: "black"
                 radius: 8
                 Text {
@@ -412,7 +483,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        backend.registersuper([regno_field.text, accname_field.text, code, password.text, password.text, username1.text, password1.text , "Pin"])
+                        backend.registersuper([regno_field.text, accname_field.text, code, stationname.text, password.text, password.text, username1.text, password1.text , "Pin"])
                     }
                 }
             }
@@ -433,7 +504,6 @@ Item {
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 120
                 visible: !switch1.checked
-                anchors.horizontalCenterOffset: 0
                 anchors.horizontalCenter: parent.horizontalCenter
                 Text {
                     width: 150
@@ -449,7 +519,7 @@ Item {
                 }
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: switch1.checked = !switch1.checked
+                    onClicked: { switch1.checked = !switch1.checked ; fingerprint1.opacity = 0 }
                 }
             }
             // Navigation contd
@@ -469,8 +539,8 @@ Item {
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 120
                 visible: switch1.checked
-                anchors.horizontalCenterOffset: -100
-                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.left: parent.left
+                anchors.leftMargin: 60
                 Text {
                     width: 160
                     height: 40
@@ -485,7 +555,7 @@ Item {
                 }
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: switch1.checked = !switch1.checked
+                    onClicked: { switch1.checked = !switch1.checked ; fingerprint1.opacity = 1 }
                 }
             }
             // Navigation contd
@@ -500,31 +570,32 @@ Item {
             id: biometric1
             visible: !switch1.checked
             x: 60
-            y: 245
+            y: 210
             width: 152
             height: 41
             text: qsTr("Super Admin")
-            font.pixelSize: 20
+            font.pixelSize: 19
             verticalAlignment: Text.AlignVCenter
-            wrapMode: Text.NoWrap
-            fontSizeMode: Text.Fit
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
+            font.bold: true
         }
         Image {
             id: fingerprint1
             visible: !switch1.checked
-            y: 360
+            opacity: 0
+            y: 300
             width: 150
             height: 150
             source: "../images/whitefinger.jpg"
             anchors.horizontalCenter: parent.horizontalCenter
             fillMode: Image.PreserveAspectFit
+            Behavior on opacity { PropertyAnimation { duration: 500 } }
             MouseArea {
                 anchors.fill: parent;
                 onClicked: {
-                    backend.registersuper([regno_field.text, accname_field.text, code, password.text, password.text, '', '' , "Fingerprint"])
+                    backend.registersuper([regno_field.text, accname_field.text, code, stationname.text, password.text, password.text, '', '' , "Fingerprint"])
                 }
             }
         }
@@ -536,11 +607,11 @@ Item {
             height: 50
             text: qsTr("Place Finger on Scanner")
             anchors.top: fingerprint1.bottom
-            font.pixelSize: 20
+            anchors.topMargin: 10
+            font.pixelSize: 18
             font.italic: true
             horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignTop
-            anchors.topMargin: 10
+            verticalAlignment: Text.AlignTop            
             anchors.horizontalCenter: fingerprint1.horizontalCenter
         }
 
@@ -548,19 +619,18 @@ Item {
         Text {
             id: superadmin1
             visible: switch1.checked
-            y: 245
+            y: 210
             height: 41
             anchors.left: parent.left
             anchors.leftMargin: 60
             anchors.right: parent.right
             text: qsTr("Super Admin")
-            font.pixelSize: 20
+            font.pixelSize: 19
             verticalAlignment: Text.AlignVCenter
-            fontSizeMode: Text.Fit
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
-
+            font.bold: true
             TextField {
                 id: username1
                 width: username_box1.width
@@ -568,7 +638,7 @@ Item {
                 placeholderText: qsTr("Username")
                 font.pixelSize: 16
                 topPadding: 7
-                leftPadding: 9
+                //leftPadding: 9
                 rightPadding: 35
                 anchors.verticalCenter: username_box1.verticalCenter
                 anchors.left: username_box1.left
@@ -584,11 +654,19 @@ Item {
                 height: 40
                 color: "transparent"
                 radius: 5
-                border.width: 1
+                //border.width: 1
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
                 anchors.rightMargin: 60
+                Rectangle {
+                    color: "black"
+                    height: 1.5
+                    anchors.left: parent.left
+                    anchors.top: parent.bottom
+                    anchors.topMargin: 1
+                    anchors.right: parent.right
+                }
             }
             Image {
                 id: clearusername1
@@ -615,14 +693,12 @@ Item {
             width: 152
             height: 41
             text: qsTr("Pin")
-            font.pixelSize: 20
+            font.pixelSize: 19
             verticalAlignment: Text.AlignVCenter
-            wrapMode: Text.NoWrap
-            fontSizeMode: Text.Fit
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
-
+            font.bold: true
             TextField {
                 id: password1
                 echoMode: TextInput.Password
@@ -631,7 +707,7 @@ Item {
                 placeholderText: qsTr("Pin")
                 font.pixelSize: 16
                 topPadding: 7
-                leftPadding: 9
+                //leftPadding: 9
                 rightPadding: 35
                 anchors.verticalCenter: password_box1.verticalCenter
                 anchors.left: password_box1.left
@@ -648,11 +724,17 @@ Item {
                 height: username_box1.height
                 color: "transparent"
                 radius: 5
-                border.width: 1
+                //border.width: 1
                 anchors.left: parent.left
                 anchors.top: parent.bottom
-                anchors.topMargin: 0
-                anchors.leftMargin: 0
+                Rectangle {
+                    color: "black"
+                    height: 1.5
+                    anchors.left: parent.left
+                    anchors.top: parent.bottom
+                    anchors.topMargin: 1
+                    anchors.right: parent.right
+                }
             }
             Image {
                 height: 14
@@ -673,13 +755,13 @@ Item {
         Text {
             id: modename1
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.horizontalCenterOffset: -70
+            anchors.horizontalCenterOffset: -60
             width: 150
             height: 20
             text: qsTr("Registration Verification")
-            font.pixelSize: 20
+            font.pixelSize: 19
             anchors.top: parent.top
-            anchors.topMargin: 87
+            anchors.topMargin: 40
             font.family: "Verdana"
             font.styleName: "Regular"
             font.bold: true
@@ -692,8 +774,8 @@ Item {
         function onInvalid(number) { if (number === 1) { displaydialog(1) } }
         function onIncorrect(number) { if (number === 3) { displaydialog(3) } }
         function onProceed(value) {
-            if (value === 1) { displaybigdialog(0,2) ; exitbutton.visible = true  }
-            if (value === 2) { displaybigdialog(1,1) }
+            if (value === 1) { displaybigdialog(0,2) ; exitbutton.visible = true }
+            if (value === 2) { if (correctpage === 'Superview.ui.qml'){ displaybigdialog(2,3) } else { displaybigdialog(2,1) } }
         }
         function onFinishedprocess(pagetoload){ correctpage = pagetoload }
     }
@@ -701,14 +783,13 @@ Item {
     Component.onCompleted: {
         image.scale = 0.6
         image.anchors.horizontalCenterOffset = 180
-        image.anchors.topMargin = 20
+        image.anchors.topMargin = -25
 
         logo.scale = 0.6
         logo.anchors.horizontalCenterOffset = 180
-        logo.anchors.topMargin = 20
-
+        logo.anchors.topMargin = -25
     }
-    function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = 0 }
+    function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = image.anchors.topMargin = 0 }
 
     // Small Dialog Display Timer
     SequentialAnimation {
@@ -724,6 +805,7 @@ Item {
 
     // Dialog Box functions
     function displaydialog(functionnum) {
+        dialog_timer.running = false ; time.width = 10
         dialog_small.anchors.bottomMargin = 10
         dialog_timer.running = true
         // 1 invalidDialog
@@ -739,13 +821,18 @@ Item {
         // 3 incorrectDialog
         if (functionnum === 3) { information2.text = qsTr("Invalid Verification Username or Password") }
 
+        // 4 stationDialog
+        if (functionnum === 4) { information2.text = qsTr("You haven't selected a station") }
+
     }
-    function closebigdialog() { dialog_big.visible = false ; f1_switch.checked = false }
+    function closebigdialog() { dialog_big.visible = false ; f1_switch.checked = f2_switch.checked = false }
+
+    function closemenu() { menu.scale = 0 ; background.visible = menu.visible = false }
 
     function displaybigdialog(buttonnum, functionnum) {
-        if (buttonnum === 0) { dialog_big.visible = true ; button_number.checked = false ; good_picture.visible = true }
+        if (buttonnum === 0) { dialog_big.visible = true ; button_number.checked = false ; good_picture.visible = false ; box.radius = 5 }
         if (buttonnum === 1) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = true }
-        if (buttonnum === 2) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = false }
+        if (buttonnum === 2) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = false ; box.radius = 10 }
 
         // 1 confirmDialog
         if (functionnum === 1) {
@@ -758,6 +845,13 @@ Item {
         if (functionnum === 2) {
             information.text = qsTr("New " + code + " Has Been Registered Successfully")
             header.text = qsTr("Registration Successful")
+        }
+        // 3 confirmDialog
+        if (functionnum === 3) {
+            information.text = qsTr("You Are About To Register " + code + " " + regno_field.text + ". Do You Want To Continue?")
+            header.text = qsTr("Registering Admin")
+            f2_switch.checked = true
+            right_button.clicked.connect(closebigdialog)
         }
     }
 
@@ -822,7 +916,7 @@ Item {
             anchors.right: parent.right
             anchors.left: center_border2.right
             height: parent.height
-            onClicked: dialog_small.anchors.bottomMargin = -100
+            onClicked: { dialog_small.anchors.bottomMargin = -100 ; time.width = 10 }
             Text {
                 id: ok2
                 anchors.verticalCenter: parent.verticalCenter
@@ -863,6 +957,16 @@ Item {
             width: 400
             height: 200
             radius: 10
+            Rectangle {
+                id: greenslip; visible: !button_number.checked
+                anchors.top: box.top ; height: box.height ; width: box.radius * 2
+                anchors.left: box.left; radius: box.radius ; color: "darkgreen"
+            }
+            Rectangle {
+                visible: greenslip.visible
+                anchors.top: greenslip.top ; anchors.bottom: greenslip.bottom; anchors.right: greenslip.right
+                anchors.rightMargin: -1 ; width: greenslip.radius ; color: "white"
+            }
             Text {
                 id: header
                 anchors.top: parent.top
@@ -954,7 +1058,16 @@ Item {
                 hoverEnabled: true
                 onEntered: { b1.color = "#a0a0a0" }
                 onExited: { b1.color = "black" }
-                onClicked: { verwindow.visible = true ; closebigdialog() ; regfinger.visible = false }
+                onClicked: { verwindow.visible = true ; closebigdialog() ; regfinger.visible = false ; fingerprint1.opacity = 1 }
+            }
+            MouseArea {
+                id: left_f2
+                visible: button_number.checked & f2_switch.checked
+                anchors.fill: b1
+                hoverEnabled: true
+                onEntered: { b1.color = "#a0a0a0" }
+                onExited: { b1.color = "black" }
+                onClicked: { closebigdialog() ; regfinger.visible = false ; displaybigdialog(0,2) ; exitbutton.visible = true ; backend.registersuper([regno_field.text, accname_field.text, code, stationname.text, password.text, password.text, "Verified"])}
             }
             Rectangle {
                 anchors.top: b2.top ; anchors.topMargin: 0.5 ; visible: b2.visible
@@ -1051,11 +1164,142 @@ Item {
             visible: false
             checked: false
         }
+        Switch { // For Superview
+            id: f2_switch
+            visible: false
+            checked: false
+        }
     }
     MouseArea {
         id: exitbutton
         visible: false
         anchors.fill: parent
-        onClicked: { page_loader.source = correctpage ; revert() }
+        onClicked: { revert() ; page_loader.source = correctpage }
+    }
+
+    // Menu Bar Component contd -- Background
+    Rectangle {
+        id: background
+        anchors.fill: parent
+        color: "dimgray"
+        opacity: 0.5
+        visible: false
+        MouseArea {
+            anchors.fill: parent
+            onClicked: closemenu()
+        }
+    }
+    // Menu Bar Items Components -- First, Second, Third; Menu 21, Menu 22
+    Rectangle {
+        id: menu
+        visible: false
+        color: "#f8f8f8"
+        anchors.left: parent.left ; anchors.leftMargin: stationpicker.anchors.leftMargin + stationname.anchors.leftMargin
+        anchors.top: parent.top
+        anchors.topMargin: stationpicker.anchors.topMargin
+        width: 150
+        height: (35*3)
+        radius: 3
+        scale: 0
+        transformOrigin: Item.Top
+        Behavior on scale { PropertyAnimation { duration: 100 } }
+        Rectangle {
+            id: first_menu
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.topMargin: menu.radius
+            anchors.right: parent.right
+            height: 35
+            color: menu.color
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onEntered: first_menu.color = "#e8e8e8"
+                onExited: first_menu.color = menu.color
+                onClicked: { closemenu() ; stationname.text = "Caf 1" ; stationpicked = 1 ; stationname.font.pixelSize = 16 }
+            }
+            Text {
+                id: caf1
+                anchors.verticalCenter: first_menu.verticalCenter
+                anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
+                height: 30
+                font.family: "Verdana"
+                width: parent.width
+                font.pixelSize: 14
+                text: qsTr("Caf 1")
+                leftPadding: 15
+            }
+        }
+        Rectangle {
+            id: first_radius
+            radius: menu.radius
+            height: menu.radius * 2
+            width: first_menu.width
+            anchors.top: menu.top
+            color: first_menu.color
+        }
+        Rectangle {
+            id: second_radius
+            radius: menu.radius
+            height: menu.radius * 2
+            width: first_menu.width
+            anchors.bottom: menu.bottom
+            color: third_menu.color
+        }
+        Rectangle {
+            id: second_menu
+            anchors.left: parent.left
+            anchors.top: first_menu.bottom
+            anchors.right: parent.right
+            height: first_menu.height
+            color: menu.color
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onEntered: second_menu.color = "#e8e8e8"
+                onExited: second_menu.color = menu.color
+                onClicked: { closemenu() ; stationname.text = "Caf 2" ; stationpicked = 1 ; stationname.font.pixelSize = 16 }
+            }
+            Text {
+                id: caf2
+                anchors.right: parent.right
+                anchors.verticalCenter: second_menu.verticalCenter
+                verticalAlignment: Text.AlignVCenter
+                height: 30
+                font.family: "Verdana"
+                width: parent.width
+                font.pixelSize: 14
+                text: qsTr("Caf 2")
+                leftPadding: caf1.leftPadding
+            }
+        }
+        Rectangle {
+            id: third_menu
+            anchors.left: parent.left
+            anchors.top: second_menu.bottom
+            anchors.right: parent.right
+            height: first_menu.height
+            color: menu.color
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onEntered: third_menu.color = "#e8e8e8"
+                onExited: third_menu.color = menu.color
+                onClicked: { closemenu() ; stationname.text = "CDS Buttery" ; stationpicked = 1 ; stationname.font.pixelSize = 16 }
+            }
+            Text {
+                id: cdsbuttery
+                anchors.right: parent.right
+                anchors.verticalCenter: third_menu.verticalCenter
+                verticalAlignment: Text.AlignVCenter
+                height: 30
+                font.family: "Verdana"
+                width: parent.width
+                font.pixelSize: 14
+                text: qsTr("CDS Buttery")
+                leftPadding: caf1.leftPadding
+            }
+        }
     }
 }
