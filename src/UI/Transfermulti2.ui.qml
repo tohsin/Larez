@@ -17,7 +17,7 @@ Item {
     Rectangle {
         id: time ; width: 10 ; height: 10 ; visible: false
     }
-    property var accName: ""
+    property string accName: ""
     property var code: ""
     property var aNum: ""
     property var aTotal: 0
@@ -31,7 +31,7 @@ Item {
             duration: 2000
             to: 100
         }
-        ScriptAction {script: { writeoff() ; stack.replace('P3Form.ui.qml') } }
+        ScriptAction { script: { writeoff() ; stack.replace('P3Form.ui.qml') } }
     }
     // Small Dialog Display Timer
     SequentialAnimation {
@@ -91,7 +91,7 @@ Item {
             anchors.fill: parent
             onClicked: {
                 if (aTotal > aNum) { displaydialog(1) }
-                else { displaybigdialog(1,1) }
+                else { displaybigdialog(2,1) }
             }
         }
     }
@@ -102,14 +102,14 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: 40
         anchors.top: parent.top
-        anchors.topMargin: 80
+        anchors.topMargin: 40
         source: '../images/menubutton.png'
         height: 25
         width: height + 2        
         MouseArea {
             id: menuarea
             anchors.fill: parent
-            onClicked: { background.visible = true ; menu.scale = 1 ; menuarea.visible = false }
+            onClicked: { background.visible = menu.visible = true ; menu.scale = 1 ; menuarea.visible = false }
         }
     }
 
@@ -119,27 +119,28 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: profilebox.bottom
-        anchors.topMargin: 15
+        anchors.topMargin: 20
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 120
         /*ScrollBar.vertical.interactive: true*/
         contentHeight: 500
         clip: true
-
         width: 200
         height: 200
 
         // Entry 1 first -- Fingerprint, Username/Fingerprint buttons, Amount, Username
         Image {
             id: fingerprint
+            visible: use_username_button.visible
+            opacity: 0
             anchors.top: amount.bottom
             anchors.topMargin: 60
             width: 120
-            height: width
-            visible: use_username_button.visible
+            height: width            
             source: "../images/whitefinger.jpg"
             anchors.horizontalCenter: parent.horizontalCenter
             fillMode: Image.PreserveAspectFit
+            Behavior on opacity { PropertyAnimation { duration: 500 } }
             MouseArea {
                 anchors.fill: parent;
                 onClicked: {
@@ -178,9 +179,9 @@ Item {
             height: 40
             anchors.top: fingerprint.bottom
             anchors.topMargin: 50
-            visible: !switch1.checked & !renderswitch1.checked
-            anchors.horizontalCenterOffset: 0
             anchors.horizontalCenter: parent.horizontalCenter
+            visible: !switch1.checked & !renderswitch1.checked
+            onVisibleChanged: animatefingerprint(1)
             Text {
                 width: 160
                 height: 40
@@ -195,7 +196,7 @@ Item {
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked: switch1.checked = !switch1.checked
+                onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 0 }
             }
         }
         // Entry 1 contd -- Fingerprint button, ( 2 left )
@@ -215,7 +216,6 @@ Item {
             anchors.top: fingerprint.bottom
             anchors.topMargin: use_username_button.anchors.topMargin
             visible: switch1.checked & !renderswitch1.checked
-            anchors.horizontalCenterOffset: 0
             anchors.horizontalCenter: parent.horizontalCenter
             Text {
                 width: 160
@@ -231,7 +231,7 @@ Item {
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked: switch1.checked = !switch1.checked
+                onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 1 }
             }
         }
         // Entry 1 contd -- Amount, ( 1 left )
@@ -245,13 +245,12 @@ Item {
             anchors.leftMargin: 60
             anchors.right: parent.right
             text: qsTr("Amount")
-            font.pixelSize: 20
+            font.pixelSize: 19
             verticalAlignment: Text.AlignVCenter
-            fontSizeMode: Text.Fit
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
-
+            font.bold: true
             TextField {
                 id: amount_field
                 height: amount_box.height - 2
@@ -263,7 +262,7 @@ Item {
                 baselineOffset: 15
                 font.pointSize: 12
                 topPadding: 7
-                leftPadding: 9
+                //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Amount")
                 validator: IntValidator {bottom: 1; top: 100000}
@@ -277,11 +276,19 @@ Item {
                 height: 40
                 color: "transparent"
                 radius: 5
-                border.width: 1
+                //border.width: 1
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
                 anchors.rightMargin: 60
+                Rectangle {
+                    color: "black"
+                    height: 1.5
+                    anchors.left: parent.left
+                    anchors.top: parent.bottom
+                    anchors.topMargin: 1
+                    anchors.right: parent.right
+                }
             }
             Image {
                 id:clearamount
@@ -311,12 +318,12 @@ Item {
             anchors.leftMargin: 60
             anchors.right: parent.right
             text: qsTr("Recipient")
-            font.pixelSize: 20
+            font.pixelSize: 19
             verticalAlignment: Text.AlignVCenter
-            fontSizeMode: Text.Fit
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
+            font.bold: true
             TextField {
                 id: username_field
                 height: username_box.height - 2
@@ -329,7 +336,7 @@ Item {
                 baselineOffset: 15
                 font.pointSize: 12
                 topPadding: 7
-                leftPadding: 9
+                //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Account No. / Reg No.")
                 Rectangle {
@@ -342,11 +349,19 @@ Item {
                 height: 40
                 color: "transparent"
                 radius: 5
-                border.width: 1
+                //border.width: 1
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
                 anchors.rightMargin: 60
+                Rectangle {
+                    color: "black"
+                    height: 1.5
+                    anchors.left: parent.left
+                    anchors.top: parent.bottom
+                    anchors.topMargin: 1
+                    anchors.right: parent.right
+                }
             }
             Text {
                 id: proceed
@@ -509,6 +524,7 @@ Item {
         // Entry 2 contd -- Fingerprint, (4 more)
         Image {
             id: fingerprint2
+            opacity: 0
             anchors.top: amount2.bottom
             anchors.topMargin: 60
             width: 120
@@ -517,6 +533,7 @@ Item {
             source: "../images/whitefinger.jpg"
             anchors.horizontalCenter: parent.horizontalCenter
             fillMode: Image.PreserveAspectFit
+            Behavior on opacity { PropertyAnimation { duration: 500 } }
             MouseArea {
                 anchors.fill: parent;
                 onClicked: {
@@ -527,6 +544,7 @@ Item {
             }
             Text {
                 id: place_finger2
+                opacity: fingerprint2.opacity
                 width: 262
                 height: 50
                 visible: use_username_button2.visible
@@ -556,8 +574,8 @@ Item {
             anchors.top: fingerprint2.bottom
             anchors.topMargin: 50
             visible: !switch2.checked & !renderswitch2.checked & multi_switch2.checked
-            anchors.horizontalCenterOffset: 0
             anchors.horizontalCenter: parent.horizontalCenter
+            onVisibleChanged: animatefingerprint(2)
             Text {
                 width: 160
                 height: 40
@@ -572,7 +590,7 @@ Item {
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked: switch2.checked = !switch2.checked
+                onClicked: { switch2.checked = !switch2.checked ; fingerprint2.opacity = 0 }
             }
         }
         // Entry 2 contd -- Fingerprint button, ( 2 left )
@@ -608,7 +626,7 @@ Item {
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked: switch2.checked = !switch2.checked
+                onClicked: { switch2.checked = !switch2.checked ; fingerprint2.opacity = 1 }
             }
         }
         // Entry 2 contd -- Amount, ( 1 left )
@@ -622,12 +640,12 @@ Item {
             anchors.leftMargin: 60
             anchors.right: parent.right
             text: qsTr("Amount 2")
-            font.pixelSize: 20
+            font.pixelSize: 19
             verticalAlignment: Text.AlignVCenter
-            fontSizeMode: Text.Fit
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
+            font.bold: true
             TextField {
                 id: amount_field2
                 height: amount_box2.height - 2
@@ -639,7 +657,7 @@ Item {
                 baselineOffset: 15
                 font.pointSize: 12
                 topPadding: 7
-                leftPadding: 9
+                //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Amount 2")
                 validator: IntValidator {bottom: 1; top: 100000}
@@ -653,11 +671,19 @@ Item {
                 height: 40
                 color: "transparent"
                 radius: 5
-                border.width: 1
+                //border.width: 1
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
                 anchors.rightMargin: 60
+                Rectangle {
+                    color: "black"
+                    height: 1.5
+                    anchors.left: parent.left
+                    anchors.top: parent.bottom
+                    anchors.topMargin: 1
+                    anchors.right: parent.right
+                }
             }
             Image {
                 id:clearamount2
@@ -687,12 +713,12 @@ Item {
             anchors.leftMargin: 60
             anchors.right: parent.right
             text: qsTr("Recipient 2")
-            font.pixelSize: 20
+            font.pixelSize: 19
             verticalAlignment: Text.AlignVCenter
-            fontSizeMode: Text.Fit
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
+            font.bold: true
             TextField {
                 id: username_field2
                 height: username_box2.height - 2
@@ -705,7 +731,7 @@ Item {
                 baselineOffset: 15
                 font.pointSize: 12
                 topPadding: 7
-                leftPadding: 9
+                //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Account No. / Reg No. 2")
                 Rectangle {
@@ -718,11 +744,19 @@ Item {
                 height: 40
                 color: "transparent"
                 radius: 5
-                border.width: 1
+                //border.width: 1
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
                 anchors.rightMargin: 60
+                Rectangle {
+                    color: "black"
+                    height: 1.5
+                    anchors.left: parent.left
+                    anchors.top: parent.bottom
+                    anchors.topMargin: 1
+                    anchors.right: parent.right
+                }
             }
             Text {
                 id: proceed2
@@ -927,6 +961,7 @@ Item {
         // Entry 3 contd -- Fingerprint, (4 more)
         Image {
             id: fingerprint3
+            opacity: 0
             anchors.top: amount3.bottom
             anchors.topMargin: 60
             width: 120
@@ -935,6 +970,7 @@ Item {
             source: "../images/whitefinger.jpg"
             anchors.horizontalCenter: parent.horizontalCenter
             fillMode: Image.PreserveAspectFit
+            Behavior on opacity { PropertyAnimation { duration: 500 } }
             MouseArea {
                 anchors.fill: parent;
                 onClicked: {
@@ -945,6 +981,7 @@ Item {
             }
             Text {
                 id: place_finger3
+                opacity: fingerprint3.opacity
                 width: 262
                 height: 50
                 visible: use_username_button3.visible
@@ -974,8 +1011,8 @@ Item {
             anchors.top: fingerprint3.bottom
             anchors.topMargin: 50
             visible: !switch3.checked & !renderswitch3.checked & multi_switch3.checked
-            anchors.horizontalCenterOffset: 0
             anchors.horizontalCenter: parent.horizontalCenter
+            onVisibleChanged: animatefingerprint(3)
             Text {
                 width: 160
                 height: 40
@@ -990,7 +1027,7 @@ Item {
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked: switch3.checked = !switch3.checked
+                onClicked: { switch3.checked = !switch3.checked ; fingerprint3.opacity = 0 }
             }
         }
         // Entry 3 contd -- Fingerprint button, ( 2 left )
@@ -1010,7 +1047,6 @@ Item {
             anchors.top: fingerprint3.bottom
             anchors.topMargin: use_username_button3.anchors.topMargin
             visible: switch3.checked & !renderswitch3.checked & multi_switch3.checked
-            anchors.horizontalCenterOffset: 0
             anchors.horizontalCenter: parent.horizontalCenter
             Text {
                 width: 160
@@ -1026,7 +1062,7 @@ Item {
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked: switch3.checked = !switch3.checked
+                onClicked: { switch3.checked = !switch3.checked ; fingerprint3.opacity = 1 }
             }
         }
         // Entry 3 contd -- Amount, ( 1 left )
@@ -1040,12 +1076,12 @@ Item {
             anchors.leftMargin: 60
             anchors.right: parent.right
             text: qsTr("Amount 3")
-            font.pixelSize: 20
+            font.pixelSize: 19
             verticalAlignment: Text.AlignVCenter
-            fontSizeMode: Text.Fit
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
+            font.bold: true
             TextField {
                 id: amount_field3
                 height: amount_box3.height - 2
@@ -1057,7 +1093,7 @@ Item {
                 baselineOffset: 15
                 font.pointSize: 12
                 topPadding: 7
-                leftPadding: 9
+                //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Amount 3")
                 validator: IntValidator {bottom: 1; top: 100000}
@@ -1071,11 +1107,19 @@ Item {
                 height: 40
                 color: "transparent"
                 radius: 5
-                border.width: 1
+                //border.width: 1
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
                 anchors.rightMargin: 60
+                Rectangle {
+                    color: "black"
+                    height: 1.5
+                    anchors.left: parent.left
+                    anchors.top: parent.bottom
+                    anchors.topMargin: 1
+                    anchors.right: parent.right
+                }
             }
             Image {
                 id:clearamount3
@@ -1105,12 +1149,12 @@ Item {
             anchors.leftMargin: 60
             anchors.right: parent.right
             text: qsTr("Recipient 3")
-            font.pixelSize: 20
+            font.pixelSize: 19
             verticalAlignment: Text.AlignVCenter
-            fontSizeMode: Text.Fit
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
             font.styleName: "Regular"
+            font.bold: true
             TextField {
                 id: username_field3
                 height: username_box3.height - 2
@@ -1123,7 +1167,7 @@ Item {
                 baselineOffset: 15
                 font.pointSize: 12
                 topPadding: 7
-                leftPadding: 9
+                //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Account No. / Reg No. 3")
                 Rectangle {
@@ -1136,11 +1180,19 @@ Item {
                 height: 40
                 color: "transparent"
                 radius: 5
-                border.width: 1
+                //border.width: 1
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
                 anchors.rightMargin: 60
+                Rectangle {
+                    color: "black"
+                    height: 1.5
+                    anchors.left: parent.left
+                    anchors.top: parent.bottom
+                    anchors.topMargin: 1
+                    anchors.right: parent.right
+                }
             }
             Text {
                 id: proceed3
@@ -1293,6 +1345,7 @@ Item {
 
     // Dialog Box functions
     function displaydialog(functionnum) {
+        dialog_timer.running = false ; time.width = 10
         dialog_small.anchors.bottomMargin = 10
         dialog_timer.running = true
         // 1 insufDialog
@@ -1307,9 +1360,9 @@ Item {
     function closebigdialog() { dialog_big.visible = false ; f1_switch.checked = f2_switch.checked = f3_switch.checked = false }
 
     function displaybigdialog(buttonnum, functionnum) {
-        if (buttonnum === 0) { dialog_big.visible = true ; button_number.checked = false ; good_picture.visible = true }
+        if (buttonnum === 0) { dialog_big.visible = true ; button_number.checked = false ; good_picture.visible = false ; box.radius = 5 }
         if (buttonnum === 1) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = true }
-        if (buttonnum === 2) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = false }
+        if (buttonnum === 2) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = false ; box.radius = 10 }
 
         // 1 transferDialog
         if (functionnum === 1) {
@@ -1354,18 +1407,18 @@ Item {
         function onTotalexp(num) {
             aTotal = num
             if (aTotal > aNum) { displaydialog(1)
-            } else { displaybigdialog(1,1) }
+            } else { displaybigdialog(2,1) }
         }
         function onAccountname(info) {
             accName = info[0]
             code = info[1]
-            preparesum()
-            aTotal = parseFloat(amount_field.text) + parseFloat(amount_field2.text) + parseFloat(amount_field3.text)
-            changecolor(0)
-            aftersum()
             if (code === 1) { name1.text = qsTr("Recipient:  <b>" + accName + "</b>") ; renderswitch1.checked = true }
             else if (code === 2) { name2.text = qsTr("Recipient 2:  <b>" + accName + "</b>") ; renderswitch2.checked = true }
             else if (code === 3) { name3.text = qsTr("Recipient 3:  <b>" + accName + "</b>") ; renderswitch3.checked = true }
+            preparesum()
+            determinetotal()
+            changecolor(0)
+            aftersum()
         }
     }
 
@@ -1377,9 +1430,9 @@ Item {
         width: 150
         height: 20
         text: qsTr(" Window")
-        font.pixelSize: 22
+        font.pixelSize: 20
         anchors.top: parent.top
-        anchors.topMargin: 80
+        anchors.topMargin: 40
         font.family: "Verdana"
         font.styleName: "Regular"
         font.bold: true
@@ -1387,13 +1440,13 @@ Item {
     Rectangle {
         id: profilebox
         radius: height / 2
-        /*color: "transparent"*/
-        color: "#e1e1e0"
-        /*color: "black"*/
+        color: "transparent"
+        /*color: "#e1e1e0"
+        color: "black"*/
         width: 160
         height: 40
         anchors.top: parent.top
-        anchors.topMargin: 170
+        anchors.topMargin: 100
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.horizontalCenterOffset: -100
         Image {
@@ -1428,8 +1481,7 @@ Item {
         /*color: "black"*/
         width: 160
         height: 40
-        anchors.top: parent.top
-        anchors.topMargin: 170
+        anchors.top: profilebox.top
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.horizontalCenterOffset: -(profilebox.anchors.horizontalCenterOffset)
         Image {
@@ -1472,11 +1524,11 @@ Item {
     Component.onCompleted: {
         image.scale = 0.6
         image.anchors.horizontalCenterOffset = 180
-        image.anchors.topMargin = 20
+        image.anchors.topMargin = -25
     }
     function revert() {
         image.scale = 1
-        image.anchors.horizontalCenterOffset = 0
+        image.anchors.horizontalCenterOffset = image.anchors.topMargin = 0
     }
 
     // Menu Bar Component contd -- Background
@@ -1488,7 +1540,7 @@ Item {
         visible: false
         MouseArea {
             anchors.fill: parent
-            onClicked: { menu.scale = 0 ; background.visible = false ; menuarea.visible = true }
+            onClicked: { menu.scale = 0 ; background.visible = menu.visible = false ; menuarea.visible = true }
         }
     }
 
@@ -1496,11 +1548,12 @@ Item {
     Rectangle {
         id: menu
         color: "#f8f8f8"
+        visible: false
         anchors.left: menubar.left
         anchors.top: menubar.bottom
         anchors.topMargin: 10
         width: 250
-        height: menu.radius + first_menu.height + second_menu.height + third_menu.height + menu.radius
+        height: menu.radius + first_menu.height + second_menu.height + third_menu.height + fourth_menu.height + menu.radius
         radius: 5
         scale: 0
         transformOrigin: Item.TopLeft
@@ -1547,7 +1600,7 @@ Item {
             height: menu.radius * 2
             width: first_menu.width
             anchors.bottom: menu.bottom
-            color: third_menu.color
+            color: fourth_menu.color
         }
         Rectangle {
             id: second_menu
@@ -1561,12 +1614,39 @@ Item {
                 hoverEnabled: true
                 onEntered: second_menu.color = "#e8e8e8"
                 onExited: second_menu.color = menu.color
+                onClicked: { backend.feature("Deposit") ; stack.replace("Deposit.ui.qml") ; backend.switchfeature() }
+            }
+            Text {
+                id: deposit_menu
+                anchors.left: parent.left
+                anchors.verticalCenter: second_menu.verticalCenter
+                verticalAlignment: Text.AlignVCenter
+                height: 30
+                font.family: "Verdana"
+                width: parent.width
+                font.pixelSize: 14
+                text: qsTr("Switch to Deposit Mode")
+                leftPadding: logout.leftPadding
+            }
+        }
+        Rectangle {
+            id: third_menu
+            anchors.left: parent.left
+            anchors.top: second_menu.bottom
+            anchors.right: parent.right
+            height: 35
+            color: menu.color
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onEntered: third_menu.color = "#e8e8e8"
+                onExited: third_menu.color = menu.color
                 onClicked: { backend.feature("Purchase") ; stack.replace("Purchasemulti2.ui.qml") ; backend.switchfeature() }
             }
             Text {
-                id: transfer_menu
+                id: purchase_menu
+                anchors.verticalCenter: third_menu.verticalCenter
                 anchors.left: parent.left
-                anchors.verticalCenter: second_menu.verticalCenter
                 verticalAlignment: Text.AlignVCenter
                 height: 30
                 font.family: "Verdana"
@@ -1577,22 +1657,22 @@ Item {
             }
         }
         Rectangle {
-            id: third_menu
+            id: fourth_menu
             anchors.left: parent.left
-            anchors.top: second_menu.bottom
+            anchors.top: third_menu.bottom
             anchors.right: parent.right
             height: first_menu.height
             color: menu.color
             MouseArea {
                 anchors.fill: parent
                 hoverEnabled: true
-                onEntered: third_menu.color = "#e8e8e8"
-                onExited: third_menu.color = menu.color
+                onEntered: fourth_menu.color = "#e8e8e8"
+                onExited: fourth_menu.color = menu.color
                 onClicked: displaybigdialog(2,3)
             }
             Text {
                 id: register_menu
-                anchors.verticalCenter: third_menu.verticalCenter
+                anchors.verticalCenter: fourth_menu.verticalCenter
                 anchors.left: parent.left
                 verticalAlignment: Text.AlignVCenter
                 height: 30
@@ -1666,7 +1746,7 @@ Item {
             anchors.right: parent.right
             anchors.left: center_border2.right
             height: parent.height
-            onClicked: dialog_small.anchors.bottomMargin = -100
+            onClicked: { dialog_small.anchors.bottomMargin = -100 ; time.width = 10 }
             Text {
                 id: ok2
                 anchors.verticalCenter: parent.verticalCenter
@@ -1798,7 +1878,7 @@ Item {
                 hoverEnabled: true
                 onEntered: { b1.color = "#a0a0a0" }
                 onExited: { b1.color = "black" }
-                onClicked: { stack.push('Success.ui.qml') ; click.running = true ; revert() }
+                onClicked: { revert() ; stack.push('Success.ui.qml') ; click.running = true }
             }
             MouseArea {
                 id: left_f2
@@ -1807,7 +1887,7 @@ Item {
                 hoverEnabled: true
                 onEntered: { b1.color = "#a0a0a0" }
                 onExited: { b1.color = "black" }
-                onClicked: { backend.userlogout() ; stack.pop() ; stack.pop() ; revert() }
+                onClicked: { revert() ; backend.userlogout() ; stack.pop() ; stack.pop() }
             }
             MouseArea {
                 id: left_f3
@@ -1957,17 +2037,37 @@ Item {
             else { renderamt3.color = "black" }
         }
     }
-    function writeoff() {
-        if (switch1.checked === true) { backend.transferfeature([amount_field.text, username_field.text, "Typed"]) }
-        else { backend.transferfeature([amount_field.text, "Bio-ID" , "Fingerprint"]) }
-        if (amount_field.text != "") { backend.transactiondone(1) }
+    function writeoff() {        
+        if (renderswitch1.checked === true) {
+            if (switch1.checked === true) { backend.transferfeature([amount_field.text, username_field.text, "Typed"]) }
+            else { backend.transferfeature([amount_field.text, "Bio-ID" , "Fingerprint"]) }
+            backend.transactiondone(1)
+        }
+        if (renderswitch2.checked === true) {
+            if (switch2.checked === true) { backend.transferfeature([amount_field2.text, username_field2.text, "Typed"]) }
+            else { backend.transferfeature([amount_field2.text, "Bio-ID" , "Fingerprint"]) }
+            backend.transactiondone(1)
+        }
+        if (renderswitch3.checked === true) {
+            if (switch3.checked === true) { backend.transferfeature([amount_field3.text, username_field3.text, "Typed"]) }
+            else { backend.transferfeature([amount_field3.text, "Bio-ID" , "Fingerprint"]) }
+            backend.transactiondone(1)
+        }
+    }
+    function animatefingerprint(code) {
+        if (code === 1) { if (use_username_button.visible === true) { fingerprint.opacity = 1 }
+        else { fingerprint.opacity = 0 } }
 
-        if (switch2.checked === true) { backend.transferfeature([amount_field2.text, username_field2.text, "Typed"]) }
-        else { backend.transferfeature([amount_field2.text, "Bio-ID" , "Fingerprint"]) }
-        if (amount_field2.text != "") { backend.transactiondone(1) }
+        else if (code === 2) { if (use_username_button2.visible === true) { fingerprint2.opacity = 1 }
+        else { fingerprint2.opacity = 0 } }
 
-        if (switch3.checked === true) { backend.transferfeature([amount_field3.text, username_field3.text, "Typed"]) }
-        else { backend.transferfeature([amount_field3.text, "Bio-ID" , "Fingerprint"]) }
-        if (amount_field3.text != "") { backend.transactiondone(1) }
+        else if (code === 3) { if (use_username_button3.visible === true) { fingerprint3.opacity = 1 }
+        else { fingerprint3.opacity = 0 } }
+    }
+    function determinetotal() {
+        aTotal = 0
+        if (renderswitch1.checked === true) { aTotal = aTotal + parseFloat(amount_field.text) }
+        if (renderswitch2.checked === true) { aTotal = aTotal + parseFloat(amount_field2.text) }
+        if (renderswitch3.checked === true) { aTotal = aTotal + parseFloat(amount_field3.text) }
     }
 }
