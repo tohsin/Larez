@@ -7,7 +7,7 @@ Item {
         id: time ; width: 10 ; height: 10 ; visible: false
     }
 
-    // Navigation Buttons -- Use Pin, Log in, Use fingerprint, Back button, Switch for Pin/Fingerprint
+    // Navigation Buttons -- Use Pin, Log in, Use fingerprint, Back button, Switch for Pin/Fingerprint, register account?
     Rectangle {
         anchors.top: use_pin_button.top ; anchors.topMargin: -0.5 ; visible: use_pin_button.visible
         anchors.left: use_pin_button.left ; anchors.leftMargin: -1
@@ -40,7 +40,7 @@ Item {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: switch1.checked = !switch1.checked
+            onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 0 }
         }
     }
     Rectangle {
@@ -56,8 +56,8 @@ Item {
         height: 40
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 120
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.horizontalCenterOffset: 100
+        anchors.right: parent.right
+        anchors.rightMargin: 60
         color: "black"
         radius: 8
         Text {
@@ -97,8 +97,8 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 120
         visible: switch1.checked
-        anchors.horizontalCenterOffset: -100
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: parent.left
+        anchors.leftMargin: 60
         Text {
             width: 160
             height: 40
@@ -113,7 +113,7 @@ Item {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: switch1.checked = !switch1.checked
+            onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 1 }
         }
     }
     Image {
@@ -121,7 +121,7 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: 35
         anchors.top: parent.top
-        anchors.topMargin: 87
+        anchors.topMargin: 40
         width: 30
         height: 30
         source: "../images/back.jpg"
@@ -129,7 +129,7 @@ Item {
         sourceSize.height: 100
         MouseArea {
             anchors.fill: parent
-            onClicked: stack.pop()
+            onClicked: { stack.pop() ; stack.replace('P3Form.ui.qml') }
         }
     }
     Switch {
@@ -137,33 +137,75 @@ Item {
         checked: false
         visible: false
     }
+    Text {
+        id: registeraccount_finger
+        visible: use_pin_button.visible
+        anchors.bottom: use_pin_button.top
+        anchors.bottomMargin: 30
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: 260
+        height: 41
+        text: qsTr("No Account? Click here to <b>Register</b>")
+        font.pixelSize: 15
+        verticalAlignment: Text.AlignVCenter
+        font.capitalization: Font.Capitalize
+        font.family: "Verdana"
+        font.styleName: "Regular"
+        MouseArea {
+            anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
+            height: parent.height; width: 75
+            onClicked: { backend.feature("Register") ; stack.replace("Register.ui.qml") }
+        }
+    }
+    Text {
+        id: registeraccount_pin
+        visible: use_fingerprint_button.visible
+        anchors.bottom: use_fingerprint_button.top
+        anchors.bottomMargin: 100
+        anchors.left: parent.left
+        anchors.leftMargin: 60
+        width: 260
+        height: 41
+        text: qsTr("No Account? Click here to <b>Register</b>")
+        font.pixelSize: 15
+        verticalAlignment: Text.AlignVCenter
+        font.capitalization: Font.Capitalize
+        font.family: "Verdana"
+        font.styleName: "Regular"
+        MouseArea {
+            anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
+            height: parent.height; width: 75
+            onClicked: { backend.feature("Register") ; stack.replace("Register.ui.qml") }
+        }
+    }
 
     // Biometric Elements -- User Rank, Fingerprint picture, "Place Finger" text
     Text {
         id: biometrics
         visible: !switch1.checked
         x: 60
-        y: 245
+        y: 230
         width: 152
         height: 41
         text: qsTr("Customer")
-        font.pixelSize: 20
-        verticalAlignment: Text.AlignVCenter
-        wrapMode: Text.NoWrap
-        fontSizeMode: Text.Fit
+        font.pixelSize: 19
+        font.bold: true
+        verticalAlignment: Text.AlignVCenter        
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
         font.styleName: "Regular"
     }
     Image {
         id: fingerprint
-        y: 360
-        width: 150
-        height: 150
         visible: use_pin_button.visible
+        opacity: 0
+        y: 300
+        width: 150
+        height: 150        
         source: "../images/whitefinger.jpg"
         anchors.horizontalCenter: parent.horizontalCenter
         fillMode: Image.PreserveAspectFit
+        Behavior on opacity { PropertyAnimation { duration: 500 } }
         MouseArea {
             anchors.fill: parent
             onClicked: {
@@ -174,17 +216,18 @@ Item {
     }
     Text {
         id: place_finger
+        visible: use_pin_button.visible
+        opacity: fingerprint.opacity
         x: 297
         width: 262
-        height: 50
-        visible: use_pin_button.visible
+        height: 50        
         text: qsTr("Place Finger on Scanner")
         anchors.top: fingerprint.bottom
-        font.pixelSize: 20
+        anchors.topMargin: 10
+        font.pixelSize: 18
         font.italic: true
         horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignTop
-        anchors.topMargin: 10
+        verticalAlignment: Text.AlignTop        
         anchors.horizontalCenter: fingerprint.horizontalCenter
     }
 
@@ -192,15 +235,15 @@ Item {
     Text {
         id: customer
         visible: switch1.checked
-        y: 245
+        y: 230
         height: 41
         anchors.left: parent.left
         anchors.leftMargin: 60
         anchors.right: parent.right
         text: qsTr("Customer")
-        font.pixelSize: 20
+        font.pixelSize: 19
+        font.bold: true
         verticalAlignment: Text.AlignVCenter
-        fontSizeMode: Text.Fit
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
         font.styleName: "Regular"
@@ -215,7 +258,7 @@ Item {
             baselineOffset: 15
             font.pointSize: 12
             topPadding: 7
-            leftPadding: 9
+            //leftPadding: 9
             rightPadding: 35
             placeholderText: qsTr("Reg No. / Username")
             Rectangle {
@@ -227,11 +270,19 @@ Item {
             height: 40
             color: "transparent"
             radius: 5
-            border.width: 1
+            //border.width: 1
             anchors.left: parent.left
             anchors.top: parent.bottom
             anchors.right: parent.right
             anchors.rightMargin: 60
+            Rectangle {
+                color: "black"
+                height: 1
+                anchors.left: parent.left
+                anchors.top: parent.bottom
+                anchors.topMargin: 0.5
+                anchors.right: parent.right
+            }
         }
         Image {
             id:clearusername
@@ -260,9 +311,9 @@ Item {
         width: 152
         height: 41
         text: qsTr("Pin")
-        font.pixelSize: 20
-        verticalAlignment: Text.AlignVCenter
-        fontSizeMode: Text.Fit
+        font.pixelSize: 19
+        font.bold: true
+        verticalAlignment: Text.AlignVCenter        
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
         font.styleName: "Regular"        
@@ -278,7 +329,7 @@ Item {
             anchors.leftMargin: 1
             font.pointSize: 12
             topPadding: 7
-            leftPadding: 9
+            //leftPadding: 9
             rightPadding: 35
             placeholderText: qsTr("Pin")
             Rectangle {
@@ -291,12 +342,20 @@ Item {
             height: username_box.height
             color: "transparent"
             radius: 5
-            border.width: 1
+            //border.width: 1
             anchors.left: parent.left
             anchors.top: parent.bottom
             anchors.topMargin: 0
             anchors.leftMargin: 0
             visible: use_fingerprint_button.visible
+            Rectangle {
+                color: "black"
+                height: 1
+                anchors.left: parent.left
+                anchors.top: parent.bottom
+                anchors.topMargin: 1
+                anchors.right: parent.right
+            }
         }
         Image {
             id:clearpin
@@ -337,6 +396,7 @@ Item {
 
     // Dialog Box functions
     function displaydialog(functionnum) {
+        dialog_timer.running = false ; time.width = 10
         dialog_small.anchors.bottomMargin = 10
         dialog_timer.running = true
         // 1 incorrectDialog
@@ -404,7 +464,7 @@ Item {
             anchors.right: parent.right
             anchors.left: center_border2.right
             height: parent.height
-            onClicked: dialog_small.anchors.bottomMargin = -100
+            onClicked: { dialog_small.anchors.bottomMargin = -100 ; time.width = 10 }
             Text {
                 id: ok2
                 anchors.verticalCenter: parent.verticalCenter
@@ -421,5 +481,5 @@ Item {
             }
         }
     }
-
+    Component.onCompleted: fingerprint.opacity = 1
 }

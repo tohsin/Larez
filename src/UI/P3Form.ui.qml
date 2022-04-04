@@ -1,6 +1,5 @@
 import QtQuick 2.14
 import QtQuick.Controls 6.2
-import Qt.labs.platform 1.1
 
 Item {
     id: window
@@ -63,153 +62,248 @@ Item {
     // Body of Code -- Features components
     FocusScope {
         id: features
+        // Features elements -- Purchase, Transfer, Deposit, Register
+        Rectangle {
+            id: greybackground
+            anchors.top: parent.top ; anchors.topMargin: 150
+            width: parent.width ; anchors.bottom: parent.bottom
+            color: "#f8f8f8"
+            Rectangle { anchors.bottom: greybackground.top ; width: parent.width ; height: 1.5 ; color: "darkgray" }
+        }
 
-        // Features elements -- Purchase, Transfer, Register
-        FocusScope {
-            id: focusScope
-            anchors.horizontalCenter: parent.horizontalCenter
-            y: 501
-            width: 491
-            height: 160
-            scale: 0.85
+        Rectangle {
+            id: grid_1_1_purchase
+            anchors.left: parent.left
+            anchors.leftMargin: 20
+            anchors.top: greybackground.top
+            anchors.topMargin: 80
+            width: 190
+            height: width + 20
+            radius: 4
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: { stack.push("P4Form.ui.qml"); backend.feature("Purchase") }
+                onEntered: { greenslip.width = parent.radius * 2 ; edit1.scale = 1.15 }
+                onExited: { greenslip.width = 0 ; edit1.scale = 1 }
+            }
 
+            Rectangle {
+                id: greenslip
+                anchors.top: parent.top ; height: parent.height ; width: 0
+                anchors.left: parent.left; radius: parent.radius ; color: "purple"
+                Behavior on width { PropertyAnimation { duration: 100 } }
+            }
+            Rectangle {
+                anchors.top: greenslip.top ; anchors.bottom: greenslip.bottom; anchors.right: greenslip.right
+                anchors.rightMargin: -1 ; width: greenslip.radius ; color: "white"
+            }
             Image {
-                id: purc
-                anchors.right: tran.left
-                anchors.rightMargin: 60
-                y: 5
+                anchors.top: parent.top
+                anchors.topMargin: 30
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.horizontalCenterOffset: -6
                 width: 100
-                height: 100
+                height: width
+                sourceSize.height: 100
+                sourceSize.width: 100
                 source: "../images/pur.png"
                 fillMode: Image.PreserveAspectFit
-
+                scale: edit1.scale
+            }
+            Text {
+                id: edit1
+                width: 160
+                height: 41
+                text: qsTr("Purchase")
+                font.pixelSize: 18
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 25
+                font.capitalization: Font.AllUppercase
+                font.family: "Verdana"
+                font.styleName: "Regular"
+                font.bold: true
                 Behavior on scale { PropertyAnimation { duration: 100 } }
-                Text {
-                    id: pur
-                    y: 120
-                    width: 152
-                    height: 41
-                    text: qsTr("Purchase")
-                    font.pixelSize: 20
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.horizontalCenter: purc.horizontalCenter
-                    fontSizeMode: Text.Fit
-                    font.capitalization: Font.AllUppercase
-                    font.family: "Verdana"
-                    font.styleName: "Regular"
-                    font.bold: true
-                }
-                MouseArea {
-                    id: mouse_pur
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: -45
-                    anchors.rightMargin: -10
-                    anchors.leftMargin: -10
-                    anchors.topMargin: 0
-                    hoverEnabled: true
-                    onClicked: { stack.push("P4Form.ui.qml"); backend.feature(pur.text) }
-                    onEntered: purc.scale = 1.2
-                    onExited: purc.scale = 1
-                }
+            }
+        }
+
+        Rectangle {
+            id: grid_1_2_transfer
+            anchors.right: parent.right
+            anchors.rightMargin: 20
+            anchors.top: grid_1_1_purchase.top
+            width: 190
+            height: width + 20
+            radius: 4
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: { stack.push("P4Form.ui.qml"); backend.feature("Transfer") }
+                onEntered: { slip2.width = parent.radius * 2 ; edit2.scale = 1.15 }
+                onExited: { slip2.width = 0 ; edit2.scale = 1 }
             }
 
+            Rectangle {
+                id: slip2
+                anchors.top: parent.top ; height: parent.height ; width: 0
+                anchors.left: parent.left; radius: parent.radius ; color: "purple"
+                Behavior on width { PropertyAnimation { duration: 100 } }
+            }
+            Rectangle {
+                anchors.top: slip2.top ; anchors.bottom: slip2.bottom; anchors.right: slip2.right
+                anchors.rightMargin: -1 ; width: slip2.radius ; color: "white"
+            }
             Image {
-                id: tran
+                anchors.top: parent.top
+                anchors.topMargin: 30
                 anchors.horizontalCenter: parent.horizontalCenter
-                y: 5
                 width: 100
-                height: 100
+                height: width
+                sourceSize.height: 100
+                sourceSize.width: 100
                 source: "../images/trans.png"
                 fillMode: Image.PreserveAspectFit
-
+                scale: edit2.scale
+            }
+            Text {
+                id: edit2
+                width: 160
+                height: 41
+                text: qsTr("Transfer")
+                font.pixelSize: 18
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 25
+                font.capitalization: Font.AllUppercase
+                font.family: "Verdana"
+                font.styleName: "Regular"
+                font.bold: true
                 Behavior on scale { PropertyAnimation { duration: 100 } }
-                Text {
-                    id: trans
-                    y: 120
-                    width: 152
-                    height: 41
-                    text: qsTr("Transfer")
-                    font.pixelSize: 20
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    wrapMode: Text.NoWrap
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    fontSizeMode: Text.Fit
-                    font.capitalization: Font.AllUppercase
-                    font.family: "Verdana"
-                    font.styleName: "Regular"
-                    font.bold: true
-                }
-                MouseArea {
-                    id: mouse_tran
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.bottom: trans.bottom
-                    anchors.bottomMargin: 0
-                    anchors.rightMargin: -10
-                    anchors.leftMargin: -10
-                    anchors.topMargin: 0
-                    hoverEnabled: true
-                    onClicked: { stack.push("P4Form.ui.qml"); backend.feature(trans.text) }
-                    onEntered: tran.scale = 1.2
-                    onExited: tran.scale = 1
-                }
+            }
+        }
+
+        Rectangle {
+            id: grid_2_1_deposit
+            anchors.left: grid_1_1_purchase.left
+            anchors.top: grid_1_1_purchase.bottom
+            anchors.topMargin: 30
+            width: 190
+            height: width + 20
+            radius: 4
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: { stack.push("P4Form.ui.qml"); backend.feature("Deposit") }
+                onEntered: { slip3.width = parent.radius * 2 ; edit3.scale = 1.15 }
+                onExited: { slip3.width = 0 ; edit3.scale = 1 }
             }
 
+            Rectangle {
+                id: slip3
+                anchors.top: parent.top ; height: parent.height ; width: 0
+                anchors.left: parent.left; radius: parent.radius ; color: "purple"
+                Behavior on width { PropertyAnimation { duration: 100 } }
+            }
+            Rectangle {
+                anchors.top: slip3.top ; anchors.bottom: slip3.bottom; anchors.right: slip3.right
+                anchors.rightMargin: -1 ; width: slip3.radius ; color: "white"
+            }
             Image {
-                id: regi
-                anchors.left: tran.right
-                anchors.leftMargin: purc.anchors.rightMargin
-                y: 5
+                anchors.top: parent.top
+                anchors.topMargin: 30
+                anchors.horizontalCenter: parent.horizontalCenter
+                source: "../images/deposit.png"
                 width: 100
-                height: 100
+                height: width
+                sourceSize.width: 100
+                sourceSize.height: 100
+                fillMode: Image.PreserveAspectFit
+                scale: edit3.scale
+            }
+            Text {
+                id: edit3
+                width: 160
+                height: 41
+                text: qsTr("Deposit")
+                font.pixelSize: 18
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 25
+                font.capitalization: Font.AllUppercase
+                font.family: "Verdana"
+                font.styleName: "Regular"
+                font.bold: true
+                Behavior on scale { PropertyAnimation { duration: 100 } }
+            }
+        }
+
+        Rectangle {
+            id: grid_2_2_register
+            anchors.right: grid_1_2_transfer.right
+            anchors.top: grid_2_1_deposit.top
+            width: 190
+            height: width + 20
+            radius: 4
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: { stack.push("Register.ui.qml"); backend.feature("Register") }
+                onEntered: { slip4.width = parent.radius * 2 ; edit4.scale = 1.15 }
+                onExited: { slip4.width = 0 ; edit4.scale = 1 }
+            }
+
+            Rectangle {
+                id: slip4
+                anchors.top: parent.top ; height: parent.height ; width: 0
+                anchors.left: parent.left; radius: parent.radius ; color: "purple"
+                Behavior on width { PropertyAnimation { duration: 100 } }
+            }
+            Rectangle {
+                anchors.top: slip4.top ; anchors.bottom: slip4.bottom; anchors.right: slip4.right
+                anchors.rightMargin: -1 ; width: slip4.radius ; color: "white"
+            }
+            Image {
+                anchors.top: parent.top
+                anchors.topMargin: 30
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 100
+                height: width
+                sourceSize.height: 100
+                sourceSize.width: 100
                 source: "../images/reg.png"
                 fillMode: Image.PreserveAspectFit
+                scale: edit4.scale
+            }
+            Text {
+                id: edit4
+                width: 160
+                height: 41
+                text: qsTr("Register")
+                font.pixelSize: 18
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 25
+                font.capitalization: Font.AllUppercase
+                font.family: "Verdana"
+                font.styleName: "Regular"
+                font.bold: true
                 Behavior on scale { PropertyAnimation { duration: 100 } }
-                Text {
-                    id: reg
-                    y: 120
-                    width: 152
-                    height: 41
-                    text: qsTr("Register")
-                    font.pixelSize: 20
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    wrapMode: Text.NoWrap
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    fontSizeMode: Text.Fit
-                    font.capitalization: Font.AllUppercase
-                    font.family: "Verdana"
-                    font.styleName: "Regular"
-                    font.bold: true
-                }
-                MouseArea {
-                    id: mouse_reg
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.bottom: reg.bottom
-                    anchors.bottomMargin: 0
-                    anchors.rightMargin: -10
-                    anchors.leftMargin: -10
-                    anchors.topMargin: 0
-                    hoverEnabled: true
-                    onClicked: { stack.push("Register.ui.qml"); backend.feature(reg.text) }
-                    onEntered: regi.scale = 1.2
-                    onExited: regi.scale = 1
-                }
             }
         }
 
         // "Redirect to Log In" Information
         Text {
             id: redirect
-            y: 170
+            y: 160
             width: 160
             height: 41
             text: qsTr("Tapping a feature will redirect you to the Login Page")
@@ -232,14 +326,14 @@ Item {
             visible: false
             MouseArea {
                 anchors.fill: parent
-                onClicked: { menu.scale = 0 ; background.visible = false ; menu21.visible = false ; menuarea.visible = true }
+                onClicked: { menu.scale = 0 ; background.visible = menu.visible = false ; menu21.visible = false ; menuarea.visible = true }
             }
         }
         Image {
             anchors.left: parent.left
             anchors.leftMargin: 40
             anchors.top: parent.top
-            anchors.topMargin: 80
+            anchors.topMargin: 40
             source: '../images/menubutton.png'
             height: 25
             width: height + 2
@@ -247,7 +341,7 @@ Item {
             MouseArea {
                 id: menuarea
                 anchors.fill: parent
-                onClicked: { background.visible = true ; menu.scale = 1 ; menuarea.visible = false }
+                onClicked: { background.visible = menu.visible = true ; menu.scale = 1 ; menuarea.visible = false }
             }
         }
 
@@ -255,6 +349,7 @@ Item {
         Rectangle {
             id: menu
             color: "#f8f8f8"
+            visible: false
             anchors.left: menubar.left
             anchors.top: menubar.top
             anchors.topMargin: 35
@@ -443,9 +538,9 @@ Item {
     function closebigdialog() { dialog_big.visible = false ; f1_switch.checked = f2_switch.checked = false }
 
     function displaybigdialog(buttonnum, functionnum) {
-        if (buttonnum === 0) { dialog_big.visible = true ; button_number.checked = false ; good_picture.visible = true }
+        if (buttonnum === 0) { dialog_big.visible = true ; button_number.checked = false ; good_picture.visible = false ; box.radius = 5 }
         if (buttonnum === 1) { dialog_big.visible = true ; button_number.checked = true }
-        if (buttonnum === 2) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = false }
+        if (buttonnum === 2) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = false ; box.radius = 10 }
 
         // 1 adminlogoutDialog
         if (functionnum === 1) {
