@@ -4,11 +4,12 @@ import QtQuick.Controls 6.2
 Item {
     id: window
     anchors.fill: parent
+    property int code: 0
     Rectangle {
         id: time ; width: 10 ; height: 10 ; visible: false
     }
 
-    // Navigation Buttons -- Log in, Use Pin, Use Fingerprint, Menu bar
+    // Navigation Buttons -- Log in, Use Pin, Use Fingerprint, Settings box, Menu bar
     Rectangle {
         anchors.top: log_in_button.top ; anchors.topMargin: 0.5 ; visible: log_in_button.visible
         anchors.left: log_in_button.left ; anchors.leftMargin: -1
@@ -22,8 +23,8 @@ Item {
         height: 40
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 120
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.horizontalCenterOffset: 100
+        anchors.right: parent.right
+        anchors.rightMargin: 60
         color: "black"
         radius: 8
         Text {
@@ -43,7 +44,7 @@ Item {
             anchors.fill: parent
             onClicked: {
                 page_loader.source = 'Loadingpage.ui.qml';
-                backend.superuser([username.text, password.text , "Pin"]);
+                backend.superuser([username.text, password.text , "Pin", code]);
             }
         }
     }
@@ -63,7 +64,6 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 120
         visible: !switch1.checked
-        anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         Text {
             width: 150
@@ -79,7 +79,7 @@ Item {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: switch1.checked = !switch1.checked
+            onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 0 ; settings_text.anchors.leftMargin = toggleswitch.anchors.rightMargin = 60 ; settings_text.anchors.bottomMargin = 130 }
         }
     }
     Rectangle {
@@ -98,8 +98,8 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 120
         visible: switch1.checked
-        anchors.horizontalCenterOffset: -100
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: parent.left
+        anchors.leftMargin: 60        
         Text {
             width: 160
             height: 40
@@ -114,108 +114,172 @@ Item {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: switch1.checked = !switch1.checked
+            onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 1 ; settings_text.anchors.leftMargin = 95 ; settings_text.anchors.bottomMargin = 120 ; toggleswitch.anchors.rightMargin = 80 }
         }
     }
-    Switch {
-        id: switch1
-        checked: false
-        visible: false
+    CheckBox {
+        id: settings_box ; visible: false
+        onCheckedChanged: {
+            if (settings_box.checked === true) { code = 1 }
+            else { code = 0 }
+        }
+    }
+    Text {
+        id: settings_text
+        height: 20
+        text: qsTr("Open Settings On Log In")
+        anchors.bottom: use_fingerprint_button.top
+        anchors.bottomMargin: 120
+        anchors.left: parent.left
+        anchors.leftMargin: 95
+        font.pixelSize: 14
+        font.family: "Verdana"
+        MouseArea {
+            anchors.fill: parent
+            onClicked: settings_box.checked = !settings_box.checked
+        }
+    }
+    Rectangle {
+        id: toggleswitch
+        anchors.right: parent.right ; anchors.rightMargin: 80
+        anchors.verticalCenter: settings_text.verticalCenter
+        color: "darkred" ; width: height * 1.5 ; height: 24 ; radius: height/2
+        MouseArea {
+            anchors.fill: parent
+            onClicked: { settings_box.checked = !settings_box.checked ; togglecolor() }
+        }
+        Rectangle {
+            id: flicker
+            height: parent.height - 4 ; width: height ; radius: height/2
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: -(toggleswitch.height / 4)
+            Behavior on anchors.horizontalCenterOffset { PropertyAnimation { duration: 100 } }
+        }
     }
 
-    // Menu Button -- Circle, 3 Dots
-    Rectangle {
-        id: dotdot
-        border.width: 3
-        radius: width/2
-        width: 32
-        height: width
-        anchors.right: parent.right
+    Switch {
+        id: switch1
+        checked: false ; visible: false
+    }
+    Text {
+        visible: use_pin_button.visible
+        anchors.bottom: use_pin_button.top ; anchors.bottomMargin: 50
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: 260 ; height: 41
+        text: qsTr("No Account? Click here to <b>Register</b>")
+        font.pixelSize: 15
+        verticalAlignment: Text.AlignVCenter
+        font.capitalization: Font.Capitalize
+        font.family: "Verdana" ; font.styleName: "Regular"
+        MouseArea {
+            anchors.right: parent.right ; anchors.verticalCenter: parent.verticalCenter
+            height: parent.height ; width: 75
+            onClicked: { page_loader.source = "Registersuper.ui.qml" ; backend.menubranch(1) }
+        }
+    }
+    Text {
+        id: registeraccount
+        visible: use_fingerprint_button.visible
+        anchors.bottom: use_fingerprint_button.top ; anchors.bottomMargin: 60
+        anchors.left: parent.left ; anchors.leftMargin: 60
+        width: 260 ; height: 41
+        text: qsTr("No Account? Click here to <b>Register</b>")
+        font.pixelSize: 15
+        verticalAlignment: Text.AlignVCenter
+        font.capitalization: Font.Capitalize
+        font.family: "Verdana" ; font.styleName: "Regular"
+        MouseArea {
+            anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
+            height: parent.height; width: 75
+            onClicked: { page_loader.source = "Registersuper.ui.qml" ; backend.menubranch(1) }
+        }
+    }
+
+    // Menu Button -- Menu
+    Image {
+        id: menubar
+        anchors.left: parent.left
+        anchors.leftMargin: 40
         anchors.top: parent.top
-        anchors.rightMargin: 50
-        anchors.topMargin: 82
+        anchors.topMargin: 40
+        source: '../images/menubutton.png'
+        height: 25
+        width: height + 2
         MouseArea {
             id: menuarea
             anchors.fill: parent
-            onClicked: { background.visible = true ; menu.scale = 1 ; menuarea.visible = false }
+            onClicked: { background.visible = menu.visible = true ; menu.scale = 1 ; menuarea.visible = false }
         }
-    }
-    Image {
-        anchors.verticalCenter: dotdot.verticalCenter
-        anchors.horizontalCenter: dotdot.horizontalCenter
-        width: 25
-        height: width
-        source: "../images/menucircle.png"
-        sourceSize.width: 100
-        sourceSize.height: 100
     }
 
     // Biometric Elements -- User Rank, Fingerprint picture, "Place Finger" text
     Text {
         id: biometric
         visible: !switch1.checked
-        x: 60
-        y: 245
-        width: 152
-        height: 41
+        anchors.left: parent.left ; anchors.leftMargin: 60
+        anchors.top: parent.top ; anchors.topMargin: 200
+        width: 152 ; height: 41
         text: qsTr("Super Admin")
-        font.pixelSize: 20
+        font.pixelSize: 19
         verticalAlignment: Text.AlignVCenter
-        wrapMode: Text.NoWrap
-        fontSizeMode: Text.Fit
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
         font.styleName: "Regular"
+        font.bold: true
     }
     Image {
         id: fingerprint
         visible: !switch1.checked
-        y: 360
+        opacity: 0
+        anchors.top: biometric.bottom
+        anchors.topMargin: 30
         width: 150
         height: 150
         source: "../images/whitefinger.jpg"
         anchors.horizontalCenter: parent.horizontalCenter
         fillMode: Image.PreserveAspectFit
+        Behavior on opacity { PropertyAnimation { duration: 500 } }
         MouseArea {
             anchors.fill: parent;
             onClicked: {
                 page_loader.source = "Loadingpage.ui.qml";
-                backend.superuser(['11', '0011', "Fingerprint"]);
+                backend.superuser(['11', '0011', "Fingerprint", code]);
             }
         }
     }
     Text {
         id: place_finger
         visible: !switch1.checked
+        opacity: fingerprint.opacity
         x: 297
         width: 262
-        height: 50
+        height: 50        
         text: qsTr("Place Finger on Scanner")
         anchors.top: fingerprint.bottom
-        font.pixelSize: 20
+        anchors.topMargin: 10
+        anchors.horizontalCenter: fingerprint.horizontalCenter
+        font.pixelSize: 18
         font.italic: true
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignTop
-        anchors.topMargin: 10
-        anchors.horizontalCenter: fingerprint.horizontalCenter
     }
 
     // Typed Elements -- Rank, Username & Pin Text box
     Text {
         id: superadmin
         visible: switch1.checked
-        y: 245
-        anchors.left: parent.left
-        anchors.leftMargin: 60
+        anchors.top: parent.top ; anchors.topMargin: 200
+        anchors.left: parent.left ;  anchors.leftMargin: 60
         anchors.right: parent.right
         height: 41
         text: qsTr("Super Admin")
-        font.pixelSize: 20
+        font.pixelSize: 19
         verticalAlignment: Text.AlignVCenter
-        fontSizeMode: Text.Fit
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
         font.styleName: "Regular"
+        font.bold: true
         TextField {
             id: username
             width: username_box.width
@@ -223,7 +287,7 @@ Item {
             placeholderText: qsTr("Username")
             font.pixelSize: 16
             topPadding: 7
-            leftPadding: 9
+            //leftPadding: 9
             rightPadding: 35
             anchors.verticalCenter: username_box.verticalCenter
             anchors.left: username_box.left
@@ -239,11 +303,19 @@ Item {
             height: 40
             color: "transparent"
             radius: 5
-            border.width: 1
+            //border.width: 1
             anchors.left: parent.left
             anchors.top: parent.bottom
             anchors.right: parent.right
             anchors.rightMargin: 60
+            Rectangle {
+                color: "black"
+                height: 1.5
+                anchors.left: parent.left
+                anchors.top: parent.bottom
+                anchors.topMargin: 1
+                anchors.right: parent.right
+            }
         }
         Image {
             id:clearusername
@@ -266,18 +338,17 @@ Item {
     Text {
         id: pin
         visible: switch1.checked
-        x: 60
-        y: 400
+        anchors.left: parent.left ; anchors.leftMargin: 60
+        anchors.top: parent.top ; anchors.topMargin: 370
         width: 152
         height: 41
         text: qsTr("Pin")
-        font.pixelSize: 20
+        font.pixelSize: 19
         verticalAlignment: Text.AlignVCenter
-        wrapMode: Text.NoWrap
-        fontSizeMode: Text.Fit
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
         font.styleName: "Regular"
+        font.bold: true
         TextField {
             id: password
             echoMode: TextInput.Password
@@ -286,7 +357,7 @@ Item {
             placeholderText: qsTr("Pin")
             font.pixelSize: 16
             topPadding: 7
-            leftPadding: 9
+            //leftPadding: 9
             rightPadding: 35
             anchors.verticalCenter: password_box.verticalCenter
             anchors.left: password_box.left
@@ -303,9 +374,17 @@ Item {
             height: username_box.height
             color: "transparent"
             radius: 5
-            border.width: 1
+            //border.width: 1
             anchors.left: parent.left
             anchors.top: parent.bottom
+            Rectangle {
+                color: "black"
+                height: 1.5
+                anchors.left: parent.left
+                anchors.top: parent.bottom
+                anchors.topMargin: 1
+                anchors.right: parent.right
+            }
         }
         Image {
             id:clearpin
@@ -336,8 +415,14 @@ Item {
         }
         ScriptAction { script: { dialog_small.anchors.bottomMargin = -100 ; time.width = 10 } }
     }
+    function togglecolor() {
+        if (settings_box.checked === true) { toggleswitch.color = "darkgreen" ; flicker.anchors.horizontalCenterOffset = (toggleswitch.height / 4) }
+        else { toggleswitch.color = "darkred" ; flicker.anchors.horizontalCenterOffset = -(toggleswitch.height / 4) }
+    }
+
     // Dialog Box functions
     function displaydialog(functionnum) {
+        dialog_timer.running = false ; time.width = 10
         dialog_small.anchors.bottomMargin = 10
         dialog_timer.running = true
         // 1 incorrectDialog
@@ -404,7 +489,7 @@ Item {
             anchors.right: parent.right
             anchors.left: center_border2.right
             height: parent.height
-            onClicked: dialog_small.anchors.bottomMargin = -100
+            onClicked: { dialog_small.anchors.bottomMargin = -100 ; time.width = 10 }
             Text {
                 id: ok2
                 anchors.verticalCenter: parent.verticalCenter
@@ -439,20 +524,21 @@ Item {
         visible: false
         MouseArea {
             anchors.fill: parent
-            onClicked: { menu.scale = 0 ; background.visible = false ; menuarea.visible = true }
+            onClicked: { menu.scale = 0 ; background.visible = menu.visible = false ; menuarea.visible = true }
         }
     }
     Rectangle {
         id: menu
         color: "#f8f8f8"
-        anchors.right: dotdot.right
-        anchors.top: dotdot.bottom
+        visible: false
+        anchors.left: menubar.left
+        anchors.top: menubar.bottom
         anchors.topMargin: 10
         width: 150
         height: menu.radius + first_menu.height + second_menu.height + menu.radius
         radius: 5
         scale: 0
-        transformOrigin: Item.TopRight
+        transformOrigin: Item.TopLeft
         Behavior on scale { PropertyAnimation { duration: 100 } }
         Rectangle {
             id: first_menu
@@ -526,6 +612,7 @@ Item {
             }
         }
     }
+    Component.onCompleted: fingerprint.opacity = 1
 }
 
 /*##^##
