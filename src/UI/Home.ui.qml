@@ -3,7 +3,6 @@ import QtQuick.Controls 6.2
 
 ApplicationWindow {
     id: window
-    /*width: 600*/
     width: (9/16) * height
     height: 800
     visible: true
@@ -11,7 +10,7 @@ ApplicationWindow {
     x: (Screen.width - width) / 2
     y: (Screen.height - height) / 2
     title: "CU Pay"
-    /*flags: Qt.FramelessWindowHint*/
+    //flags: Qt.FramelessWindowHint
     color: "transparent"
 
     Rectangle {
@@ -28,7 +27,6 @@ ApplicationWindow {
         visible: false
         anchors.top: white_rectangle.top
         source: "../images/culogo.jpg"
-        anchors.topMargin: 40
         anchors.horizontalCenter: white_rectangle.horizontalCenter
         fillMode: Image.PreserveAspectFit
     }
@@ -36,18 +34,6 @@ ApplicationWindow {
         id: page_loader
         source: "Splash.ui.qml"
         anchors.fill: parent
-    }
-    Image {
-        id: close
-        source: "../images/closebutton.png"
-        x: 25
-        y: x
-        height: 20
-        width: height
-        MouseArea {
-            anchors.fill: parent
-            onClicked: { backend.closeapp() ; window.close() }
-        }
     }
     Connections {
         target: backend
