@@ -3,8 +3,7 @@ import QtQuick.Controls 6.2
 
 Item {
     id: window
-    property var code: ""
-    property var correctpage: ""
+    property string correctpage: ""
     Rectangle {
         id: time ; width: 10 ; height: 10 ; visible: false
     }
@@ -21,7 +20,7 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: 35
         anchors.top: parent.top
-        anchors.topMargin: 87
+        anchors.topMargin: 40
         width: 30
         height: 30
         source: "../images/back.jpg"
@@ -29,7 +28,7 @@ Item {
         sourceSize.height: 100
         MouseArea {
             anchors.fill: parent
-            onClicked: { page_loader.source = correctpage ; revert() }
+            onClicked: { revert() ; page_loader.source = correctpage }
         }
     }
     Rectangle {
@@ -48,8 +47,8 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 120
         visible: fingerprint.visible
-        anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
+        onVisibleChanged: animatefingerprint()
         Text {
             width: 150
             height: 40
@@ -64,7 +63,7 @@ Item {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: switch1.checked = !switch1.checked
+            onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 0 }
         }
     }
     Rectangle {
@@ -82,8 +81,8 @@ Item {
         height: 40
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 120
-        anchors.horizontalCenterOffset: 100
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.right: parent.right
+        anchors.rightMargin: 60
         Text {
             width: 150
             height: 40
@@ -101,7 +100,7 @@ Item {
             anchors.fill: parent
             onClicked: {
                 if ( regno_field.text === "" | ver_field.text === "" | password.text === "" ) { displaydialog(2) }
-                else { backend.removesuper([regno_field.text, ver_field.text, "Pin", password.text]) }
+                else { displaybigdialog(2,1) }
             }
         }
     }
@@ -116,13 +115,10 @@ Item {
         color: "#ffffff"
         radius: 8
         //border.width: 3
-        width: 156
-        height: 40
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 120
+        width: 156 ; height: 40
+        anchors.bottom: parent.bottom ; anchors.bottomMargin: 120
         visible: ver.visible
-        anchors.horizontalCenterOffset: -100
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: parent.left ; anchors.leftMargin: 60
         Text {
             width: 160
             height: 40
@@ -137,20 +133,22 @@ Item {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: switch1.checked = !switch1.checked
+            onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 1 }
         }
     }
 
     // Verification Details -- Fingerprint, "Place finger" Information
     Image {
         id: fingerprint
-        y: 380
-        width: 160
-        height: 160
         visible: regno_checkBox.checked & !switch1.checked
+        opacity: 0
+        y: 380
+        width: 150
+        height: 150        
         source: "../images/whitefinger.jpg"
         anchors.horizontalCenter: parent.horizontalCenter
         fillMode: Image.PreserveAspectFit
+        Behavior on opacity { PropertyAnimation { duration: 500 } }
         MouseArea {
             anchors.fill: parent
             onClicked: {
@@ -161,17 +159,18 @@ Item {
     }
     Text {
         id: place_finger
+        visible: fingerprint.visible
+        opacity: fingerprint.opacity
         x: 297
         width: 262
-        height: 50
-        visible: fingerprint.visible
+        height: 50        
         text: qsTr("Place Finger on Scanner")
         anchors.top: fingerprint.bottom
-        font.pixelSize: 20
+        anchors.topMargin: 10
+        font.pixelSize: 18
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignTop
-        font.italic: true
-        anchors.topMargin: 10
+        font.italic: true        
         anchors.horizontalCenter: fingerprint.horizontalCenter
     }
 
@@ -184,13 +183,12 @@ Item {
         anchors.leftMargin: 60
         anchors.right: parent.right
         text: qsTr("Username")
-        font.pixelSize: 20
+        font.pixelSize: 19
         verticalAlignment: Text.AlignVCenter
-        fontSizeMode: Text.Fit
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
         font.styleName: "Regular"
-
+        font.bold: true
         CheckBox {
             id: regno_checkBox
             width: 13
@@ -201,7 +199,6 @@ Item {
             anchors.rightMargin: 60
             checked: false
         }
-
         Text {
             id: check_uncheck
             x: 336
@@ -215,7 +212,6 @@ Item {
             anchors.topMargin: 10
             anchors.rightMargin: -7
         }
-
         TextField {
             id: regno_field
             height: regno_box.height - 2
@@ -227,7 +223,7 @@ Item {
             baselineOffset: 15
             font.pointSize: 12
             topPadding: 7
-            leftPadding: 9
+            //leftPadding: 9
             rightPadding: 35
             placeholderText: qsTr("Username")
             readOnly: regno_checkBox.checked
@@ -240,11 +236,19 @@ Item {
             height: 40
             color: "transparent"
             radius: 5
-            border.width: 1
+            //border.width: 1
             anchors.left: parent.left
             anchors.top: parent.bottom
             anchors.right: regno_checkBox.left
             anchors.rightMargin: 15
+            Rectangle {
+                color: "black"
+                height: 1.5
+                anchors.left: parent.left
+                anchors.top: parent.bottom
+                anchors.topMargin: 1
+                anchors.right: parent.right
+            }
         }
         Image {
             id: clearregno
@@ -291,13 +295,12 @@ Item {
         anchors.leftMargin: 60
         anchors.right: parent.right
         text: qsTr("Username")
-        font.pixelSize: 20
+        font.pixelSize: 19
         verticalAlignment: Text.AlignVCenter
-        fontSizeMode: Text.Fit
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
         font.styleName: "Regular"
-
+        font.bold: true
         TextField {
             id: ver_field
             height: ver_box.height - 2
@@ -309,7 +312,7 @@ Item {
             baselineOffset: 15
             font.pointSize: 12
             topPadding: 7
-            leftPadding: 9
+            //leftPadding: 9
             rightPadding: 35
             placeholderText: qsTr("Super Admin Username")
             Rectangle {
@@ -321,11 +324,19 @@ Item {
             height: 40
             color: "transparent"
             radius: 5
-            border.width: 1
+            //border.width: 1
             anchors.left: parent.left
             anchors.top: parent.bottom
             anchors.right: parent.right
             anchors.rightMargin: 60
+            Rectangle {
+                color: "black"
+                height: 1.5
+                anchors.left: parent.left
+                anchors.top: parent.bottom
+                anchors.topMargin: 1
+                anchors.right: parent.right
+            }
         }
         Image {
             id: clearver
@@ -353,13 +364,12 @@ Item {
         width: 152
         height: 41
         text: qsTr("Pin")
-        font.pixelSize: 20
+        font.pixelSize: 19
         verticalAlignment: Text.AlignVCenter
-        fontSizeMode: Text.Fit
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
         font.styleName: "Regular"
-
+        font.bold: true
         TextField {
             id: password
             echoMode: TextInput.Password
@@ -372,7 +382,7 @@ Item {
             baselineOffset: 15
             font.pointSize: 12
             topPadding: 7
-            leftPadding: 9
+            //leftPadding: 9
             rightPadding: 35
             placeholderText: qsTr("Pin")
             Rectangle {
@@ -385,11 +395,19 @@ Item {
             height: ver_box.height
             color: "transparent"
             radius: 5
-            border.width: 1
+            //border.width: 1
             anchors.left: parent.left
             anchors.top: parent.bottom
             anchors.topMargin: 0
             anchors.leftMargin: 0
+            Rectangle {
+                color: "black"
+                height: 1.5
+                anchors.left: parent.left
+                anchors.top: parent.bottom
+                anchors.topMargin: 1
+                anchors.right: parent.right
+            }
         }
         Image {
             id: clearpin
@@ -415,7 +433,7 @@ Item {
             if (number === 1) { displaydialog(1) ; regno_checkBox.checked = false }
         }
         function onIncorrect(number) { if (number === 3) { displaydialog(3) } }
-        function onProceed(value) { if (value === 1) { displaybigdialog(1,1) } }
+        function onProceed(value) { if (value === 1) { displaybigdialog(0,2) ; exitbutton.visible = true } }
         function onFinishedprocess(pagetoload){ correctpage = pagetoload }
     }
 
@@ -427,9 +445,9 @@ Item {
         width: 150
         height: 20
         text: qsTr("Admin Removal")
-        font.pixelSize: 22
+        font.pixelSize: 20
         anchors.top: parent.top
-        anchors.topMargin: 87
+        anchors.topMargin: 40
         font.family: "Verdana"
         font.styleName: "Regular"
         font.bold: true
@@ -437,9 +455,9 @@ Item {
     Component.onCompleted: {
         image.scale = 0.6
         image.anchors.horizontalCenterOffset = 180
-        image.anchors.topMargin = 20
+        image.anchors.topMargin = -25
     }
-    function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = 0 }
+    function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = image.anchors.topMargin = 0 }
 
     // Small Dialog Display Timer
     SequentialAnimation {
@@ -455,6 +473,7 @@ Item {
 
     // Dialog Box functions
     function displaydialog(functionnum) {
+        dialog_timer.running = false ; time.width = 10
         dialog_small.anchors.bottomMargin = 10
         dialog_timer.running = true
         // 1 invalidDialog
@@ -470,9 +489,9 @@ Item {
     function closebigdialog() { dialog_big.visible = false ; f1_switch.checked = false }
 
     function displaybigdialog(buttonnum, functionnum) {
-        if (buttonnum === 0) { dialog_big.visible = true ; button_number.checked = false ; good_picture.visible = true }
+        if (buttonnum === 0) { dialog_big.visible = true ; button_number.checked = false ; good_picture.visible = false ; box.radius = 5 }
         if (buttonnum === 1) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = true }
-        if (buttonnum === 2) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = false }
+        if (buttonnum === 2) { dialog_big.visible = true ; button_number.checked = true ; good_picture.visible = false ; box.radius = 10 }
 
         // 1 confirmDialog
         if (functionnum === 1) {
@@ -549,7 +568,7 @@ Item {
             anchors.right: parent.right
             anchors.left: center_border2.right
             height: parent.height
-            onClicked: dialog_small.anchors.bottomMargin = -100
+            onClicked: { dialog_small.anchors.bottomMargin = -100 ; time.width = 10 }
             Text {
                 id: ok2
                 anchors.verticalCenter: parent.verticalCenter
@@ -590,6 +609,16 @@ Item {
             width: 400
             height: 200
             radius: 10
+            Rectangle {
+                id: greenslip; visible: !button_number.checked
+                anchors.top: box.top ; height: box.height ; width: box.radius * 2
+                anchors.left: box.left; radius: box.radius ; color: "darkgreen"
+            }
+            Rectangle {
+                visible: greenslip.visible
+                anchors.top: greenslip.top ; anchors.bottom: greenslip.bottom; anchors.right: greenslip.right
+                anchors.rightMargin: -1 ; width: greenslip.radius ; color: "white"
+            }
             Text {
                 id: header
                 anchors.top: parent.top
@@ -681,7 +710,7 @@ Item {
                 hoverEnabled: true
                 onEntered: { b1.color = "#a0a0a0" }
                 onExited: { b1.color = "black" }
-                onClicked: { displaybigdialog(0,2) ; exitbutton.visible = true }
+                onClicked: { closebigdialog() ; backend.removesuper([regno_field.text, ver_field.text, "Pin", password.text]) }
             }
             Rectangle {
                 anchors.top: b2.top ; anchors.topMargin: 0.5 ; visible: b2.visible
@@ -708,7 +737,7 @@ Item {
                 hoverEnabled: true
                 onEntered: { no.color = "#a0a0a0" }
                 onExited: { no.color = "black" }
-                onClicked: dialog_big.visible = false
+                onClicked: closebigdialog()
                 Text {
                     id: no
                     anchors.verticalCenter: parent.verticalCenter
@@ -737,7 +766,7 @@ Item {
                 height: 43
                 width: 280
                 color: "white"
-                radius: 8
+                radius: 5
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 20
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -783,6 +812,10 @@ Item {
         id: exitbutton
         visible: false
         anchors.fill: parent
-        onClicked: { page_loader.source = correctpage ; revert() }
+        onClicked: { revert() ; page_loader.source = correctpage }
+    }
+    function animatefingerprint() {
+        if (fingerprint.visible === true) { fingerprint.opacity = 1 }
+        else { fingerprint.opacity = 0 }
     }
 }
