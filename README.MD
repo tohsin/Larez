@@ -9,3 +9,17 @@ For admin, use fingerprint, it automatically generates '0000' as pin. You can ty
 supersheet = {'1': ''}
 adminsheet = {'2': '0000'}
 customersheet = {'3': '0000'}
+
+Create Virtual environment in python
+python3 -m venv venv
+to install all libraries
+pip install -r requirements.txt 
+
+pip freeze >requirements.txt
+
+Windows
+$ py -3 -m venv venv
+
+Activate virtual environment:
+venv\Scripts\activate
+
