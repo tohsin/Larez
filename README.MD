@@ -3,12 +3,11 @@ NB: Take note of anything that wasn't intuitive/user-friendly on your first use
 
 # To LOGIN: 
 Click the fingerprint icon to use it
-For superadmin, don't put a password, i did it that way for speed
-For admin, use fingerprint, it automatically generates '0000' as pin. You can type '0000' manually too, if you wish
+If you wish to manually fill, below are the details:
 
-supersheet = {'1': ''}
-adminsheet = {'2': '0000'}
-customersheet = {'3': '0000'}
+supersheet = {'11': '0011', '13': '0013', '15': '0015'} # '11' is logged in by clicking the fingerprint icon
+adminsheet = {'12': '0012', '14': '0014', '16': '0016'} # '12' is logged in by clicking the fingerprint icon
+customersheet = {'21': '0021', '22': '0022'} # '21' is logged in by clicking the fingerprint icon
 
 ### Create Virtual environment in python
 ```
