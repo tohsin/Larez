@@ -76,9 +76,10 @@ class Backend(QObject):
     14. Purchasefeature: Called to assign the variable which tells the program what amount was spent
     15. Transferrecipient: Checks if the beneficiary of a transaction exists
     16. Transferfeature: Called to assign the variables which tell the program what amount was transferred, the Recipient, and Recipient's means of identification
-    17. Checkuser: Called when registering a new user to be sure reg no doesn't already exist
-    18. Registeruser: Called to assign the variables which tell the program Reg No., Password, and Fingerprint of New User
-    19. Transactiondone: Called after a Purchase or Transfer was attempted regardless if it was successful or not
+    17. Deposit: Called when making a deposit to confirm admin to verify the deposit and update the database
+    18. Checkuser: Called when registering a new user to be sure reg no doesn't already exist
+    19. Registeruser: Called to assign the variables which tell the program Reg No., Password, and Fingerprint of New User
+    20. Transactiondone: Called after a Purchase or Transfer was attempted regardless if it was successful or not
     """
 
     @Slot(list)
