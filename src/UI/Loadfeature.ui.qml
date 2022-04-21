@@ -10,7 +10,6 @@ Item {
         visible: true
         color: "dimgrey"
         anchors.fill: parent
-        radius: 8
         opacity: 0.6
     }
     Rectangle {
@@ -18,15 +17,15 @@ Item {
         visible: true
         color: "#f6f6f6"
         anchors.centerIn: parent
-        width: height
-        height: parent.height / 2
+        width: height + 100
+        height: parent.height * 2/ 3
         radius: 8
     }
     AnimatedImage {
         id: pic
         source: "../images/loading.gif"
-        width: 250
-        height: (6/8) * width
+        width: 450
+        height: (3/4) * width
         anchors.horizontalCenter: box.horizontalCenter
         anchors.bottom: box.bottom
         anchors.bottomMargin: 85
@@ -41,7 +40,7 @@ Item {
         font.styleName: "Regular"
         width: 152
         height: 41
-        font.pixelSize: 20
+        font.pixelSize: 24
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignBottom
         color: "black"
