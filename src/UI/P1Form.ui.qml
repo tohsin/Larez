@@ -5,9 +5,10 @@ Item {
     id: window
     anchors.fill: parent
     property int code: 0
+    // scale: Math.max(1,(mainwindow.width - 1000)*1.2 / 920)
     Rectangle {
         id: time ; width: 10 ; height: 10 ; visible: false
-    }
+    }    
 
     // Navigation Buttons -- Log in, Use Pin, Use Fingerprint, Settings box, Menu bar
     Rectangle {
@@ -19,21 +20,22 @@ Item {
     Rectangle {
         id: log_in_button
         visible: switch1.checked
-        width: 114
-        height: 40
+        width: 150
+        height: 53
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 120
         anchors.right: parent.right
-        anchors.rightMargin: 60
+        anchors.rightMargin: use_fingerprint_button.anchors.leftMargin
         color: "black"
         radius: 8
         Text {
+            id: login_text
             width: 150
             height: 40
             color: "white"
             text: qsTr("Log In")
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 15
+            font.pixelSize: 20
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             font.bold: true
@@ -57,12 +59,11 @@ Item {
     Rectangle {
         id: use_pin_button
         color: "#ffffff"
-        radius: 8
-        //border.width: 3
-        width: 114
-        height: 40
+        radius: log_in_button.radius
+        width: log_in_button.width
+        height: log_in_button.height
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 120
+        anchors.bottomMargin: log_in_button.anchors.bottomMargin
         visible: !switch1.checked
         anchors.horizontalCenter: parent.horizontalCenter
         Text {
@@ -70,7 +71,7 @@ Item {
             height: 40
             text: qsTr("Use Pin")
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 15
+            font.pixelSize: login_text.font.pixelSize
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             font.bold: true
@@ -79,7 +80,7 @@ Item {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 0 ; settings_text.anchors.leftMargin = toggleswitch.anchors.rightMargin = 60 ; settings_text.anchors.bottomMargin = 130 }
+            onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 0 ; settings_text.anchors.leftMargin = toggleswitch.anchors.rightMargin = biometric.anchors.leftMargin ; settings_text.anchors.bottomMargin = 100 }
         }
     }
     Rectangle {
@@ -91,21 +92,21 @@ Item {
     Rectangle {
         id: use_fingerprint_button
         color: "#ffffff"
-        radius: 8
+        radius: log_in_button.radius
         //border.width: 3
-        width: 156
-        height: 40
+        width: 230
+        height: log_in_button.height
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 120
+        anchors.bottomMargin: log_in_button.anchors.bottomMargin
         visible: switch1.checked
         anchors.left: parent.left
-        anchors.leftMargin: 60        
+        anchors.leftMargin: biometric.anchors.leftMargin + 100
         Text {
             width: 160
             height: 40
             text: qsTr("Use Fingerprint")
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 15
+            font.pixelSize: login_text.font.pixelSize
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             font.bold: true
@@ -114,7 +115,7 @@ Item {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 1 ; settings_text.anchors.leftMargin = 95 ; settings_text.anchors.bottomMargin = 120 ; toggleswitch.anchors.rightMargin = 80 }
+            onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 1 ; settings_text.anchors.leftMargin = 200 ; settings_text.anchors.bottomMargin = 100 ; toggleswitch.anchors.rightMargin = settings_text.anchors.leftMargin }
         }
     }
     CheckBox {
@@ -129,10 +130,10 @@ Item {
         height: 20
         text: qsTr("Open Settings On Log In")
         anchors.bottom: use_fingerprint_button.top
-        anchors.bottomMargin: 120
+        anchors.bottomMargin: 100
         anchors.left: parent.left
-        anchors.leftMargin: 95
-        font.pixelSize: 14
+        anchors.leftMargin: 100
+        font.pixelSize: 16
         font.family: "Verdana"
         MouseArea {
             anchors.fill: parent
@@ -141,9 +142,9 @@ Item {
     }
     Rectangle {
         id: toggleswitch
-        anchors.right: parent.right ; anchors.rightMargin: 80
+        anchors.right: parent.right ; anchors.rightMargin: settings_text.anchors.leftMargin
         anchors.verticalCenter: settings_text.verticalCenter
-        color: "darkred" ; width: height * 1.5 ; height: 24 ; radius: height/2
+        color: "darkred" ; width: height * 1.5 ; height: 28 ; radius: height/2
         MouseArea {
             anchors.fill: parent
             onClicked: { settings_box.checked = !settings_box.checked ; togglecolor() }
@@ -157,41 +158,23 @@ Item {
             Behavior on anchors.horizontalCenterOffset { PropertyAnimation { duration: 100 } }
         }
     }
-
     Switch {
         id: switch1
         checked: false ; visible: false
     }
     Text {
-        visible: use_pin_button.visible
-        anchors.bottom: use_pin_button.top ; anchors.bottomMargin: 50
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: 260 ; height: 41
-        text: qsTr("No Account? Click here to <b>Register</b>")
-        font.pixelSize: 15
-        verticalAlignment: Text.AlignVCenter
-        font.capitalization: Font.Capitalize
-        font.family: "Verdana" ; font.styleName: "Regular"
-        MouseArea {
-            anchors.right: parent.right ; anchors.verticalCenter: parent.verticalCenter
-            height: parent.height ; width: 75
-            onClicked: { page_loader.source = "Registersuper.ui.qml" ; backend.menubranch(1) }
-        }
-    }
-    Text {
         id: registeraccount
-        visible: use_fingerprint_button.visible
-        anchors.bottom: use_fingerprint_button.top ; anchors.bottomMargin: 60
-        anchors.left: parent.left ; anchors.leftMargin: 60
-        width: 260 ; height: 41
+        anchors.bottom: use_fingerprint_button.top ; anchors.bottomMargin: 40
+        anchors.left: settings_text.left
+        width: 300 ; height: 40
         text: qsTr("No Account? Click here to <b>Register</b>")
-        font.pixelSize: 15
+        font.pixelSize: 16
         verticalAlignment: Text.AlignVCenter
         font.capitalization: Font.Capitalize
         font.family: "Verdana" ; font.styleName: "Regular"
         MouseArea {
             anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
-            height: parent.height; width: 75
+            height: parent.height; width: 80
             onClicked: { page_loader.source = "Registersuper.ui.qml" ; backend.menubranch(1) }
         }
     }
@@ -217,23 +200,27 @@ Item {
     Text {
         id: biometric
         visible: !switch1.checked
-        anchors.left: parent.left ; anchors.leftMargin: 60
+        anchors.left: parent.left ; anchors.leftMargin: 100
         anchors.top: parent.top ; anchors.topMargin: 200
         width: 152 ; height: 41
         text: qsTr("Super Admin")
-        font.pixelSize: 19
+        font.pixelSize: 20
         verticalAlignment: Text.AlignVCenter
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
         font.styleName: "Regular"
         font.bold: true
+        MouseArea {
+            anchors.fill: parent
+            onClicked: console.log(window.scale, mainwindow.width)
+        }
     }
     Image {
         id: fingerprint
         visible: !switch1.checked
         opacity: 0
         anchors.top: biometric.bottom
-        anchors.topMargin: 30
+        anchors.topMargin: 10
         width: 150
         height: 150
         source: "../images/whitefinger.jpg"
@@ -259,7 +246,8 @@ Item {
         anchors.top: fingerprint.bottom
         anchors.topMargin: 10
         anchors.horizontalCenter: fingerprint.horizontalCenter
-        font.pixelSize: 18
+        font.family: "Calibri" ; font.styleName: "Regular"
+        font.pixelSize: 22
         font.italic: true
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignTop
@@ -270,11 +258,11 @@ Item {
         id: superadmin
         visible: switch1.checked
         anchors.top: parent.top ; anchors.topMargin: 200
-        anchors.left: parent.left ;  anchors.leftMargin: 60
+        anchors.left: parent.left ;  anchors.leftMargin: biometric.anchors.leftMargin
         anchors.right: parent.right
         height: 41
         text: qsTr("Super Admin")
-        font.pixelSize: 19
+        font.pixelSize: biometric.font.pixelSize
         verticalAlignment: Text.AlignVCenter
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
@@ -282,10 +270,11 @@ Item {
         font.bold: true
         TextField {
             id: username
+            font.family: "Calibri"
             width: username_box.width
             height: username_box.height - 2
             placeholderText: qsTr("Username")
-            font.pixelSize: 16
+            font.pixelSize: 20
             topPadding: 7
             //leftPadding: 9
             rightPadding: 35
@@ -307,7 +296,7 @@ Item {
             anchors.left: parent.left
             anchors.top: parent.bottom
             anchors.right: parent.right
-            anchors.rightMargin: 60
+            anchors.rightMargin: biometric.anchors.leftMargin
             Rectangle {
                 color: "black"
                 height: 1.5
@@ -338,12 +327,12 @@ Item {
     Text {
         id: pin
         visible: switch1.checked
-        anchors.left: parent.left ; anchors.leftMargin: 60
+        anchors.left: superadmin.left
         anchors.top: parent.top ; anchors.topMargin: 370
         width: 152
         height: 41
         text: qsTr("Pin")
-        font.pixelSize: 19
+        font.pixelSize: biometric.font.pixelSize
         verticalAlignment: Text.AlignVCenter
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
@@ -351,11 +340,12 @@ Item {
         font.bold: true
         TextField {
             id: password
+            font.family: "Calibri"
             echoMode: TextInput.Password
             width: username_box.width
             height: username_box.height - 2
             placeholderText: qsTr("Pin")
-            font.pixelSize: 16
+            font.pixelSize: username.font.pixelSize
             topPadding: 7
             //leftPadding: 9
             rightPadding: 35
@@ -413,7 +403,7 @@ Item {
             duration: 4000
             to: 100
         }
-        ScriptAction { script: { dialog_small.anchors.bottomMargin = -100 ; time.width = 10 } }
+        ScriptAction { script: { dialog_small.anchors.bottomMargin = -(dialog_small.height + 20) ; time.width = 10 } }
     }
     function togglecolor() {
         if (settings_box.checked === true) { toggleswitch.color = "darkgreen" ; flicker.anchors.horizontalCenterOffset = (toggleswitch.height / 4) }
@@ -423,22 +413,22 @@ Item {
     // Dialog Box functions
     function displaydialog(functionnum) {
         dialog_timer.running = false ; time.width = 10
-        dialog_small.anchors.bottomMargin = 10
+        dialog_small.anchors.bottomMargin = 20
         dialog_timer.running = true
         // 1 incorrectDialog
         if (functionnum === 1) { information2.text = qsTr("Invalid Username or Password") }
     }
+
     // Small Dialog Box Components
     Rectangle {
         id: dialog_small
         visible: true
         color: "#f0f0f0"
-        border.width: 0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: -100
-        width: 400
-        height: 80
+        anchors.bottomMargin: -(height + 20)
+        width: 700
+        height: (width / 5) - 30
         radius: 15
         Behavior on anchors.bottomMargin { PropertyAnimation { duration: 100 } }
         Text {
@@ -447,11 +437,11 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: center_border2.left
             anchors.leftMargin: 10
-            anchors.rightMargin: 10
+            anchors.rightMargin: anchors.leftMargin
             font.family: "Verdana"
             font.styleName: "Regular"
             height: parent.height
-            font.pixelSize: 14
+            font.pixelSize: 20
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             color: "black"
@@ -463,12 +453,12 @@ Item {
         Image {
             id: bad_picture2
             anchors.left: parent.left
-            anchors.leftMargin: 15
+            anchors.leftMargin: width/2
             anchors.verticalCenter: parent.verticalCenter
-            width: 25
+            width: 50
             height: width
-            sourceSize.width: 50
-            sourceSize.height: 50
+            sourceSize.width: width + 20
+            sourceSize.height: width + 20
             source: "../images/warning.png"
             fillMode: Image.PreserveAspectFit
         }
@@ -478,18 +468,18 @@ Item {
             opacity: 0.7
             width: 2
             anchors.top: parent.top
-            anchors.topMargin: 10
+            anchors.topMargin: 20
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 10
+            anchors.bottomMargin: anchors.topMargin
             anchors.right: parent.right
-            anchors.rightMargin: 60
+            anchors.rightMargin: 100
         }
         MouseArea {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.left: center_border2.right
             height: parent.height
-            onClicked: { dialog_small.anchors.bottomMargin = -100 ; time.width = 10 }
+            onClicked: { dialog_small.anchors.bottomMargin = -(dialog_small.height + 20) ; time.width = 10 }
             Text {
                 id: ok2
                 anchors.verticalCenter: parent.verticalCenter
@@ -498,7 +488,7 @@ Item {
                 font.styleName: "Regular"
                 width: 152
                 height: parent.height
-                font.pixelSize: 14
+                font.pixelSize: information2.font.pixelSize
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 color: "black"
@@ -534,7 +524,7 @@ Item {
         anchors.left: menubar.left
         anchors.top: menubar.bottom
         anchors.topMargin: 10
-        width: 150
+        width: 190
         height: menu.radius + first_menu.height + second_menu.height + menu.radius
         radius: 5
         scale: 0
@@ -546,7 +536,7 @@ Item {
             anchors.top: parent.top
             anchors.topMargin: menu.radius
             anchors.right: parent.right
-            height: 35 - menu.radius
+            height: 40 - menu.radius
             color: menu.color
             MouseArea {
                 anchors.fill: parent
@@ -563,9 +553,9 @@ Item {
                 height: 30
                 font.family: "Verdana"
                 width: parent.width
-                font.pixelSize: 14
+                font.pixelSize: 16
                 text: qsTr("New Admin")
-                leftPadding: 15
+                leftPadding: 30
             }
         }
         Rectangle {
@@ -606,7 +596,7 @@ Item {
                 height: 30
                 font.family: "Verdana"
                 width: parent.width
-                font.pixelSize: 14
+                font.pixelSize: newadmin.font.pixelSize
                 text: qsTr("Remove Admin")
                 leftPadding: newadmin.leftPadding
             }

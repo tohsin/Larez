@@ -74,11 +74,11 @@ Item {
         Rectangle {
             id: grid_1_1_purchase
             anchors.left: parent.left
-            anchors.leftMargin: 20
+            anchors.leftMargin: 80
             anchors.top: greybackground.top
             anchors.topMargin: 80
-            width: 190
-            height: width + 20
+            width: 400
+            height: 200
             radius: 4
             MouseArea {
                 anchors.fill: parent
@@ -133,10 +133,10 @@ Item {
         Rectangle {
             id: grid_1_2_transfer
             anchors.right: parent.right
-            anchors.rightMargin: 20
+            anchors.rightMargin: grid_1_1_purchase.anchors.leftMargin
             anchors.top: grid_1_1_purchase.top
-            width: 190
-            height: width + 20
+            width: grid_1_1_purchase.width
+            height: grid_1_1_purchase.height
             radius: 4
             MouseArea {
                 anchors.fill: parent
@@ -191,9 +191,9 @@ Item {
             id: grid_2_1_deposit
             anchors.left: grid_1_1_purchase.left
             anchors.top: grid_1_1_purchase.bottom
-            anchors.topMargin: 30
-            width: 190
-            height: width + 20
+            anchors.topMargin: 50
+            width: grid_1_1_purchase.width
+            height: grid_1_1_purchase.height
             radius: 4
             MouseArea {
                 anchors.fill: parent
@@ -248,8 +248,8 @@ Item {
             id: grid_2_2_register
             anchors.right: grid_1_2_transfer.right
             anchors.top: grid_2_1_deposit.top
-            width: 190
-            height: width + 20
+            width: grid_1_1_purchase.width
+            height: grid_1_1_purchase.height
             radius: 4
             MouseArea {
                 anchors.fill: parent
@@ -307,7 +307,7 @@ Item {
             width: 160
             height: 41
             text: qsTr("Tapping a feature will redirect you to the Login Page")
-            font.pixelSize: 14
+            font.pixelSize: 16
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             anchors.horizontalCenter: parent.horizontalCenter
@@ -351,9 +351,9 @@ Item {
             color: "#f8f8f8"
             visible: false
             anchors.left: menubar.left
-            anchors.top: menubar.top
-            anchors.topMargin: 35
-            width: 200
+            anchors.top: menubar.bottom
+            anchors.topMargin: 10
+            width: 230
             height: menu.radius + first_menu.height + second_menu.height + third_menu.height + menu.radius
             radius: 5
             scale: 0
@@ -365,7 +365,7 @@ Item {
                 anchors.top: parent.top
                 anchors.topMargin: menu.radius
                 anchors.right: parent.right
-                height: 35 - menu.radius
+                height: 40 - menu.radius
                 color: menu.color
                 MouseArea {
                     anchors.fill: parent
@@ -375,14 +375,14 @@ Item {
                     onClicked: menu21.visible = !menu21.visible
                 }
                 Text {
-                    id: logout
+                    id: manage
                     anchors.verticalCenter: first_menu.verticalCenter
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                     height: 30
                     font.family: "Verdana"
                     width: parent.width
-                    font.pixelSize: 14
+                    font.pixelSize: 16
                     text: qsTr("Manage Admins")
                     leftPadding: 30
                 }
@@ -418,7 +418,7 @@ Item {
                 anchors.left: parent.left
                 anchors.top: first_menu.bottom
                 anchors.right: parent.right
-                height: 35
+                height: 40
                 color: menu.color
                 MouseArea {
                     anchors.fill: parent
@@ -428,16 +428,16 @@ Item {
                     onClicked: displaybigdialog(2,1)
                 }
                 Text {
-                    id: new_user
+                    id: logout
                     anchors.left: parent.left
                     anchors.verticalCenter: second_menu.verticalCenter
                     verticalAlignment: Text.AlignVCenter
                     height: 30
                     font.family: "Verdana"
                     width: parent.width
-                    font.pixelSize: 14
+                    font.pixelSize: manage.font.pixelSize
                     text: qsTr("Logout Admin")
-                    leftPadding: logout.leftPadding
+                    leftPadding: manage.leftPadding
                 }
             }
             Rectangle {
@@ -455,16 +455,16 @@ Item {
                     onClicked: displaybigdialog(2,2)
                 }
                 Text {
-                    id: remove_user
+                    id: logout_super
                     anchors.verticalCenter: third_menu.verticalCenter
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                     height: 30
                     font.family: "Verdana"
                     width: parent.width
-                    font.pixelSize: 14
+                    font.pixelSize: manage.font.pixelSize
                     text: qsTr("Logout Super Admin")
-                    leftPadding: logout.leftPadding
+                    leftPadding: manage.leftPadding
                 }
             }
             Rectangle {
@@ -472,8 +472,8 @@ Item {
                 visible: false
                 anchors.left: first_menu.right
                 anchors.top: first_menu.top
-                height: 30
-                width: 150
+                height: 40
+                width: 180
                 color: menu.color
                 MouseArea {
                     anchors.fill: parent
@@ -483,13 +483,14 @@ Item {
                     onClicked: { page_loader.source = "Registersuper.ui.qml" ; backend.menubranch(3) }
                 }
                 Text {
+                    id: reg_admin
                     anchors.verticalCenter: menu21.verticalCenter
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                     height: 30
                     width: parent.width
                     font.family: "Verdana"
-                    font.pixelSize: 13
+                    font.pixelSize: 16
                     text: qsTr("Register Admin")
                     leftPadding: 25
                 }
@@ -516,9 +517,9 @@ Item {
                     height: 30
                     font.family: "Verdana"
                     width: parent.width
-                    font.pixelSize: 13
+                    font.pixelSize: reg_admin.font.pixelSize
                     text: qsTr("Remove Admin")
-                    leftPadding: 25
+                    leftPadding: reg_admin.leftPadding
                 }
             }
             Rectangle {
