@@ -1,14 +1,18 @@
 import QtQuick 2.14
 import QtQuick.Controls 2.5
+import QtQuick.Window 2.15
+//import QtVirtualKeyboard.VirtualKeyboard 2.15
+//import QtQuick.VirtualKeyboard 2.15
+
 
 ApplicationWindow {
-    id: window
-    width: (9/16) * height
-    height: 800
+    id: mainwindow
+    width: (4/3) * height
+    height: 768
+    //width: Screen.width
+    //height: Screen.height
     visible: true
     visibility: "Windowed"
-    //x: (Screen.width - width) / 2
-    //y: (Screen.height - height) / 2
     title: "CU Pay"
     //flags: Qt.FramelessWindowHint
     color: "transparent"
@@ -18,7 +22,6 @@ ApplicationWindow {
         visible: true
         color: "#ffffff"
         anchors.fill: parent
-        //radius: 8   
     }
     Image {
         id: image
@@ -27,6 +30,8 @@ ApplicationWindow {
         visible: false
         anchors.top: white_rectangle.top
         source: "../images/culogo.jpg"
+        sourceSize.height: 300
+        sourceSize.width: 300
         anchors.horizontalCenter: white_rectangle.horizontalCenter
         fillMode: Image.PreserveAspectFit
     }
