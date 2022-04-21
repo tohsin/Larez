@@ -42,17 +42,17 @@ Item {
             duration: 4000
             to: 100
         }
-        ScriptAction { script: { dialog_small.anchors.bottomMargin = -100 ; time.width = 10 } }
+        ScriptAction { script: { dialog_small.anchors.bottomMargin = -(dialog_small.height + 20) ; time.width = 10 } }
     }
 
     // Navigation Buttons -- Total Amount, Submit button, Menu bar, ScrollView
     Text {
         id: total
-        width: 150
+        width: 160
         height: 40
         text: qsTr("Total: " + aTotal)
         anchors.verticalCenter: submit_button.verticalCenter
-        font.pixelSize: 15
+        font.pixelSize: 18
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         font.bold: true
@@ -69,18 +69,19 @@ Item {
         id: submit_button
         color: "black"
         radius: 8
-        width: 115
-        height: 40
+        width: 150
+        height: 53
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 60
         anchors.horizontalCenter: parent.horizontalCenter
         Text {
+            id: submit_text
             width: 150
             height: 40
             color: "white"
             text: qsTr("Submit")
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 15
+            font.pixelSize: 20
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             font.bold: true
@@ -150,13 +151,14 @@ Item {
                 }
             }
             Text {
-                id: place_finger
+                id: place_finger                
                 width: 262
                 height: 50
                 visible: use_username_button.visible
                 text: qsTr("Place Finger on Scanner")
                 anchors.top: fingerprint.bottom
-                font.pixelSize: 17
+                font.family: "Calibri"
+                font.pixelSize: 21
                 font.italic: true
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignTop
@@ -175,19 +177,20 @@ Item {
             color: "#ffffff"
             radius: 8
             //border.width: 3
-            width: 150
-            height: 40
+            width: submit_button.width + 40
+            height: submit_button.height
             anchors.top: fingerprint.bottom
             anchors.topMargin: 50
             anchors.horizontalCenter: parent.horizontalCenter
             visible: !switch1.checked & !renderswitch1.checked
             onVisibleChanged: animatefingerprint(1)
             Text {
+                id: number_text
                 width: 160
                 height: 40
                 text: qsTr("Type Number")
                 anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 15
+                font.pixelSize: 18
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 font.bold: true
@@ -211,8 +214,8 @@ Item {
             color: "#ffffff"
             radius: 8
             //border.width: 3
-            width: 156
-            height: 40
+            width: 230
+            height: submit_button.height
             anchors.top: fingerprint.bottom
             anchors.topMargin: use_username_button.anchors.topMargin
             visible: switch1.checked & !renderswitch1.checked
@@ -222,7 +225,7 @@ Item {
                 height: 40
                 text: qsTr("Use Fingerprint")
                 anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 15
+                font.pixelSize: number_text.font.pixelSize
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 font.bold: true
@@ -242,10 +245,10 @@ Item {
             anchors.topMargin: 20
             height: 41
             anchors.left: parent.left
-            anchors.leftMargin: 60
+            anchors.leftMargin: 100
             anchors.right: parent.right
             text: qsTr("Amount")
-            font.pixelSize: 19
+            font.pixelSize: 20
             verticalAlignment: Text.AlignVCenter
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
@@ -253,6 +256,7 @@ Item {
             font.bold: true
             TextField {
                 id: amount_field
+                font.family: "Calibri"
                 height: amount_box.height - 2
                 anchors.verticalCenter: amount_box.verticalCenter
                 anchors.left: amount_box.left
@@ -280,7 +284,7 @@ Item {
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
-                anchors.rightMargin: 60
+                anchors.rightMargin: amount.anchors.leftMargin
                 Rectangle {
                     color: "black"
                     height: 1.5
@@ -314,11 +318,10 @@ Item {
             anchors.top: amount.bottom
             anchors.topMargin: 100
             height: 41
-            anchors.left: parent.left
-            anchors.leftMargin: 60
+            anchors.left: amount.left
             anchors.right: parent.right
             text: qsTr("Recipient")
-            font.pixelSize: 19
+            font.pixelSize: amount.font.pixelSize
             verticalAlignment: Text.AlignVCenter
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
@@ -326,6 +329,7 @@ Item {
             font.bold: true
             TextField {
                 id: username_field
+                font.family: "Calibri"
                 height: username_box.height - 2
                 visible: use_fingerprint_button.visible
                 anchors.verticalCenter: username_box.verticalCenter
@@ -353,7 +357,7 @@ Item {
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
-                anchors.rightMargin: 60
+                anchors.rightMargin: amount.anchors.leftMargin
                 Rectangle {
                     color: "black"
                     height: 1.5
@@ -369,12 +373,13 @@ Item {
                 width: 140
                 height: 40
                 text: qsTr("Proceed  >")
+                font.family: "Verdana"
                 anchors.right: username_box.right
                 anchors.top: username_box.bottom
-                font.pixelSize: 16
+                font.pixelSize: 17
                 font.bold: true
                 horizontalAlignment: Text.AlignRight
-                anchors.topMargin: 13
+                anchors.topMargin: 15
                 anchors.rightMargin: -5
                 MouseArea {
                     anchors.fill: parent
@@ -382,7 +387,7 @@ Item {
                         if (username_field.text === '' | amount_field.text === '') { displaydialog(4) }
                         else if (checkamount(parseFloat(amount_field.text)) === 0) { return }
                         else { backend.transferrecipient([username_field.text, 1]) }
-                        if (renderswitch1.checked === true) { rendered1.height = 75 ; scrollView.contentHeight = scrollView.contentHeight - 300 ; changecolor(1) }
+                        if (renderswitch1.checked === true) { rendered1.height = 85 ; scrollView.contentHeight = scrollView.contentHeight - 300 ; changecolor(1) }
                     }
                 }
             }
@@ -409,12 +414,12 @@ Item {
             radius: 5
             height: 360
             anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.leftMargin: 40
+            anchors.left: amount.left
+            anchors.leftMargin: -20
             anchors.right: parent.right
-            anchors.rightMargin: 40
+            anchors.rightMargin: 100 + anchors.leftMargin
             color: "transparent"
-            border.width: 1
+            border.width: 1.5
             border.color: "#d0d0d0"
             Text {
                 id: name1
@@ -426,7 +431,7 @@ Item {
                 height: 30
                 width: 50
                 text: qsTr("Recipient:  ")
-                font.pixelSize: 15
+                font.pixelSize: 17
                 verticalAlignment: Text.AlignVCenter
                 font.capitalization: Font.AllUppercase
                 font.family: "Verdana"
@@ -442,7 +447,7 @@ Item {
                 height: name1.height
                 width: 50
                 text: qsTr("Amount:  <b>" + amount_field.text + "</b>")
-                font.pixelSize: 15
+                font.pixelSize: name1.font.pixelSize
                 verticalAlignment: Text.AlignVCenter
                 font.capitalization: Font.AllUppercase
                 font.family: "Verdana"
@@ -478,18 +483,18 @@ Item {
             visible: !multi_switch2.checked
             anchors.top: rendered2.top
             anchors.topMargin: 20
-            anchors.left: parent.left
-            anchors.leftMargin: 60
-            width: 50
+            anchors.left: amount.left
+            width: 55
             height: width
             radius: width / 2
             color: "dimgray"
             Text {
+                id: add_tran2
                 anchors.left: parent.right
                 anchors.leftMargin: 20
                 anchors.verticalCenter: parent.verticalCenter
                 text: qsTr("Additional Transfer")
-                font.pixelSize: 15
+                font.pixelSize: 17
                 verticalAlignment: Text.AlignVCenter
                 font.bold: true
                 font.family: "Verdana"
@@ -550,7 +555,8 @@ Item {
                 visible: use_username_button2.visible
                 text: qsTr("Place Finger on Scanner")
                 anchors.top: fingerprint2.bottom
-                font.pixelSize: 17
+                font.family: "Calibri"
+                font.pixelSize: 21
                 font.italic: true
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignTop
@@ -566,11 +572,10 @@ Item {
         }
         Rectangle {
             id: use_username_button2
-            color: "#ffffff"
-            radius: 8
+            radius: use_username_button.radius
             //border.width: 3
-            width: 150
-            height: 40
+            width: use_username_button.width
+            height: use_username_button.height
             anchors.top: fingerprint2.bottom
             anchors.topMargin: 50
             visible: !switch2.checked & !renderswitch2.checked & multi_switch2.checked
@@ -581,7 +586,7 @@ Item {
                 height: 40
                 text: qsTr("Type Number")
                 anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 15
+                font.pixelSize: number_text.font.pixelSize
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 font.bold: true
@@ -602,22 +607,20 @@ Item {
         }
         Rectangle {
             id: use_fingerprint_button2
-            color: "#ffffff"
-            radius: 8
+            radius: use_fingerprint_button.radius
             //border.width: 3
-            width: 156
-            height: 40
+            width: use_fingerprint_button.width
+            height: use_fingerprint_button.height
             anchors.top: fingerprint2.bottom
             anchors.topMargin: use_username_button2.anchors.topMargin
             visible: switch2.checked & !renderswitch2.checked & multi_switch2.checked
-            anchors.horizontalCenterOffset: 0
             anchors.horizontalCenter: parent.horizontalCenter
             Text {
                 width: 160
                 height: 40
                 text: qsTr("Use Fingerprint")
                 anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 15
+                font.pixelSize: number_text.font.pixelSize
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 font.bold: true
@@ -636,11 +639,10 @@ Item {
             anchors.top: rendered2.top
             anchors.topMargin: 20
             height: 41
-            anchors.left: parent.left
-            anchors.leftMargin: 60
+            anchors.left: amount.left
             anchors.right: parent.right
             text: qsTr("Amount 2")
-            font.pixelSize: 19
+            font.pixelSize: amount.font.pixelSize
             verticalAlignment: Text.AlignVCenter
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
@@ -648,6 +650,7 @@ Item {
             font.bold: true
             TextField {
                 id: amount_field2
+                font.family: "Calibri"
                 height: amount_box2.height - 2
                 anchors.verticalCenter: amount_box2.verticalCenter
                 anchors.left: amount_box2.left
@@ -675,7 +678,7 @@ Item {
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
-                anchors.rightMargin: 60
+                anchors.rightMargin: amount.anchors.leftMargin
                 Rectangle {
                     color: "black"
                     height: 1.5
@@ -709,11 +712,10 @@ Item {
             anchors.top: amount2.bottom
             anchors.topMargin: 100
             height: 41
-            anchors.left: parent.left
-            anchors.leftMargin: 60
+            anchors.left: amount.left
             anchors.right: parent.right
             text: qsTr("Recipient 2")
-            font.pixelSize: 19
+            font.pixelSize: amount.font.pixelSize
             verticalAlignment: Text.AlignVCenter
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
@@ -721,6 +723,7 @@ Item {
             font.bold: true
             TextField {
                 id: username_field2
+                font.family: "Calibri"
                 height: username_box2.height - 2
                 visible: use_fingerprint_button2.visible
                 anchors.verticalCenter: username_box2.verticalCenter
@@ -748,7 +751,7 @@ Item {
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
-                anchors.rightMargin: 60
+                anchors.rightMargin: amount.anchors.leftMargin
                 Rectangle {
                     color: "black"
                     height: 1.5
@@ -760,16 +763,16 @@ Item {
             }
             Text {
                 id: proceed2
-                x: 336
                 width: 140
                 height: 40
                 text: qsTr("Proceed  >")
+                font.family: proceed.font.family
                 anchors.right: username_box2.right
                 anchors.top: username_box2.bottom
-                font.pixelSize: 16
+                font.pixelSize: proceed.font.pixelSize
                 font.bold: true
                 horizontalAlignment: Text.AlignRight
-                anchors.topMargin: 13
+                anchors.topMargin: proceed.anchors.topMargin
                 anchors.rightMargin: -5
                 MouseArea {
                     anchors.fill: parent
@@ -777,7 +780,7 @@ Item {
                         if (username_field2.text === '' | amount_field2.text === '') { displaydialog(4) }
                         else if (checkamount(parseFloat(amount_field2.text)) === 0) { return }
                         else { backend.transferrecipient([username_field2.text, 2]) }
-                        if (renderswitch2.checked === true) { rendered2.height = 75 ; scrollView.contentHeight = scrollView.contentHeight - 300 ; changecolor(2) }
+                        if (renderswitch2.checked === true) { rendered2.height = 85 ; scrollView.contentHeight = scrollView.contentHeight - 300 ; changecolor(2) }
                     }
                 }
             }
@@ -806,7 +809,7 @@ Item {
             height: 90
             anchors.top: rendered1.bottom
             anchors.topMargin: 30
-            anchors.left: parent.left
+            anchors.left: amount2.left
             anchors.leftMargin: rendered1.anchors.leftMargin
             anchors.right: parent.right
             anchors.rightMargin: rendered1.anchors.rightMargin
@@ -817,13 +820,13 @@ Item {
                 id: name2
                 visible: renderswitch2.checked
                 anchors.top: parent.top
-                anchors.topMargin: 10
+                anchors.topMargin: name1.anchors.topMargin
                 anchors.left: parent.left
-                anchors.leftMargin: 20
+                anchors.leftMargin: name1.anchors.leftMargin
                 height: 30
                 width: 50
                 text: qsTr("Recipient 2:  ")
-                font.pixelSize: 15
+                font.pixelSize: name1.font.pixelSize
                 verticalAlignment: Text.AlignVCenter
                 font.capitalization: Font.AllUppercase
                 font.family: "Verdana"
@@ -839,7 +842,7 @@ Item {
                 height: name2.height
                 width: 50
                 text: qsTr("Amount 2:  <b>" + amount_field2.text + "</b>")
-                font.pixelSize: 15
+                font.pixelSize: name1.font.pixelSize
                 verticalAlignment: Text.AlignVCenter
                 font.capitalization: Font.AllUppercase
                 font.family: "Verdana"
@@ -915,9 +918,8 @@ Item {
             visible: !multi_switch3.checked & multi_switch2.checked
             anchors.top: rendered3.top
             anchors.topMargin: 20
-            anchors.left: parent.left
-            anchors.leftMargin: 60
-            width: 50
+            anchors.left: amount.left
+            width: entry2.width
             height: width
             radius: width / 2
             color: "dimgray"
@@ -926,7 +928,7 @@ Item {
                 anchors.leftMargin: 20
                 anchors.verticalCenter: parent.verticalCenter
                 text: qsTr("Additional Transfer")
-                font.pixelSize: 15
+                font.pixelSize: add_tran2.font.pixelSize
                 verticalAlignment: Text.AlignVCenter
                 font.bold: true
                 font.family: "Verdana"
@@ -987,7 +989,8 @@ Item {
                 visible: use_username_button3.visible
                 text: qsTr("Place Finger on Scanner")
                 anchors.top: fingerprint3.bottom
-                font.pixelSize: 17
+                font.family: "Calibri"
+                font.pixelSize: 21
                 font.italic: true
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignTop
@@ -1003,11 +1006,10 @@ Item {
         }
         Rectangle {
             id: use_username_button3
-            color: "#ffffff"
-            radius: 8
+            radius: use_username_button.radius
             //border.width: 3
-            width: 150
-            height: 40
+            width: use_username_button.width
+            height: use_username_button.height
             anchors.top: fingerprint3.bottom
             anchors.topMargin: 50
             visible: !switch3.checked & !renderswitch3.checked & multi_switch3.checked
@@ -1018,7 +1020,7 @@ Item {
                 height: 40
                 text: qsTr("Type Number")
                 anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 15
+                font.pixelSize: number_text.font.pixelSize
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 font.bold: true
@@ -1039,11 +1041,10 @@ Item {
         }
         Rectangle {
             id: use_fingerprint_button3
-            color: "#ffffff"
-            radius: 8
+            radius: use_fingerprint_button.radius
             //border.width: 3
-            width: 156
-            height: 40
+            width: use_fingerprint_button.width
+            height: use_fingerprint_button.height
             anchors.top: fingerprint3.bottom
             anchors.topMargin: use_username_button3.anchors.topMargin
             visible: switch3.checked & !renderswitch3.checked & multi_switch3.checked
@@ -1053,7 +1054,7 @@ Item {
                 height: 40
                 text: qsTr("Use Fingerprint")
                 anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 15
+                font.pixelSize: number_text.font.pixelSize
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 font.bold: true
@@ -1072,11 +1073,10 @@ Item {
             anchors.top: rendered3.top
             anchors.topMargin: 20
             height: 41
-            anchors.left: parent.left
-            anchors.leftMargin: 60
+            anchors.left: amount.left
             anchors.right: parent.right
             text: qsTr("Amount 3")
-            font.pixelSize: 19
+            font.pixelSize: amount.font.pixelSize
             verticalAlignment: Text.AlignVCenter
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
@@ -1084,6 +1084,7 @@ Item {
             font.bold: true
             TextField {
                 id: amount_field3
+                font.family: "Calibri"
                 height: amount_box3.height - 2
                 anchors.verticalCenter: amount_box3.verticalCenter
                 anchors.left: amount_box3.left
@@ -1111,7 +1112,7 @@ Item {
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
-                anchors.rightMargin: 60
+                anchors.rightMargin: amount.anchors.leftMargin
                 Rectangle {
                     color: "black"
                     height: 1.5
@@ -1145,11 +1146,10 @@ Item {
             anchors.top: amount3.bottom
             anchors.topMargin: 100
             height: 41
-            anchors.left: parent.left
-            anchors.leftMargin: 60
+            anchors.left: amount.left
             anchors.right: parent.right
             text: qsTr("Recipient 3")
-            font.pixelSize: 19
+            font.pixelSize: amount.font.pixelSize
             verticalAlignment: Text.AlignVCenter
             font.capitalization: Font.AllUppercase
             font.family: "Verdana"
@@ -1157,6 +1157,7 @@ Item {
             font.bold: true
             TextField {
                 id: username_field3
+                font.family: "Calibri"
                 height: username_box3.height - 2
                 visible: use_fingerprint_button3.visible
                 anchors.verticalCenter: username_box3.verticalCenter
@@ -1184,7 +1185,7 @@ Item {
                 anchors.left: parent.left
                 anchors.top: parent.bottom
                 anchors.right: parent.right
-                anchors.rightMargin: 60
+                anchors.rightMargin: amount.anchors.leftMargin
                 Rectangle {
                     color: "black"
                     height: 1.5
@@ -1200,12 +1201,13 @@ Item {
                 width: 140
                 height: 40
                 text: qsTr("Proceed  >")
+                font.family: proceed.font.family
                 anchors.right: username_box3.right
                 anchors.top: username_box3.bottom
-                font.pixelSize: 16
+                font.pixelSize: proceed.font.pixelSize
                 font.bold: true
                 horizontalAlignment: Text.AlignRight
-                anchors.topMargin: 13
+                anchors.topMargin: proceed.anchors.topMargin
                 anchors.rightMargin: -5
                 MouseArea {
                     anchors.fill: parent
@@ -1213,7 +1215,7 @@ Item {
                         if (username_field3.text === '' | amount_field3.text === '') { displaydialog(4) }
                         else if (checkamount(parseFloat(amount_field3.text)) === 0) { return }
                         else { backend.transferrecipient([username_field3.text, 3]) }
-                        if (renderswitch3.checked === true) { rendered3.height = 75 ; scrollView.contentHeight = scrollView.contentHeight - 300 ; changecolor(3) }
+                        if (renderswitch3.checked === true) { rendered3.height = 85 ; scrollView.contentHeight = scrollView.contentHeight - 300 ; changecolor(3) }
                     }
                 }
             }
@@ -1243,7 +1245,7 @@ Item {
             height: 90
             anchors.top: rendered2.bottom
             anchors.topMargin: 30
-            anchors.left: parent.left
+            anchors.left: amount3.left
             anchors.leftMargin: rendered1.anchors.leftMargin
             anchors.right: parent.right
             anchors.rightMargin: rendered1.anchors.rightMargin
@@ -1254,13 +1256,13 @@ Item {
                 id: name3
                 visible: renderswitch3.checked
                 anchors.top: parent.top
-                anchors.topMargin: 10
+                anchors.topMargin: name1.anchors.topMargin
                 anchors.left: parent.left
-                anchors.leftMargin: 20
+                anchors.leftMargin: name1.anchors.leftMargin
                 height: 30
                 width: 50
                 text: qsTr("Recipient 3:  ")
-                font.pixelSize: 15
+                font.pixelSize: name1.font.pixelSize
                 verticalAlignment: Text.AlignVCenter
                 font.capitalization: Font.AllUppercase
                 font.family: "Verdana"
@@ -1276,7 +1278,7 @@ Item {
                 height: name3.height
                 width: 50
                 text: qsTr("Amount 3:  <b>" + amount_field3.text + "</b>")
-                font.pixelSize: 15
+                font.pixelSize: name1.font.pixelSize
                 verticalAlignment: Text.AlignVCenter
                 font.capitalization: Font.AllUppercase
                 font.family: "Verdana"
@@ -1346,7 +1348,7 @@ Item {
     // Dialog Box functions
     function displaydialog(functionnum) {
         dialog_timer.running = false ; time.width = 10
-        dialog_small.anchors.bottomMargin = 10
+        dialog_small.anchors.bottomMargin = 20
         dialog_timer.running = true
         // 1 insufDialog
         if (functionnum === 1) { information2.text = qsTr("Amount You Entered Exceeds Your Available Balance") }
@@ -1430,7 +1432,7 @@ Item {
         width: 150
         height: 20
         text: qsTr(" Window")
-        font.pixelSize: 20
+        font.pixelSize: 25
         anchors.top: parent.top
         anchors.topMargin: 40
         font.family: "Verdana"
@@ -1465,7 +1467,7 @@ Item {
             width: 100
             height: 20
             text: "Hi, "
-            font.pixelSize: 16
+            font.pixelSize: 18
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: profile.right
             anchors.leftMargin: 10
@@ -1500,7 +1502,7 @@ Item {
             width: 150
             height: 20
             text: "Available "
-            font.pixelSize: 16
+            font.pixelSize: loggeduser.font.pixelSize
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: credit.right
             anchors.leftMargin: 10
@@ -1520,10 +1522,10 @@ Item {
         visible: false
         checked: false
     }
-    //Image { id: image }
+
     Component.onCompleted: {
         image.scale = 0.6
-        image.anchors.horizontalCenterOffset = 180
+        image.anchors.horizontalCenterOffset = (mainwindow.width / 2) - 45
         image.anchors.topMargin = -25
     }
     function revert() {
@@ -1552,7 +1554,7 @@ Item {
         anchors.left: menubar.left
         anchors.top: menubar.bottom
         anchors.topMargin: 10
-        width: 250
+        width: 280
         height: menu.radius + first_menu.height + second_menu.height + third_menu.height + fourth_menu.height + menu.radius
         radius: 5
         scale: 0
@@ -1564,7 +1566,7 @@ Item {
             anchors.top: parent.top
             anchors.topMargin: menu.radius
             anchors.right: parent.right
-            height: 35 - menu.radius
+            height: 40 - menu.radius
             color: menu.color
             MouseArea {
                 anchors.fill: parent
@@ -1581,7 +1583,7 @@ Item {
                 height: 30
                 font.family: "Verdana"
                 width: parent.width
-                font.pixelSize: 14
+                font.pixelSize: 16
                 text: qsTr("Logout User")
                 leftPadding: 30
             }
@@ -1607,7 +1609,7 @@ Item {
             anchors.left: parent.left
             anchors.top: first_menu.bottom
             anchors.right: parent.right
-            height: 35
+            height: 40
             color: menu.color
             MouseArea {
                 anchors.fill: parent
@@ -1624,7 +1626,7 @@ Item {
                 height: 30
                 font.family: "Verdana"
                 width: parent.width
-                font.pixelSize: 14
+                font.pixelSize: logout.font.pixelSize
                 text: qsTr("Switch to Deposit Mode")
                 leftPadding: logout.leftPadding
             }
@@ -1634,7 +1636,7 @@ Item {
             anchors.left: parent.left
             anchors.top: second_menu.bottom
             anchors.right: parent.right
-            height: 35
+            height: second_menu.height
             color: menu.color
             MouseArea {
                 anchors.fill: parent
@@ -1651,7 +1653,7 @@ Item {
                 height: 30
                 font.family: "Verdana"
                 width: parent.width
-                font.pixelSize: 14
+                font.pixelSize: logout.font.pixelSize
                 text: qsTr("Switch to Purchase Mode")
                 leftPadding: logout.leftPadding
             }
@@ -1678,7 +1680,7 @@ Item {
                 height: 30
                 font.family: "Verdana"
                 width: parent.width
-                font.pixelSize: 14
+                font.pixelSize: logout.font.pixelSize
                 text: qsTr("Switch to Registration Mode")
                 leftPadding: logout.leftPadding
             }
@@ -1690,25 +1692,24 @@ Item {
         id: dialog_small
         visible: true
         color: "#f0f0f0"
-        border.width: 0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: -100
-        width: 400
-        height: 80
+        anchors.bottomMargin: -(height + 20)
+        width: 700
+        height: (width / 5) - 30
         radius: 15
         Behavior on anchors.bottomMargin { PropertyAnimation { duration: 100 } }
         Text {
             id: information2
             anchors.left: bad_picture2.right
-            anchors.leftMargin: 10
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: center_border2.left
-            anchors.rightMargin: 10
+            anchors.leftMargin: 10
+            anchors.rightMargin: anchors.leftMargin
             font.family: "Verdana"
             font.styleName: "Regular"
             height: parent.height
-            font.pixelSize: 14
+            font.pixelSize: 20
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             color: "black"
@@ -1720,12 +1721,12 @@ Item {
         Image {
             id: bad_picture2
             anchors.left: parent.left
-            anchors.leftMargin: 15
+            anchors.leftMargin: width/2
             anchors.verticalCenter: parent.verticalCenter
-            width: 25
+            width: 50
             height: width
-            sourceSize.width: 50
-            sourceSize.height: 50
+            sourceSize.width: width + 20
+            sourceSize.height: width + 20
             source: "../images/warning.png"
             fillMode: Image.PreserveAspectFit
         }
@@ -1735,18 +1736,18 @@ Item {
             opacity: 0.7
             width: 2
             anchors.top: parent.top
-            anchors.topMargin: 10
+            anchors.topMargin: 20
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 10
+            anchors.bottomMargin: anchors.topMargin
             anchors.right: parent.right
-            anchors.rightMargin: 60
+            anchors.rightMargin: 100
         }
         MouseArea {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.left: center_border2.right
             height: parent.height
-            onClicked: { dialog_small.anchors.bottomMargin = -100 ; time.width = 10 }
+            onClicked: { dialog_small.anchors.bottomMargin = -(dialog_small.height + 20) ; time.width = 10 }
             Text {
                 id: ok2
                 anchors.verticalCenter: parent.verticalCenter
@@ -1755,7 +1756,7 @@ Item {
                 font.styleName: "Regular"
                 width: 152
                 height: parent.height
-                font.pixelSize: 14
+                font.pixelSize: information2.font.pixelSize
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 color: "black"
@@ -1784,20 +1785,19 @@ Item {
             id: box
             color: "white"
             anchors.centerIn: parent
-            width: 400
-            height: 200
+            width: 700
+            height: width / 2
             radius: 10
             Text {
                 id: header
                 anchors.top: parent.top
-                anchors.topMargin: 15
+                anchors.topMargin: 30
                 anchors.horizontalCenter: parent.horizontalCenter
-                anchors.leftMargin: 20
                 height: 40
                 font.family: "Verdana"
                 font.styleName: "Regular"
                 width: parent.width - 40
-                font.pixelSize: 17
+                font.pixelSize: 24
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 color: "black"
@@ -1807,15 +1807,15 @@ Item {
             }
             Text {
                 id: information
-                anchors.top: good_picture.bottom
-                anchors.topMargin: 20
+                anchors.top: header.bottom
+                anchors.topMargin: header.anchors.topMargin // 30
                 anchors.left: parent.left
-                anchors.leftMargin: 20
+                anchors.leftMargin: anchors.topMargin
                 anchors.bottom: b1.top
                 font.family: "Verdana"
                 font.styleName: "Regular"
                 width: parent.width - 40
-                font.pixelSize: 14
+                font.pixelSize: 21
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignTop
                 color: "black"
@@ -1828,7 +1828,7 @@ Item {
                 id: good_picture
                 visible: true
                 anchors.top: parent.top
-                anchors.topMargin: 15
+                anchors.topMargin: 20
                 anchors.left: parent.left
                 anchors.leftMargin: 18
                 width: 35
@@ -1847,14 +1847,14 @@ Item {
             Rectangle {
                 id: b1
                 visible: button_number.checked
-                height: 43
-                width: 140
+                height: 50
+                width: 170
                 color: "black"
                 radius: 8
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: 20
+                anchors.bottomMargin: header.anchors.topMargin + 20 // 50
                 anchors.left: parent.left
-                anchors.leftMargin: 30
+                anchors.leftMargin: anchors.bottomMargin * 2 // 60
                 Text {
                     id: yes
                     anchors.verticalCenter: parent.verticalCenter
@@ -1863,7 +1863,7 @@ Item {
                     font.styleName: "Regular"
                     width: 152
                     height: parent.height
-                    font.pixelSize: 16
+                    font.pixelSize: 22
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: "white"

@@ -22,18 +22,19 @@ Item {
     Rectangle {
         id: logout_button
         radius: 8
-        width: 115
-        height: 40
+        width: 150
+        height: 53
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 100
+        anchors.bottomMargin: 90
         anchors.left: parent.left
-        anchors.leftMargin: 60
+        anchors.leftMargin: continue_button.anchors.rightMargin
         Text {
+            id: logout_text
             width: 150
             height: 40
             text: qsTr("Log Out")
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 15
+            font.pixelSize: 19
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             font.bold: true
@@ -42,7 +43,7 @@ Item {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: { revert() ; backend.superadminlogout(0) ; page_loader.source = "P1Form.ui.qml" }
+            onClicked: displaybigdialog(2,1)
         }
     }
     Rectangle {
@@ -53,20 +54,20 @@ Item {
     }
     Rectangle {
         id: continue_button
-        width: 115
-        height: 40
+        width: logout_button.width
+        height: logout_button.height
         anchors.bottom: logout_button.bottom
         anchors.right: parent.right
-        anchors.rightMargin: 60
+        anchors.rightMargin: loggeduser.anchors.leftMargin + 50
         color: "black"
-        radius: 8
+        radius: logout_button.radius
         Text {
             width: 150
             height: 40
             color: "white"
             text: qsTr("Continue")
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 15
+            font.pixelSize: logout_text.font.pixelSize
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             font.bold: true
@@ -83,11 +84,11 @@ Item {
     Rectangle {
         id: level1
         anchors.left: parent.left
-        anchors.leftMargin: 20
+        anchors.leftMargin: 80
         anchors.top: topbar.bottom
-        anchors.topMargin: 80
-        width: 190
-        height: width //+ 30
+        anchors.topMargin: 70
+        width: 400
+        height: 190 //+ 30
         radius: 4
         MouseArea {
             anchors.fill: parent
@@ -126,7 +127,7 @@ Item {
             width: 160
             height: 41
             text: qsTr("Edit Your Profile")
-            font.pixelSize: 15
+            font.pixelSize: 17
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             anchors.horizontalCenter: parent.horizontalCenter
@@ -141,10 +142,10 @@ Item {
     }
     Rectangle {
         anchors.right: parent.right
-        anchors.rightMargin: 20
+        anchors.rightMargin: level1.anchors.leftMargin
         anchors.top: level1.top
-        width: 190
-        height: width //+ 30
+        width: level1.width
+        height: level1.height //+ 30
         radius: 4
         MouseArea {
             anchors.fill: parent
@@ -183,7 +184,7 @@ Item {
             width: 160
             height: 41
             text: qsTr("View Transactions")
-            font.pixelSize: 15
+            font.pixelSize: edit1.font.pixelSize
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             anchors.horizontalCenter: parent.horizontalCenter
@@ -200,9 +201,9 @@ Item {
         id: level2
         anchors.left: level1.left
         anchors.top: level1.bottom
-        anchors.topMargin: 30
-        width: 190
-        height: width //+ 30
+        anchors.topMargin: 50
+        width: level1.width
+        height: level1.height //+ 30
         radius: 4
         MouseArea {
             anchors.fill: parent
@@ -239,7 +240,7 @@ Item {
             width: 160
             height: 41
             text: qsTr("View Admin Log")
-            font.pixelSize: 15
+            font.pixelSize: edit1.font.pixelSize
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             anchors.horizontalCenter: parent.horizontalCenter
@@ -254,10 +255,10 @@ Item {
     }
     Rectangle {
         anchors.right: parent.right
-        anchors.rightMargin: 20
+        anchors.rightMargin: level1.anchors.leftMargin
         anchors.top: level2.top
-        width: 190
-        height: width //+ 30
+        width: level1.width
+        height: level1.height //+ 30
         radius: 4
         MouseArea {
             anchors.fill: parent
@@ -296,7 +297,7 @@ Item {
             width: 160
             height: 41
             text: qsTr("Print Statement")
-            font.pixelSize: 15
+            font.pixelSize: edit1.font.pixelSize
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             anchors.horizontalCenter: parent.horizontalCenter
@@ -327,7 +328,7 @@ Item {
         width: 150
         height: 20
         text: qsTr("Super Admin Dashboard")
-        font.pixelSize: 19
+        font.pixelSize: 25
         anchors.top: parent.top
         anchors.topMargin: 40
         font.family: "Verdana"
@@ -339,11 +340,11 @@ Item {
         width: 100
         height: 30
         text: ""
-        font.pixelSize: 16
+        font.pixelSize: 18
         anchors.top: topbar.bottom
         anchors.topMargin: 20
         anchors.left: parent.left
-        anchors.leftMargin: 40
+        anchors.leftMargin: 150
         font.family: "Verdana"
         font.styleName: "Regular"
         //font.bold: true
@@ -355,10 +356,10 @@ Item {
         width: 150
         height: 30
         text: ""
-        font.pixelSize: 16
+        font.pixelSize: loggeduser.font.pixelSize
         anchors.top: loggeduser.top
         anchors.right: parent.right
-        anchors.rightMargin: 40
+        anchors.rightMargin: loggeduser.anchors.leftMargin
         font.family: "Verdana"
         font.styleName: "Regular"
         //font.bold: true
@@ -399,9 +400,9 @@ Item {
         color: "#f8f8f8"
         visible: false
         anchors.left: menubar.left
-        anchors.top: menubar.top
-        anchors.topMargin: 35
-        width: 200
+        anchors.top: menubar.bottom
+        anchors.topMargin: 10
+        width: 230
         height: menu.radius + first_menu.height + second_menu.height + menu.radius
         radius: 5
         scale: 0
@@ -413,7 +414,7 @@ Item {
             anchors.top: parent.top
             anchors.topMargin: menu.radius
             anchors.right: parent.right
-            height: 35 - menu.radius
+            height: 40 - menu.radius
             color: menu.color
             MouseArea {
                 anchors.fill: parent
@@ -423,14 +424,14 @@ Item {
                 onClicked: menu21.visible = !menu21.visible
             }
             Text {
-                id: logout
+                id: manage
                 anchors.verticalCenter: first_menu.verticalCenter
                 anchors.left: parent.left
                 verticalAlignment: Text.AlignVCenter
                 height: 30
                 font.family: "Verdana"
                 width: parent.width
-                font.pixelSize: 14
+                font.pixelSize: 16
                 text: qsTr("Manage Admins")
                 leftPadding: 30
             }
@@ -439,7 +440,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 15
                 source: '../images/right.png'
-                height: 10
+                height: 12
                 width: height + 2
                 sourceSize.width: 30
                 sourceSize.height: 30
@@ -476,16 +477,16 @@ Item {
                 onClicked: displaybigdialog(2,1)
             }
             Text {
-                id: new_user
+                id: logout
                 anchors.left: parent.left
                 anchors.verticalCenter: second_menu.verticalCenter
                 verticalAlignment: Text.AlignVCenter
                 height: 30
                 font.family: "Verdana"
                 width: parent.width
-                font.pixelSize: 14
+                font.pixelSize: manage.font.pixelSize
                 text: qsTr("Logout Super Admin")
-                leftPadding: logout.leftPadding
+                leftPadding: manage.leftPadding
             }
         }
         Rectangle {
@@ -493,8 +494,8 @@ Item {
             visible: false
             anchors.left: first_menu.right
             anchors.top: first_menu.top
-            height: 30
-            width: 150
+            height: 40
+            width: 180
             color: menu.color
             MouseArea {
                 anchors.fill: parent
@@ -504,13 +505,14 @@ Item {
                 onClicked: { revert() ; page_loader.source = "Registersuper.ui.qml" ; backend.menubranch(4) }
             }
             Text {
+                id: reg_admin
                 anchors.verticalCenter: menu21.verticalCenter
                 anchors.left: parent.left
                 verticalAlignment: Text.AlignVCenter
                 height: 30
                 width: parent.width
                 font.family: "Verdana"
-                font.pixelSize: 13
+                font.pixelSize: 16
                 text: qsTr("Register Admin")
                 leftPadding: 25
             }
@@ -537,9 +539,9 @@ Item {
                 height: 30
                 font.family: "Verdana"
                 width: parent.width
-                font.pixelSize: 13
+                font.pixelSize: reg_admin.font.pixelSize
                 text: qsTr("Remove Admin")
-                leftPadding: 25
+                leftPadding: reg_admin.leftPadding
             }
         }
         Rectangle {
@@ -556,7 +558,7 @@ Item {
 
     Component.onCompleted: {
         image.scale = 0.6
-        image.anchors.horizontalCenterOffset = 180
+        image.anchors.horizontalCenterOffset = (mainwindow.width / 2) - 45 // 467
         image.anchors.topMargin = -25
         white_rectangle.color = "#f8f8f8"
     }
@@ -575,14 +577,14 @@ Item {
             duration: 4000
             to: 100
         }
-        ScriptAction { script: { dialog_small.anchors.bottomMargin = -100 ; time.width = 10 } }
+        ScriptAction { script: { dialog_small.anchors.bottomMargin = -(dialog_small.height + 20) ; time.width = 10 } }
     }
     // Dialog Box functions
     function closebigdialog() { dialog_big.visible = false ; f1_switch.checked = f2_switch.checked = false }
 
     function displaydialog(functionnum) {
         dialog_timer.running = false ; time.width = 10
-        dialog_small.anchors.bottomMargin = 10
+        dialog_small.anchors.bottomMargin = 20
         dialog_timer.running = true
         // 1 scamDialog
         if (functionnum === 1) { information2.text = qsTr("No function has been assigned to any...lol") }
@@ -607,12 +609,11 @@ Item {
         id: dialog_small
         visible: true
         color: "#f0f0f0"
-        border.width: 0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: -100
-        width: 400
-        height: 80
+        anchors.bottomMargin: -(height + 20)
+        width: 700
+        height: (width / 5) - 30
         radius: 15
         Behavior on anchors.bottomMargin { PropertyAnimation { duration: 100 } }
         Text {
@@ -621,11 +622,11 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: center_border2.left
             anchors.leftMargin: 10
-            anchors.rightMargin: 10
+            anchors.rightMargin: anchors.leftMargin
             font.family: "Verdana"
             font.styleName: "Regular"
             height: parent.height
-            font.pixelSize: 14
+            font.pixelSize: 20
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             color: "black"
@@ -637,12 +638,12 @@ Item {
         Image {
             id: bad_picture2
             anchors.left: parent.left
-            anchors.leftMargin: 15
+            anchors.leftMargin: width/2
             anchors.verticalCenter: parent.verticalCenter
-            width: 25
+            width: 50
             height: width
-            sourceSize.width: 50
-            sourceSize.height: 50
+            sourceSize.width: width + 20
+            sourceSize.height: width + 20
             source: "../images/warning.png"
             fillMode: Image.PreserveAspectFit
         }
@@ -652,18 +653,18 @@ Item {
             opacity: 0.7
             width: 2
             anchors.top: parent.top
-            anchors.topMargin: 10
+            anchors.topMargin: 20
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 10
+            anchors.bottomMargin: anchors.topMargin
             anchors.right: parent.right
-            anchors.rightMargin: 60
+            anchors.rightMargin: 100
         }
         MouseArea {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.left: center_border2.right
             height: parent.height
-            onClicked: { dialog_small.anchors.bottomMargin = -100 ; time.width = 10 }
+            onClicked: { dialog_small.anchors.bottomMargin = -(dialog_small.height + 20) ; time.width = 10 }
             Text {
                 id: ok2
                 anchors.verticalCenter: parent.verticalCenter
@@ -672,7 +673,7 @@ Item {
                 font.styleName: "Regular"
                 width: 152
                 height: parent.height
-                font.pixelSize: 14
+                font.pixelSize: information2.font.pixelSize
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 color: "black"
@@ -701,20 +702,19 @@ Item {
             id: box
             color: "white"
             anchors.centerIn: parent
-            width: 400
-            height: 200
+            width: 700
+            height: width / 2
             radius: 10
             Text {
                 id: header
                 anchors.top: parent.top
-                anchors.topMargin: 15
+                anchors.topMargin: 30
                 anchors.horizontalCenter: parent.horizontalCenter
-                anchors.leftMargin: 20
                 height: 40
                 font.family: "Verdana"
                 font.styleName: "Regular"
                 width: parent.width - 40
-                font.pixelSize: 17
+                font.pixelSize: 24
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 color: "black"
@@ -724,15 +724,15 @@ Item {
             }
             Text {
                 id: information
-                anchors.top: good_picture.bottom
-                anchors.topMargin: 20
+                anchors.top: header.bottom
+                anchors.topMargin: header.anchors.topMargin // 30
                 anchors.left: parent.left
-                anchors.leftMargin: 20
+                anchors.leftMargin: anchors.topMargin
                 anchors.bottom: b1.top
                 font.family: "Verdana"
                 font.styleName: "Regular"
                 width: parent.width - 40
-                font.pixelSize: 14
+                font.pixelSize: 21
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignTop
                 color: "black"
@@ -745,7 +745,7 @@ Item {
                 id: good_picture
                 visible: true
                 anchors.top: parent.top
-                anchors.topMargin: 15
+                anchors.topMargin: 20
                 anchors.left: parent.left
                 anchors.leftMargin: 18
                 width: 35
@@ -764,14 +764,14 @@ Item {
             Rectangle {
                 id: b1
                 visible: button_number.checked
-                height: 43
-                width: 140
+                height: 50
+                width: 170
                 color: "black"
                 radius: 8
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: 20
+                anchors.bottomMargin: header.anchors.topMargin + 20 // 50
                 anchors.left: parent.left
-                anchors.leftMargin: 30
+                anchors.leftMargin: anchors.bottomMargin * 2 // 60
                 Text {
                     id: yes
                     anchors.verticalCenter: parent.verticalCenter
@@ -780,7 +780,7 @@ Item {
                     font.styleName: "Regular"
                     width: 152
                     height: parent.height
-                    font.pixelSize: 16
+                    font.pixelSize: 22
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: "white"
@@ -831,7 +831,7 @@ Item {
                     font.styleName: "Regular"
                     width: 152
                     height: parent.height
-                    font.pixelSize: 15
+                    font.pixelSize: yes.font.pixelSize
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: "black"

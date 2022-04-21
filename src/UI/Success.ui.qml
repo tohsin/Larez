@@ -9,11 +9,11 @@ Item {
     }
     Image {
         id: success
-        height: 200
+        height: 300
         width: height
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: -50
+        anchors.verticalCenterOffset: -80
         source: "../images/success.png"
     }
     Text {
@@ -23,7 +23,7 @@ Item {
         anchors.topMargin: 35
         width: 140
         height: 40
-        font.pixelSize: 22
+        font.pixelSize: 26
         font.bold: true
         font.capitalization: Font.Capitalize
         font.family: "Verdana"
