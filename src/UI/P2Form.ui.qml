@@ -1,5 +1,6 @@
 import QtQuick 2.14
 import QtQuick.Controls 2.5
+import "keyboard"
 
 Item {
     id: window
@@ -293,6 +294,7 @@ Item {
             //leftPadding: 9
             rightPadding: 35
             placeholderText: qsTr("Username")
+            onPressed: inputPaneln.showKeyboard = true
             Rectangle {
                 anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
             }
@@ -402,6 +404,54 @@ Item {
                 anchors.fill: parent
                 onClicked: password.text = ""
             }
+        }
+    }
+
+    // Keyboards
+    InputPanelN {
+        id: inputPaneln
+        property bool showKeyboard :  false
+        y: showKeyboard ? parent.height - height : parent.height
+        Behavior on y {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
+        anchors.leftMargin: mainwindow.width/10
+        anchors.rightMargin: mainwindow.width/10
+        anchors.left: parent.left
+        anchors.right: parent.right
+        Rectangle {
+            id: leftblackn
+            anchors.right: parent.left ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+        Rectangle {
+            id: rightblackn
+            anchors.left: parent.right ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+    }
+    InputPanel {
+        id: inputPanel
+        property bool showKeyboard :  false
+        y: showKeyboard ? parent.height - height : parent.height
+        Behavior on y {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
+        anchors.leftMargin: mainwindow.width/10
+        anchors.rightMargin: mainwindow.width/10
+        anchors.left: parent.left
+        anchors.right: parent.right
+        Rectangle {
+            id: leftblack
+            anchors.right: parent.left ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+        Rectangle {
+            id: rightblack
+            anchors.left: parent.right ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
         }
     }
 
@@ -691,6 +741,7 @@ Item {
         function onIncorrect(number) {
             if (number === 1) { displaydialog(1) }
         }
+        function onHidekeyboard() { inputPaneln.showKeyboard = inputPanel.showKeyboard = false }
     }
 
     // Menu Bar Component contd -- Background

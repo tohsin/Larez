@@ -1,5 +1,6 @@
 import QtQuick 2.14
 import QtQuick.Controls 2.5
+import "keyboard"
 
 Item {
     id: window
@@ -8,7 +9,7 @@ Item {
     // scale: Math.max(1,(mainwindow.width - 1000)*1.2 / 920)
     Rectangle {
         id: time ; width: 10 ; height: 10 ; visible: false
-    }    
+    }        
 
     // Navigation Buttons -- Log in, Use Pin, Use Fingerprint, Settings box, Menu bar
     Rectangle {
@@ -283,6 +284,7 @@ Item {
             anchors.right: username_box.right
             anchors.rightMargin: 1
             anchors.leftMargin: 1
+            onPressed: { hidekeyboard() ; inputPaneln.showKeyboard = true }
             Rectangle {
                 anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
             }
@@ -354,6 +356,7 @@ Item {
             anchors.right: password_box.right
             anchors.rightMargin: 1
             anchors.leftMargin: 1
+            onPressed: inputPaneln.showKeyboard = true
             Rectangle {
                 anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
             }
@@ -394,6 +397,54 @@ Item {
         }
     }
 
+    // Keyboards
+    InputPanelN {
+        id: inputPaneln
+        property bool showKeyboard :  false
+        y: showKeyboard ? parent.height - height : parent.height
+        Behavior on y {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
+        anchors.leftMargin: mainwindow.width/10
+        anchors.rightMargin: mainwindow.width/10
+        anchors.left: parent.left
+        anchors.right: parent.right
+        Rectangle {
+            id: leftblackn
+            anchors.right: parent.left ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+        Rectangle {
+            id: rightblackn
+            anchors.left: parent.right ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+    }
+    InputPanel {
+        id: inputPanel
+        property bool showKeyboard :  false
+        y: showKeyboard ? parent.height - height : parent.height
+        Behavior on y {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
+        anchors.leftMargin: mainwindow.width/10
+        anchors.rightMargin: mainwindow.width/10
+        anchors.left: parent.left
+        anchors.right: parent.right
+        Rectangle {
+            id: leftblack
+            anchors.right: parent.left ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+        Rectangle {
+            id: rightblack
+            anchors.left: parent.right ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+    }
+
     // Small Dialog Display Timer
     SequentialAnimation {
         id: dialog_timer
@@ -409,6 +460,7 @@ Item {
         if (settings_box.checked === true) { toggleswitch.color = "darkgreen" ; flicker.anchors.horizontalCenterOffset = (toggleswitch.height / 4) }
         else { toggleswitch.color = "darkred" ; flicker.anchors.horizontalCenterOffset = -(toggleswitch.height / 4) }
     }
+    function hidekeyboard() { inputPaneln.showKeyboard = inputPanel.showKeyboard = false }
 
     // Dialog Box functions
     function displaydialog(functionnum) {
@@ -503,6 +555,7 @@ Item {
         function onIncorrect(number) {
             if (number === 1) { displaydialog(1) }
         }
+        function onHidekeyboard() { inputPaneln.showKeyboard = inputPanel.showKeyboard = false }
     }
 
     // Menu Bar Items Components
