@@ -1,5 +1,6 @@
 import QtQuick 2.14
 import QtQuick.Controls 2.5
+import "keyboard"
 
 Item {
     id: window
@@ -18,9 +19,9 @@ Item {
         id: time ; width: 10 ; height: 10 ; visible: false
     }
     property string accName: ""
-    property var code: ""
-    property var aNum: ""
-    property var aTotal: 0
+    property int code: 0
+    property real aNum: 0
+    property real aTotal: 0
 
     // Success Display Timer
     SequentialAnimation {
@@ -269,8 +270,9 @@ Item {
                 //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Amount")
-                validator: IntValidator {bottom: 1; top: 100000}
+                validator: IntValidator { bottom: 1; top: 100000 }
                 inputMethodHints: Qt.ImhDigitsOnly
+                onPressed: inputPaneln.showKeyboard = true
                 Rectangle {
                     anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
                 }
@@ -343,6 +345,7 @@ Item {
                 //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Account No. / Reg No.")
+                onPressed: inputPaneln.showKeyboard = true
                 Rectangle {
                     anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
                 }
@@ -665,6 +668,7 @@ Item {
                 placeholderText: qsTr("Amount 2")
                 validator: IntValidator {bottom: 1; top: 100000}
                 inputMethodHints: Qt.ImhDigitsOnly
+                onPressed: inputPaneln.showKeyboard = true
                 Rectangle {
                     anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
                 }
@@ -737,6 +741,7 @@ Item {
                 //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Account No. / Reg No. 2")
+                onPressed: inputPaneln.showKeyboard = true
                 Rectangle {
                     anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
                 }
@@ -1099,6 +1104,7 @@ Item {
                 placeholderText: qsTr("Amount 3")
                 validator: IntValidator {bottom: 1; top: 100000}
                 inputMethodHints: Qt.ImhDigitsOnly
+                onPressed: inputPaneln.showKeyboard = true
                 Rectangle {
                     anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
                 }
@@ -1171,6 +1177,7 @@ Item {
                 //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Account No. / Reg No. 3")
+                onPressed: inputPaneln.showKeyboard = true
                 Rectangle {
                     anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
                 }
@@ -1417,11 +1424,9 @@ Item {
             if (code === 1) { name1.text = qsTr("Recipient:  <b>" + accName + "</b>") ; renderswitch1.checked = true }
             else if (code === 2) { name2.text = qsTr("Recipient 2:  <b>" + accName + "</b>") ; renderswitch2.checked = true }
             else if (code === 3) { name3.text = qsTr("Recipient 3:  <b>" + accName + "</b>") ; renderswitch3.checked = true }
-            preparesum()
-            determinetotal()
-            changecolor(0)
-            aftersum()
+            preparesum() ; determinetotal() ; changecolor(0) ; aftersum()
         }
+        function onHidekeyboard() { inputPaneln.showKeyboard = inputPanel.showKeyboard = false }
     }
 
     // Page / User Information -- Feature name, Name of User, Account Balance of User
@@ -1531,6 +1536,54 @@ Item {
     function revert() {
         image.scale = 1
         image.anchors.horizontalCenterOffset = image.anchors.topMargin = 0
+    }
+
+    // Keyboards
+    InputPanelN {
+        id: inputPaneln
+        property bool showKeyboard :  false
+        y: showKeyboard ? parent.height - height : parent.height
+        Behavior on y {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
+        anchors.leftMargin: mainwindow.width/10
+        anchors.rightMargin: mainwindow.width/10
+        anchors.left: parent.left
+        anchors.right: parent.right
+        Rectangle {
+            id: leftblackn
+            anchors.right: parent.left ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+        Rectangle {
+            id: rightblackn
+            anchors.left: parent.right ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+    }
+    InputPanel {
+        id: inputPanel
+        property bool showKeyboard :  false
+        y: showKeyboard ? parent.height - height : parent.height
+        Behavior on y {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
+        anchors.leftMargin: mainwindow.width/10
+        anchors.rightMargin: mainwindow.width/10
+        anchors.left: parent.left
+        anchors.right: parent.right
+        Rectangle {
+            id: leftblack
+            anchors.right: parent.left ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+        Rectangle {
+            id: rightblack
+            anchors.left: parent.right ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
     }
 
     // Menu Bar Component contd -- Background
