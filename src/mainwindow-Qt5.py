@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QApplication
+from PyQt5.Qt import QInputMethodEvent
 from PyQt5.QtQml import QQmlApplicationEngine
-from PyQt5.QtCore import QObject, pyqtSignal as Signal, pyqtSlot as Slot
+from PyQt5.QtCore import QObject, QRect, pyqtSignal as Signal, pyqtSlot as Slot
 #import gspread
 
 from database import Sheet
@@ -10,7 +11,7 @@ import sys
 import datetime
 
 # EXPERIMENTAL
-    
+
 class Backend(QObject):
     def __init__(self):
         QObject.__init__(self)
@@ -374,7 +375,28 @@ class Backend(QObject):
         with open ('userdummy.csv', 'w') as file:
             csv_writer = csv.writer(file)
             csv_writer.writerows(formatted_list)
-   
+
+    """
+    Keyboard Slots and Signals
+    1. hidekeyboard: Signals keyboard to hide by falling below the screen
+    2. sendKeyToFocusItem: Slot inputs pressed key into the textbox
+    3. hideKeyboard: Slot receives the instruction and emits the signal to the keyboard
+    """
+    hidekeyboard = Signal()
+
+    @Slot(str)
+    def sendKeyToFocusItem(self, text):
+        event = QInputMethodEvent()
+        if text == '\x7F':
+            event.setCommitString("", -1,1)
+        else:
+            event.setCommitString(text)
+        QApplication.sendEvent(QApplication.focusObject(), event)
+
+    @Slot()
+    def hideKeyboard(self): # K in Keyboard is capital
+        self.hidekeyboard.emit()
+
     """
     Script Functions
     1. Test_gspread: Retrieves Googlesheet from cloud and loads information into physical memory
@@ -433,7 +455,6 @@ class Backend(QObject):
             userlist.insert(0, list(self.customersheet.columns))
             return userlist
 
-        
     def loaded(self, code):
         ''' Called after process has finished'''
         self.finishedprocess.emit(code)
@@ -483,7 +504,6 @@ if __name__ == "__main__":
     back = Backend()
     engine.rootContext().setContextProperty("backend", back)
     print('> ', end= '')
-    #engine.load('UI/Deposit.ui.qml')
     engine.load('UI/Home.ui.qml')
     print("loaded")
     back.test_gspread()
