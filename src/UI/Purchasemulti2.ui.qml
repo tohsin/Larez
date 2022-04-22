@@ -1,5 +1,6 @@
 import QtQuick 2.14
 import QtQuick.Controls 2.5
+import "keyboard"
 
 Item {
     id: window
@@ -20,8 +21,8 @@ Item {
     Rectangle {
         id: time ; width: 10 ; height: 10 ; visible: false
     }
-    property var aNum: ""
-    property var aTotal: ""
+    property real aNum: 0
+    property real aTotal: 0
 
     // Success Display Timer
     SequentialAnimation {
@@ -148,6 +149,7 @@ Item {
                     top: 100000
                 }
                 inputMethodHints: Qt.ImhDigitsOnly
+                onPressed: inputPaneln.showKeyboard = true
                 Rectangle {
                     anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
                 }
@@ -268,6 +270,7 @@ Item {
                     top: 100000
                 }
                 inputMethodHints: Qt.ImhDigitsOnly
+                onPressed: inputPaneln.showKeyboard = true
                 Rectangle {
                     anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
                 }
@@ -428,6 +431,7 @@ Item {
                     top: 100000
                 }
                 inputMethodHints: Qt.ImhDigitsOnly
+                onPressed: inputPaneln.showKeyboard = true
                 Rectangle {
                     anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
                 }
@@ -587,6 +591,7 @@ Item {
                     top: 100000
                 }
                 inputMethodHints: Qt.ImhDigitsOnly
+                onPressed: inputPaneln.showKeyboard = true
                 Rectangle {
                     anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
                 }
@@ -741,6 +746,7 @@ Item {
                     top: 100000
                 }
                 inputMethodHints: Qt.ImhDigitsOnly
+                onPressed: inputPaneln.showKeyboard = true
                 Rectangle {
                     anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
                 }
@@ -869,6 +875,7 @@ Item {
             if (aTotal > aNum) { displaydialog(1)
             } else { displaybigdialog(2,1) }
         }
+        function onHidekeyboard() { inputPaneln.showKeyboard = inputPanel.showKeyboard = false }
     }
 
     // Page / User Information -- Feature name, Name of User, Account Balance of User
@@ -966,6 +973,54 @@ Item {
     function revert() {
         image.scale = 1
         image.anchors.horizontalCenterOffset = image.anchors.topMargin = 0
+    }
+
+    // Keyboards
+    InputPanelN {
+        id: inputPaneln
+        property bool showKeyboard :  false
+        y: showKeyboard ? parent.height - height : parent.height
+        Behavior on y {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
+        anchors.leftMargin: mainwindow.width/10
+        anchors.rightMargin: mainwindow.width/10
+        anchors.left: parent.left
+        anchors.right: parent.right
+        Rectangle {
+            id: leftblackn
+            anchors.right: parent.left ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+        Rectangle {
+            id: rightblackn
+            anchors.left: parent.right ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+    }
+    InputPanel {
+        id: inputPanel
+        property bool showKeyboard :  false
+        y: showKeyboard ? parent.height - height : parent.height
+        Behavior on y {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
+        anchors.leftMargin: mainwindow.width/10
+        anchors.rightMargin: mainwindow.width/10
+        anchors.left: parent.left
+        anchors.right: parent.right
+        Rectangle {
+            id: leftblack
+            anchors.right: parent.left ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+        Rectangle {
+            id: rightblack
+            anchors.left: parent.right ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
     }
 
     // Menu Bar Component contd -- Background

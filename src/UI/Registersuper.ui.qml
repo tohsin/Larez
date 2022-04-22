@@ -1,5 +1,6 @@
 import QtQuick 2.14
 import QtQuick.Controls 2.5
+import "keyboard"
 
 Item {
     id: window
@@ -104,6 +105,7 @@ Item {
                 //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Username")
+                onPressed: { hidekeyboard() ; inputPaneln.showKeyboard = true }
                 Rectangle {
                     anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
                 }
@@ -173,6 +175,7 @@ Item {
                 //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Account Name")
+                onPressed: { hidekeyboard() ; inputPanel.showKeyboard = true }
                 Rectangle {
                     anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
                 }
@@ -290,6 +293,7 @@ Item {
                 //leftPadding: 9
                 rightPadding: 35
                 placeholderText: qsTr("Pin")
+                onPressed: { hidekeyboard() ; inputPaneln.showKeyboard = true }
                 Rectangle {
                     anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
                 }
@@ -651,6 +655,7 @@ Item {
                 anchors.right: username_box1.right
                 anchors.rightMargin: 1
                 anchors.leftMargin: 1
+                onPressed: inputPaneln.showKeyboard = true
                 Rectangle {
                     anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
                 }
@@ -721,6 +726,7 @@ Item {
                 anchors.right: password_box1.right
                 anchors.rightMargin: 1
                 anchors.leftMargin: 1
+                onPressed: inputPaneln.showKeyboard = true
                 Rectangle {
                     anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
                 }
@@ -785,6 +791,7 @@ Item {
             if (value === 2) { if (correctpage === 'Superview.ui.qml'){ displaybigdialog(2,3) } else { displaybigdialog(2,1) } }
         }
         function onFinishedprocess(pagetoload){ correctpage = pagetoload }
+        function onHidekeyboard() { inputPaneln.showKeyboard = inputPanel.showKeyboard = false }
     }
 
     Component.onCompleted: {
@@ -793,6 +800,54 @@ Item {
         image.anchors.topMargin = logo.anchors.topMargin = -25
     }
     function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = image.anchors.topMargin = 0 }
+    function hidekeyboard() { inputPaneln.showKeyboard = inputPanel.showKeyboard = false }
+    // Keyboards
+    InputPanelN {
+        id: inputPaneln
+        property bool showKeyboard :  false
+        y: showKeyboard ? parent.height - height : parent.height
+        Behavior on y {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
+        anchors.leftMargin: mainwindow.width/10
+        anchors.rightMargin: mainwindow.width/10
+        anchors.left: parent.left
+        anchors.right: parent.right
+        Rectangle {
+            id: leftblackn
+            anchors.right: parent.left ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+        Rectangle {
+            id: rightblackn
+            anchors.left: parent.right ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+    }
+    InputPanel {
+        id: inputPanel
+        property bool showKeyboard :  false
+        y: showKeyboard ? parent.height - height : parent.height
+        Behavior on y {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
+        anchors.leftMargin: mainwindow.width/10
+        anchors.rightMargin: mainwindow.width/10
+        anchors.left: parent.left
+        anchors.right: parent.right
+        Rectangle {
+            id: leftblack
+            anchors.right: parent.left ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+        Rectangle {
+            id: rightblack
+            anchors.left: parent.right ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+    }
 
     // Small Dialog Display Timer
     SequentialAnimation {

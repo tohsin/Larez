@@ -1,5 +1,6 @@
 import QtQuick 2.14
 import QtQuick.Controls 2.5
+import "keyboard"
 
 Item {
     id: window
@@ -47,7 +48,7 @@ Item {
         anchors.bottomMargin: 120
         visible: fingerprint.visible
         anchors.horizontalCenter: parent.horizontalCenter
-        onVisibleChanged: animatefingerprint()
+        onVisibleChanged: { animatefingerprint() ; hidekeyboard() }
         Text {
             id: pin_text
             width: 150
@@ -117,6 +118,7 @@ Item {
         anchors.bottom: use_pin_button.bottom
         visible: ver.visible
         anchors.left: parent.left ; anchors.leftMargin: submit_button.anchors.rightMargin
+        onVisibleChanged: if (visible == true) { hidekeyboard() }
         Text {
             width: 160
             height: 40
@@ -226,6 +228,7 @@ Item {
             //leftPadding: 9
             rightPadding: 35
             placeholderText: qsTr("Username")
+            onPressed: { inputPaneln.showKeyboard = true ; regno_checkBox.checked = false }
             readOnly: regno_checkBox.checked
             Rectangle {
                 anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
@@ -313,6 +316,7 @@ Item {
             topPadding: 7
             //leftPadding: 9
             rightPadding: 35
+            onPressed: inputPaneln.showKeyboard = true
             placeholderText: qsTr("Super Admin Username")
             Rectangle {
                 anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
@@ -384,6 +388,7 @@ Item {
             topPadding: 7
             //leftPadding: 9
             rightPadding: 35
+            onPressed: inputPaneln.showKeyboard = true
             placeholderText: qsTr("Pin")
             Rectangle {
                 anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
@@ -433,6 +438,7 @@ Item {
         function onIncorrect(number) { if (number === 3) { displaydialog(3) } }
         function onProceed(value) { if (value === 1) { displaybigdialog(0,2) ; exitbutton.visible = true } }
         function onFinishedprocess(pagetoload){ correctpage = pagetoload }
+        function onHidekeyboard() { inputPaneln.showKeyboard = inputPanel.showKeyboard = false }
     }
 
     // Page Information -- Feature Name
@@ -456,6 +462,55 @@ Item {
         image.anchors.topMargin = -25
     }
     function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = image.anchors.topMargin = 0 }
+    function hidekeyboard() { inputPaneln.showKeyboard = inputPanel.showKeyboard = false }
+
+    // Keyboards
+    InputPanelN {
+        id: inputPaneln
+        property bool showKeyboard :  false
+        y: showKeyboard ? parent.height - height : parent.height
+        Behavior on y {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
+        anchors.leftMargin: mainwindow.width/10
+        anchors.rightMargin: mainwindow.width/10
+        anchors.left: parent.left
+        anchors.right: parent.right
+        Rectangle {
+            id: leftblackn
+            anchors.right: parent.left ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+        Rectangle {
+            id: rightblackn
+            anchors.left: parent.right ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+    }
+    InputPanel {
+        id: inputPanel
+        property bool showKeyboard :  false
+        y: showKeyboard ? parent.height - height : parent.height
+        Behavior on y {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
+        anchors.leftMargin: mainwindow.width/10
+        anchors.rightMargin: mainwindow.width/10
+        anchors.left: parent.left
+        anchors.right: parent.right
+        Rectangle {
+            id: leftblack
+            anchors.right: parent.left ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+        Rectangle {
+            id: rightblack
+            anchors.left: parent.right ; anchors.top: parent.top ; anchors.bottom: parent.bottom ; width: mainwindow.width/10 ; color: "black"
+        }
+    }
 
     // Small Dialog Display Timer
     SequentialAnimation {
