@@ -1,8 +1,6 @@
 import QtQuick 2.14
 import QtQuick.Controls 2.5
 import QtQuick.Window 2.15
-//import QtVirtualKeyboard.VirtualKeyboard 2.15
-//import QtQuick.VirtualKeyboard 2.15
 
 
 ApplicationWindow {
@@ -16,6 +14,8 @@ ApplicationWindow {
     title: "CU Pay"
     //flags: Qt.FramelessWindowHint
     color: "transparent"
+
+    Constants { id: constant }
 
     Rectangle {
         id: white_rectangle
