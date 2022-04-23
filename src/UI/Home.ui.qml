@@ -15,8 +15,6 @@ ApplicationWindow {
     //flags: Qt.FramelessWindowHint
     color: "transparent"
 
-    Constants { id: constant }
-
     Rectangle {
         id: white_rectangle
         visible: true
