@@ -428,7 +428,7 @@ class Handler(QObject):
             with open ('admindummy.csv', 'w') as file:
                 csv_writer = csv.writer(file)
                 csv_writer.writerows(formatted_list)
-            ''''
+            '''
             self.log(['6','1',removerank,supername,superlog], removename)
         else:
             self.invalid.emit(1); self.log(['6','0','Unfound',supername,superlog], removename)
@@ -677,10 +677,6 @@ class Handler(QObject):
     """
     
     def test_gspread(self):
-        """
-        tosin needs to define a function for removing a user
-        a function for loading the sheet to a panda file, it's in gspread documentation
-        """
         #from pandas import read_csv
 
         spreadsheet, self.adminworksheet = load_admin_database()
@@ -708,8 +704,8 @@ class Handler(QObject):
         self.superbiosheet = {username: eval(finger) for finger, username in zip(self.supersheet['Fingerprint'],self.supersheet['Name'])}
         self.adminbiosheet = {username: eval(finger) for finger, username in zip(self.adminsheet['Fingerprint'],self.adminsheet['Name'])}
         self.userbiosheet = {username: eval(finger) for finger, username in zip(self.customersheet['Fingerprint'],self.customersheet['Name'])}
-        '''
-        '''
+
+
         admindf, adminworksheet = load_admin_database()
         userdf, userworksheet = load_user_database()
 
@@ -717,7 +713,7 @@ class Handler(QObject):
         userworksheet = update_admin_database(self.customersheet, userworksheet)
         '''
 
-        print(f"{spreadsheet}\n{self.customersheet}")
+        #print(f"{spreadsheet}\n{type(spreadsheet['Fingerprint'])}")
         print(f"Admins: {len(spreadsheet)} Entries\nUsers: {len(self.customersheet)} Entries")
         self.finishedprocess.emit(self.pageindex[1])
 
@@ -757,7 +753,6 @@ class Handler(QObject):
     def writeout(self, message):
         with open('cupaylog.txt', 'a') as file:
             file.write(message)
-        print('event logged')
 
     def log(self, code, name):
         passkey = {'1': 'Success', '0': 'Fail'}
