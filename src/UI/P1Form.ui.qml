@@ -711,10 +711,6 @@ Item {
     //Component.onCompleted: fingerprint.opacity = 1
 }
 
-// exception sends incorrect.emit return False use superloginbio
-// add Authenticate Button // enroll finger function // hide place finger // incorrect function make finger opacity 0 // login & authenticate buttons check for username.text === ""  >> CHECK P1
-// make sure open settings is arranged same way across
-
 /*##^##
 Designer {
     D{i:0;autoSize:true;height:700;width:600}D{i:2}D{i:1}D{i:3}D{i:5}D{i:6}D{i:4}D{i:8}
