@@ -148,7 +148,7 @@ Item {
                 onClicked: {
                     if (amount_field.text < 50.0) { displaydialog(2) }
                     else if (amount_field.text > aNum) { displaydialog(1) }
-                    else { transferDialogBio.open() ; backend.transferfeature([amount_field.text, "'Bio ID - 00'", "Fingerprint"]) }
+                    else { transferDialogBio.open() ; backend.transferfeature([amount_field.text, "'Bio ID - 00'"]) }
                 }
             }
             Text {
@@ -550,7 +550,7 @@ Item {
                 onClicked: {
                     if (amount_field2.text < 50.0) { displaydialog(2) }
                     else if (amount_field2.text > aNum) { displaydialog(1) }
-                    else { transferDialogBio.open() ; backend.transferfeature([amount_field2.text, "'Bio ID - 00'", "Fingerprint"]) }
+                    else { transferDialogBio.open() ; backend.transferfeature([amount_field2.text, "'Bio ID - 00'"]) }
                 }
             }
             Text {
@@ -989,7 +989,7 @@ Item {
                 onClicked: {
                     if (amount_field3.text < 50.0) { displaydialog(2) }
                     else if (amount_field3.text > aNum) { displaydialog(1) }
-                    else { transferDialogBio.open() ; backend.transferfeature([amount_field3.text, "'Bio ID - 00'", "Fingerprint"]) }
+                    else { transferDialogBio.open() ; backend.transferfeature([amount_field3.text, "'Bio ID - 00'"]) }
                 }
             }
             Text {
@@ -2102,18 +2102,15 @@ Item {
     }
     function writeoff() {        
         if (renderswitch1.checked === true) {
-            if (switch1.checked === true) { backend.transferfeature([amount_field.text, username_field.text, "Typed"]) }
-            else { backend.transferfeature([amount_field.text, "Bio-ID" , "Fingerprint"]) }
+            backend.transferfeature([amount_field.text, username_field.text])
             backend.transactiondone(1)
         }
         if (renderswitch2.checked === true) {
-            if (switch2.checked === true) { backend.transferfeature([amount_field2.text, username_field2.text, "Typed"]) }
-            else { backend.transferfeature([amount_field2.text, "Bio-ID" , "Fingerprint"]) }
+            backend.transferfeature([amount_field2.text, username_field2.text])
             backend.transactiondone(1)
         }
         if (renderswitch3.checked === true) {
-            if (switch3.checked === true) { backend.transferfeature([amount_field3.text, username_field3.text, "Typed"]) }
-            else { backend.transferfeature([amount_field3.text, "Bio-ID" , "Fingerprint"]) }
+            backend.transferfeature([amount_field3.text, username_field3.text])
             backend.transactiondone(1)
         }
     }

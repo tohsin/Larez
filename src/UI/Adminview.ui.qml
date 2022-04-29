@@ -314,10 +314,10 @@ Item {
     Connections {
         target: backend
 
-        function onAccountname(info) { // [ accName, station ]
+        function onAccountname(info) { // [ accName, station, balance ]
             loggeduser.text = qsTr("Name:  <b>" + info[0] + "</b>")
             station.text = qsTr("Station:  <b>" + info[1] + "</b>")
-
+            balance.text = qsTr("Balance:  <b>" + info[2] + "</b>")
         }
     }
 
@@ -338,14 +338,14 @@ Item {
     }
     Text {
         id: loggeduser
-        width: 100
+        width: 230
         height: 30
         text: ""
         font.pixelSize: 18
         anchors.top: topbar.bottom
         anchors.topMargin: 20
         anchors.left: parent.left
-        anchors.leftMargin: 150
+        anchors.leftMargin: 100
         font.family: "Verdana"
         font.styleName: "Regular"
         //font.bold: true
@@ -354,6 +354,20 @@ Item {
 
     Text {
         id: station
+        width: 200
+        height: 30
+        text: ""
+        font.pixelSize: loggeduser.font.pixelSize
+        anchors.top: loggeduser.top
+        anchors.left: loggeduser.right
+        anchors.right: balance.left
+        font.family: "Verdana"
+        font.styleName: "Regular"
+        horizontalAlignment: Text.AlignHCenter
+        font.capitalization: "AllUppercase"
+    }
+    Text {
+        id: balance
         width: 150
         height: 30
         text: ""
@@ -364,7 +378,6 @@ Item {
         font.family: "Verdana"
         font.styleName: "Regular"
         //font.bold: true
-        font.capitalization: "AllUppercase"
     }
 
     // Menu Button -- Background, Menu picture
