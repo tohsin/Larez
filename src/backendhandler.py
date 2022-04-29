@@ -1,4 +1,3 @@
-#import pandas as pd
 from PyQt5.QtWidgets import QApplication
 from PyQt5.Qt import QInputMethodEvent
 from PyQt5.QtCore import QObject, QThreadPool, pyqtSignal as Signal
@@ -7,7 +6,6 @@ from PyQt5.QtCore import QObject, QThreadPool, pyqtSignal as Signal
 from checkfunc import *
 from database import *
 
-#import gspread
 import datetime
 
 class Handler(QObject):
@@ -49,6 +47,11 @@ class Handler(QObject):
     7. Proceed: Gives go ahead to continue transaction
     8. Totalexp: Used in purchase page to sum up total expense
     9. Accountname: Used in feature pages (purchases & transfer) to identify customer and beneficiary's of transfers
+    10. Biofailed: Emitted when scanned fingerprint doesn't match
+    11. Loadloader: When finger is scanned, it makes the loading page to appear. Used in pages that loaded
+    12. Loadstack: When finger is scanned, it makes the loading page to appear. Used in pages that are stacked
+    13. Enrollinfo: Displays the information that the scanner is sending
+    14. Retryenroll: If the enrollment process fails, this resets the page
     """
     incorrect = Signal(int)
     invalid = Signal(int) 
@@ -87,126 +90,7 @@ class Handler(QObject):
     18. Checkuser: Called when registering a new user to be sure reg no doesn't already exist
     19. Registeruser: Called to assign the variables which tell the program Reg No., Password, and Fingerprint of New User
     20. Transactiondone: Called after a Purchase or Transfer was attempted regardless if it was successful or not
-    """
-
-    def _verifysuperbio(self, code, details):
-        breakout = False
-
-        if code == 0: # For Register
-            regno, rank = details[0], details[2]
-            supername, superlog = details[5:7]
-            try:
-                bioinput = auth(self.superbiosheet[supername])
-            except KeyError:
-                self.log('40-1', f"{regno} Unfound {supername}") if rank == 'Super Admin' else self.log('40-0', f"{regno} Unfound {supername}")
-                self.incorrect.emit(3); return None
-
-            for output in bioinput:
-                # False - finger didn't match
-                if output == False:
-                    self.log('40-1', f"{regno} Unverified {supername}") if rank == 'Super Admin' else self.log('40-0', f"{regno} Unverified {supername}")
-                    self.biofailed.emit(); breakout = True; break
-                # None - no finger was scanned
-                elif output == None: print('none timed out'); breakout = True; break
-                # elif output == True: self.enrollinfo.emit("Processing Fingerprint. Please Wait...") # True - finger was scanned
-                elif type(output) == str: self.enrollinfo.emit(output) # str - verifying
-                elif output == "Found": break
-
-            if breakout == True: return True
-
-            return False # successful
-
-        elif code == 1: # For Removal
-            removename, supername, superlog = details
-            try:
-                bioinput = auth(self.superbiosheet[supername])
-            except KeyError:
-                self.log(['6','0','Unfound', f'Unfound {supername}', superlog], removename); self.incorrect.emit(3)
-                return None
-
-            for output in bioinput:
-                # False finger didn't match
-                if output == False: self.loaded(pageindex['Removesuper']) ; self.log(['6','0','Unfound', f'Unverified {supername}', superlog], removename); self.biofailed.emit(); self._menubranch(self.intermediatepage); breakout = True; break
-                # None finger wasn't scanned
-                elif output == None: print('none timed out'); breakout = True; break
-                elif output == True: self.loadloader.emit() # True finger was scanned
-                elif type(output) == str: self.enrollinfo.emit(output) # str - verifying
-                elif output == "Found": break
-
-            if breakout == True: return True
-
-            return False
-
-        elif code == 2: # For Deposit
-            amount = float(details[0])
-            supername, superlog = details[1:3] # supername, superpin, superlog = details[1:4]
-
-            admin_n_super_bio = self.adminbiosheet
-            admin_n_super_bio.update(self.superbiosheet)
-            try:
-                bioinput = auth(admin_n_super_bio[supername]) # used in all the codes
-            except KeyError:
-                self.log(['7','0','3',supername,f"Unfound {superlog}"], amount)
-                self.incorrect.emit(3); return None
-
-            for output in bioinput:
-                # False finger didn't match
-                if output == False: self.loaded('close'); self.log(['7','0','3', supername,f"Unverified {superlog}"], amount); self.biofailed.emit(); breakout = True; break
-                # None finger wasn't scanned
-                elif output == None: print('none timed out'); breakout = True; break
-                elif output == True: self.loadstack.emit() # True finger was scanned
-                elif type(output) == str: self.enrollinfo.emit(output) # str - verifying
-                elif output == "Found": break
-
-            if breakout == True: return True
-
-            return False # successful
-
-    def _verifysuper(self, code, details):
-        if code == 0: # For Register
-            regno, rank = details[0], details[2]
-            supername, superpassword, superlog = details[5:8]
-            if self.supersheet['Name'].get(supername) == None:
-                self.log('40-1', f"{regno} Unfound {supername}") if rank == 'Super Admin' else self.log('40-0', f"{regno} Unfound {supername}")
-                self.incorrect.emit(3); return True
-            else:
-                data = self.supersheet.loc[self.supersheet['Name'].get(supername)]
-                if superpassword != data.Pin:
-                    self.log('40-1', f"{regno} Unverified {supername}") if rank == 'Super Admin' else self.log('40-0', f"{regno} Unverified {supername}")
-                    self.incorrect.emit(3); return True
-            return False # successful
-
-        elif code == 1: # For Removal
-            removename, supername, superpassword, superlog = details
-
-            if self.supersheet['Name'].get(supername) == None: self.log(['6','0','Unfound', f'Unfound {supername}', superlog], removename); self.incorrect.emit(3); return True
-            else:
-                data = self.supersheet.loc[self.supersheet['Name'].get(supername)]
-                if superpassword != data.Pin:
-                    self.log(['6','0','Unfound', f"Unverified {supername}", superlog], removename)
-                    self.incorrect.emit(3); return True
-            return False # successful
-
-        elif code == 2: # For Deposit
-            amount = float(details[0])
-            supername, superpin, superlog = details[1:4]
-
-            if self.supersheet['Name'].get(supername) != None: # Super Verified
-                data = self.supersheet.loc[self.supersheet['Name'].get(supername)]
-                rank = '1'
-                if superpin != data.Pin:
-                    self.log(['7','0',rank,supername,f"Unverified {superlog}"], amount)
-                    self.incorrect.emit(3); return True
-            elif self.adminsheet['Name'].get(supername) != None: # Admin Verified
-                data = self.adminsheet.loc[self.adminsheet['Name'].get(supername)]
-                rank = '0'
-                if superpin != data.Pin:
-                    self.log(['7','0',rank,supername,f"Unverified {superlog}"], amount)
-                    self.incorrect.emit(3); return True
-            else:
-                self.log(['7','0','3',supername,f"Unfound {superlog}"], amount)
-                self.incorrect.emit(3); return True
-            return False # successful
+    """        
 
     def _superlogin(self, s_user):
         self.super = s_user[0]
@@ -299,6 +183,125 @@ class Handler(QObject):
     def _adminlogout(self):
         self.log("51-0", self.admin)
         self.admin, self.adminlog = "", ""
+
+    def _verifysuper(self, code, details):
+        if code == 0: # For Register
+            regno, rank = details[0], details[2]
+            supername, superpassword, superlog = details[5:8]
+            if self.supersheet['Name'].get(supername) == None:
+                self.log('40-1', f"{regno} Unfound {supername}") if rank == 'Super Admin' else self.log('40-0', f"{regno} Unfound {supername}")
+                self.incorrect.emit(3); return True
+            else:
+                data = self.supersheet.loc[self.supersheet['Name'].get(supername)]
+                if superpassword != data.Pin:
+                    self.log('40-1', f"{regno} Unverified {supername}") if rank == 'Super Admin' else self.log('40-0', f"{regno} Unverified {supername}")
+                    self.incorrect.emit(3); return True
+            return False # successful
+
+        elif code == 1: # For Removal
+            removename, supername, superpassword, superlog = details
+
+            if self.supersheet['Name'].get(supername) == None: self.log(['6','0','Unfound', f'Unfound {supername}', superlog], removename); self.incorrect.emit(3); return True
+            else:
+                data = self.supersheet.loc[self.supersheet['Name'].get(supername)]
+                if superpassword != data.Pin:
+                    self.log(['6','0','Unfound', f"Unverified {supername}", superlog], removename)
+                    self.incorrect.emit(3); return True
+            return False # successful
+
+        elif code == 2: # For Deposit
+            amount = float(details[0])
+            supername, superpin, superlog = details[1:4]
+
+            if self.supersheet['Name'].get(supername) != None: # Super Verified
+                data = self.supersheet.loc[self.supersheet['Name'].get(supername)]
+                rank = '1'
+                if superpin != data.Pin:
+                    self.log(['7','0',rank,supername,f"Unverified {superlog}"], amount)
+                    self.incorrect.emit(3); return True
+            elif self.adminsheet['Name'].get(supername) != None: # Admin Verified
+                data = self.adminsheet.loc[self.adminsheet['Name'].get(supername)]
+                rank = '0'
+                if superpin != data.Pin:
+                    self.log(['7','0',rank,supername,f"Unverified {superlog}"], amount)
+                    self.incorrect.emit(3); return True
+            else:
+                self.log(['7','0','3',supername,f"Unfound {superlog}"], amount)
+                self.incorrect.emit(3); return True
+            return False # successful
+
+    def _verifysuperbio(self, code, details):
+        breakout = False
+
+        if code == 0: # For Register
+            regno, rank = details[0], details[2]
+            supername, superlog = details[5:7]
+            try:
+                bioinput = auth(self.superbiosheet[supername])
+            except KeyError:
+                self.log('40-1', f"{regno} Unfound {supername}") if rank == 'Super Admin' else self.log('40-0', f"{regno} Unfound {supername}")
+                self.incorrect.emit(3); return None
+
+            for output in bioinput:
+                # False - finger didn't match
+                if output == False:
+                    self.log('40-1', f"{regno} Unverified {supername}") if rank == 'Super Admin' else self.log('40-0', f"{regno} Unverified {supername}")
+                    self.biofailed.emit(); breakout = True; break
+                # None - no finger was scanned
+                elif output == None: print('none timed out'); breakout = True; break
+                # elif output == True: self.enrollinfo.emit("Processing Fingerprint. Please Wait...") # True - finger was scanned
+                elif type(output) == str: self.enrollinfo.emit(output) # str - verifying
+                elif output == "Found": break
+
+            if breakout == True: return True
+
+            return False # successful
+
+        elif code == 1: # For Removal
+            removename, supername, superlog = details
+            try:
+                bioinput = auth(self.superbiosheet[supername])
+            except KeyError:
+                self.log(['6','0','Unfound', f'Unfound {supername}', superlog], removename); self.incorrect.emit(3)
+                return None
+
+            for output in bioinput:
+                # False finger didn't match
+                if output == False: self.loaded(pageindex['Removesuper']) ; self.log(['6','0','Unfound', f'Unverified {supername}', superlog], removename); self.biofailed.emit(); self._menubranch(self.intermediatepage); breakout = True; break
+                # None finger wasn't scanned
+                elif output == None: print('none timed out'); breakout = True; break
+                elif output == True: self.loadloader.emit() # True finger was scanned
+                elif type(output) == str: self.enrollinfo.emit(output) # str - verifying
+                elif output == "Found": break
+
+            if breakout == True: return True
+
+            return False
+
+        elif code == 2: # For Deposit
+            amount = float(details[0])
+            supername, superlog = details[1:3] # supername, superpin, superlog = details[1:4]
+
+            admin_n_super_bio = self.adminbiosheet
+            admin_n_super_bio.update(self.superbiosheet)
+            try:
+                bioinput = auth(admin_n_super_bio[supername]) # used in all the codes
+            except KeyError:
+                self.log(['7','0','3',supername,f"Unfound {superlog}"], amount)
+                self.incorrect.emit(3); return None
+
+            for output in bioinput:
+                # False finger didn't match
+                if output == False: self.loaded('close'); self.log(['7','0','3', supername,f"Unverified {superlog}"], amount); self.biofailed.emit(); breakout = True; break
+                # None finger wasn't scanned
+                elif output == None: print('none timed out'); breakout = True; break
+                elif output == True: self.loadstack.emit() # True finger was scanned
+                elif type(output) == str: self.enrollinfo.emit(output) # str - verifying
+                elif output == "Found": break
+
+            if breakout == True: return True
+
+            return False # successful
 
     def _checksuper(self, details):
         regno = details[0]
