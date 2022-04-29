@@ -21,13 +21,13 @@ Item {
     Rectangle {
         id: use_pin_button
         radius: 8
-        //border.width: 3
         width: 150
         height: 53
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 120
         visible: !switch1.checked
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: parent.left
+        anchors.leftMargin: use_fingerprint_button.anchors.leftMargin
         Text {
             id: pin_text
             width: 150
@@ -113,30 +113,66 @@ Item {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 1 }
+            onClicked: switch1.checked = !switch1.checked
         }
     }
+    // Navigation Buttons -- Authenticate
+    Rectangle {
+        anchors.top: authenticate_button.top ; anchors.topMargin: 0.5 ; visible: authenticate_button.visible
+        anchors.left: authenticate_button.left ; anchors.leftMargin: -1
+        height: authenticate_button.height + 2.5 ; width: authenticate_button.width + 1.5 ; radius: authenticate_button.radius + 1
+        color: "#e0e0e0"
+    }
+    Rectangle {
+        id: authenticate_button
+        visible: use_pin_button.visible
+        width: constant.button1width - 20 // 230 - 20
+        height: constant.button1height // 53
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: constant.button2bottommargin // 120
+        anchors.right: parent.right
+        anchors.rightMargin: use_fingerprint_button.anchors.leftMargin
+        color: "black"
+        radius: constant.button2radius // 8
+        Text {
+            id: authenticate_text
+            width: 150
+            height: 40
+            color: "white"
+            text: qsTr("Authenticate")
+            anchors.verticalCenter: parent.verticalCenter
+            font.pixelSize: pin_text.font.pixelSize
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.bold: true
+            font.family: "Verdana"
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: { if (ver_field.text === "" | amount_field.text === "" ) { displaydialog(1) }
+                else { fingerprint.opacity = 1 } }
+        }
+    }
+
     // Verification Details -- Fingerprint, "Place finger" Information
     Image {
         id: fingerprint
         visible: use_pin_button.visible
         opacity: 0
-        y: 360
-        width: 150
-        height: 150
+        y: 390
+        width: 180
+        height: 180
         source: "../images/whitefinger.jpg"
         anchors.horizontalCenter: parent.horizontalCenter
         fillMode: Image.PreserveAspectFit
-        Behavior on opacity { PropertyAnimation { duration: 500 } }
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                if ( amount_field.text === "" ) { displaydialog(1) }
-                else { displaybigdialog(2,1) }
-            }
+        onOpacityChanged: {
+            if (opacity == 1){ backend.biometrics([7, amount_field.text, ver_field.text, "Fingerprint"]) ; enrolldialog("place finger on scanner") }
+            else if (opacity == 0){ backend.stopthread() }
         }
+        Behavior on opacity { PropertyAnimation { duration: 500 } }
     }
-    Text {
+    /*Text {
         id: place_finger
         visible: fingerprint.visible
         opacity: fingerprint.opacity
@@ -152,7 +188,7 @@ Item {
         verticalAlignment: Text.AlignTop
         font.italic: true
         anchors.horizontalCenter: fingerprint.horizontalCenter
-    }
+    }*/
     // Menu Button
     Image {
         id: menubar
@@ -243,12 +279,13 @@ Item {
     // Verification Typed Elements -- Username & Pin Text box
     Text {
         id: verify
-        anchors.left: amount.left
-        y: 300
+        //anchors.left: amount.left
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: 270
         width: 180
         height: 41
         text: qsTr("Verify Deposit")
-        font.pixelSize: amount.font.pixelSize + 1
+        font.pixelSize: amount.font.pixelSize + 10
         verticalAlignment: Text.AlignVCenter
         fontSizeMode: Text.Fit
         font.capitalization: Font.AllUppercase
@@ -259,8 +296,8 @@ Item {
     }
     Text {
         id: ver
-        visible: use_fingerprint_button.visible
-        y: 350
+        //visible: use_fingerprint_button.visible
+        y: 300
         height: 41
         anchors.left: amount.left
         anchors.right: parent.right
@@ -332,7 +369,7 @@ Item {
         id: pin
         visible: use_fingerprint_button.visible
         anchors.left: amount.left
-        y: 480
+        y: 440
         width: 152
         height: 41
         text: qsTr("Pin")
@@ -568,7 +605,7 @@ Item {
                 hoverEnabled: true
                 onEntered: second_menu.color = "#e8e8e8"
                 onExited: second_menu.color = menu.color
-                onClicked: { backend.feature("Transfer") ; stack.replace("Transfermulti2.ui.qml") ; backend.switchfeature() }
+                onClicked: { backend.stopthread() ; backend.feature("Transfer") ; stack.replace("Transfermulti2.ui.qml") ; backend.switchfeature() }
             }
             Text {
                 id: transfer_menu
@@ -595,7 +632,7 @@ Item {
                 hoverEnabled: true
                 onEntered: third_menu.color = "#e8e8e8"
                 onExited: third_menu.color = menu.color
-                onClicked: { backend.feature("Purchase") ; stack.replace("Purchasemulti2.ui.qml") ; backend.switchfeature() }
+                onClicked: { backend.stopthread() ; backend.feature("Purchase") ; stack.replace("Purchasemulti2.ui.qml") ; backend.switchfeature() }
             }
             Text {
                 id: purchase_menu
@@ -642,22 +679,19 @@ Item {
     Connections {
         target: backend
 
-        function onLoggeduser(customer) {
-            loggeduser.text = "<b>" + customer + "</b>"
-        }
-        function onFeaturemode(activity) {
-            modename.text = activity + " Window"
-        }
+        function onLoggeduser(customer) { loggeduser.text = "<b>" + customer + "</b>" }
+        function onFeaturemode(activity) { modename.text = activity + " Window" }
         function onAccbalance(cash) {
             acbal.text = "<b>" + cash + "</b>"
             aNum = cash
         }
-        function onIncorrect(number) { if (number === 3) { displaydialog(2) } }
-        function onProceed(value) {
-            if (value === 1) { displaybigdialog(0,4) ; exitbutton.visible = true }
-        }
+        function onIncorrect(number) { if (number === 3) { fingerprint.opacity = 0 ; displaydialog(2) } }
+        function onProceed(value) { if (value === 1) { backend.stopthread() ; displaybigdialog(0,4) ; exitbutton.visible = true } }
         function onFinishedprocess(pagetoload){ correctpage = pagetoload }
         function onHidekeyboard() { inputPaneln.showKeyboard = inputPanel.showKeyboard = false }
+
+        function onLoadstack() { stack.push('Loadfeature.ui.qml') }
+        function onBiofailed() { displaydialog(3) }
     }
 
     Component.onCompleted: {
@@ -665,7 +699,7 @@ Item {
         image.anchors.horizontalCenterOffset = (mainwindow.width / 2) - 45
         image.anchors.topMargin = -25
 
-        fingerprint.opacity = 1
+        //fingerprint.opacity = 1
     }
     function revert() { image.scale = 1 ; image.anchors.horizontalCenterOffset = image.anchors.topMargin = 0 }
 
@@ -731,18 +765,29 @@ Item {
 
     // Dialog Box functions
     function displaydialog(functionnum) {
+        center_border2.visible = bad_picture2.visible = true
         dialog_timer.running = false ; time.width = 10
-        dialog_small.anchors.bottomMargin = 20
+        dialog_small.anchors.bottomMargin = constant.smalldialogbottommargin // 20
         dialog_timer.running = true
+        information2.font.bold = false
+        information2.font.pixelSize = 20
         // 1 incompleteDialog
-        if (functionnum === 1) {
-            information2.text = qsTr("Details You Entered Are Incomplete. Fill the empty fields")
-        }
-
+        if (functionnum === 1) { information2.text = qsTr("Details You Entered Are Incomplete. Fill the empty fields") }
         // 2 incorrectDialog
-        if (functionnum === 2) { information2.text = qsTr("Invalid Verification Username or Password") }
-
+        else if (functionnum === 2) { information2.text = qsTr("Invalid Verification Username or Password") }
+        // 3 bioDialog
+        else if (functionnum === 3) { information2.text = qsTr("Fingerprint did not match") }
     }
+    function enrolldialog(info) {
+        center_border2.visible = bad_picture2.visible = false
+        dialog_timer.running = false ; time.width = 10
+        dialog_small.anchors.bottomMargin = 40
+        dialog_timer.running = true
+        information2.font.bold = true
+        information2.font.pixelSize = 24
+        information2.text = qsTr(info)
+    }
+
     function closebigdialog() { dialog_big.visible = false ; f1_switch.checked = f2_switch.checked = f3_switch.checked = false }
 
     function closemenu() { menu.scale = 0 ; background.visible = menu.visible = false ; menuarea.visible = true }
@@ -836,6 +881,7 @@ Item {
             anchors.rightMargin: 100
         }
         MouseArea {
+            visible: center_border2.visible
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.left: center_border2.right
@@ -914,10 +960,11 @@ Item {
                 anchors.topMargin: header.anchors.topMargin // 30
                 anchors.left: parent.left
                 anchors.leftMargin: anchors.topMargin
+                anchors.right: parent.right
+                anchors.rightMargin: anchors.leftMargin
                 anchors.bottom: b1.top
                 font.family: "Verdana"
                 font.styleName: "Regular"
-                width: parent.width - 40
                 font.pixelSize: 21
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignTop
@@ -981,7 +1028,7 @@ Item {
                 hoverEnabled: true
                 onEntered: { b1.color = "#a0a0a0" }
                 onExited: { b1.color = "black" }
-                onClicked: { closebigdialog() ; backend.deposit([amount_field.text, ver_field.text, password.text, "Pin"]) } // Use code var to do fingerprint
+                onClicked: { backend.stopthread() ; closebigdialog() ; backend.deposit([amount_field.text, ver_field.text, password.text, "Pin"]) } // Use code var to do fingerprint
             }
             MouseArea {
                 id: left_f2
@@ -990,7 +1037,7 @@ Item {
                 hoverEnabled: true
                 onEntered: { b1.color = "#a0a0a0" }
                 onExited: { b1.color = "black" }
-                onClicked: { revert() ; backend.userlogout() ; stack.pop() ; stack.pop() }
+                onClicked: { backend.stopthread() ; revert() ; backend.userlogout() ; stack.pop() ; stack.pop() }
             }
             MouseArea {
                 id: left_f3
@@ -999,7 +1046,7 @@ Item {
                 hoverEnabled: true
                 onEntered: { b1.color = "#a0a0a0" }
                 onExited: { b1.color = "black" }
-                onClicked: { backend.userlogout() ; backend.feature("Register") ; stack.pop() ; stack.replace("Register.ui.qml") ; backend.switchfeature() }
+                onClicked: { backend.stopthread() ; backend.userlogout() ; backend.feature("Register") ; stack.pop() ; stack.replace("Register.ui.qml") ; backend.switchfeature() }
             }
             Rectangle {
                 anchors.top: b2.top ; anchors.topMargin: 0.5 ; visible: b2.visible

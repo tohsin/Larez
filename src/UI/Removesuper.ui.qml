@@ -29,7 +29,7 @@ Item {
         sourceSize.height: 100
         MouseArea {
             anchors.fill: parent
-            onClicked: { revert() ; page_loader.source = correctpage }
+            onClicked: { backend.stopthread() ; revert() ; page_loader.source = correctpage }
         }
     }
     Rectangle {
@@ -46,9 +46,10 @@ Item {
         height: 53
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 120
-        visible: fingerprint.visible
-        anchors.horizontalCenter: parent.horizontalCenter
-        onVisibleChanged: { animatefingerprint() ; hidekeyboard() }
+        visible: regno_checkBox.checked & !switch1.checked
+        anchors.left: parent.left
+        anchors.leftMargin: use_fingerprint_button.anchors.leftMargin
+        onVisibleChanged: { hidekeyboard() }
         Text {
             id: pin_text
             width: 150
@@ -116,7 +117,7 @@ Item {
         //border.width: 3
         width: 230 ; height: use_pin_button.height
         anchors.bottom: use_pin_button.bottom
-        visible: ver.visible
+        visible: !use_pin_button.visible
         anchors.left: parent.left ; anchors.leftMargin: submit_button.anchors.rightMargin
         onVisibleChanged: if (visible == true) { hidekeyboard() }
         Text {
@@ -133,7 +134,45 @@ Item {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 1 }
+            onClicked: { switch1.checked = !switch1.checked }
+        }
+    }
+    // Navigation Buttons -- Authenticate
+    Rectangle {
+        anchors.top: authenticate_button.top ; anchors.topMargin: 0.5 ; visible: authenticate_button.visible
+        anchors.left: authenticate_button.left ; anchors.leftMargin: -1
+        height: authenticate_button.height + 2.5 ; width: authenticate_button.width + 1.5 ; radius: authenticate_button.radius + 1
+        color: "#e0e0e0"
+    }
+    Rectangle {
+        id: authenticate_button
+        visible: use_pin_button.visible
+        width: constant.button1width - 20 // 230 - 20
+        height: constant.button1height // 53
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: constant.button2bottommargin // 120
+        anchors.right: parent.right
+        anchors.rightMargin: use_fingerprint_button.anchors.leftMargin
+        color: "black"
+        radius: constant.button2radius // 8
+        Text {
+            id: authenticate_text
+            width: 150
+            height: 40
+            color: "white"
+            text: qsTr("Authenticate")
+            anchors.verticalCenter: parent.verticalCenter
+            font.pixelSize: pin_text.font.pixelSize
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.bold: true
+            font.family: "Verdana"
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: { if (regno_field.text === "" | ver_field.text === "") { displaydialog(2) }
+                else { fingerprint.opacity = 1 } }
         }
     }
 
@@ -142,22 +181,19 @@ Item {
         id: fingerprint
         visible: regno_checkBox.checked & !switch1.checked
         opacity: 0
-        y: 360
-        width: 150
-        height: 150        
+        y: 390
+        width: 180
+        height: 180
         source: "../images/whitefinger.jpg"
         anchors.horizontalCenter: parent.horizontalCenter
         fillMode: Image.PreserveAspectFit
-        Behavior on opacity { PropertyAnimation { duration: 500 } }
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                if ( regno_field.text === "" | ver_field.text === "" | password.text === "" ) { displaydialog(2) }
-                else { backend.removesuper([regno_field.text, ver_field.text, "Fingerprint", "Bio - C1"]) }
-            }
+        onOpacityChanged: {
+            if (opacity == 1){ backend.biometrics([4, regno_field.text, ver_field.text, "Fingerprint"]) ; enrolldialog("place finger on scanner") }
+            else if (opacity == 0){ backend.stopthread() }
         }
+        Behavior on opacity { PropertyAnimation { duration: 500 } }
     }
-    Text {
+    /*Text {
         id: place_finger
         font.family: "Calibri"
         visible: fingerprint.visible
@@ -173,7 +209,7 @@ Item {
         verticalAlignment: Text.AlignTop
         font.italic: true        
         anchors.horizontalCenter: fingerprint.horizontalCenter
-    }
+    }*/
 
     // Removed Super Details -- Name Text box & Check box
     Text {
@@ -199,6 +235,7 @@ Item {
             anchors.right: parent.right
             anchors.rightMargin: removee.anchors.leftMargin
             checked: false
+            onCheckedChanged: if (checked === true) { if ( regno_field.text === "" ) { checked = false ; displaydialog(2) } }
         }
         Text {
             id: check_uncheck
@@ -228,7 +265,7 @@ Item {
             //leftPadding: 9
             rightPadding: 35
             placeholderText: qsTr("Username")
-            onPressed: { inputPaneln.showKeyboard = true ; regno_checkBox.checked = false }
+            onPressed: { inputPaneln.showKeyboard = true ; regno_checkBox.checked = false ; fingerprint.opacity = 0 }
             readOnly: regno_checkBox.checked
             Rectangle {
                 anchors.fill: parent ; color: "transparent" ; border.width: 1 ; border.color: "white"
@@ -275,12 +312,13 @@ Item {
     Text {
         id: verify
         visible: regno_checkBox.checked
-        anchors.left: removee.left
-        y: 300
+        //anchors.left: removee.left
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: 270
         width: 180
         height: 41
         text: qsTr("Verify Removal")
-        font.pixelSize: removee.font.pixelSize + 1
+        font.pixelSize: removee.font.pixelSize
         verticalAlignment: Text.AlignVCenter
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
@@ -290,8 +328,8 @@ Item {
     }
     Text {
         id: ver
-        visible: regno_checkBox.checked & switch1.checked
-        y: 350
+        visible: regno_checkBox.checked //regno_checkBox.checked & switch1.checked
+        y: 300
         height: 41
         anchors.left: removee.left
         anchors.right: parent.right
@@ -363,7 +401,7 @@ Item {
         id: pin
         visible: regno_checkBox.checked & switch1.checked
         anchors.left: removee.left
-        y: 480
+        y: 440
         width: 152
         height: 41
         text: qsTr("Pin")
@@ -429,13 +467,15 @@ Item {
             }
         }
     }
-    Connections {
+    Connections { //comeback here | add more opacity = 0
         target: backend
 
-        function onInvalid(number) {
-            if (number === 1) { displaydialog(1) ; regno_checkBox.checked = false }
-        }
-        function onIncorrect(number) { if (number === 3) { displaydialog(3) } }
+        function onInvalid(number) { if (number === 1) { fingerprint.opacity = 0 ; displaydialog(1) ; regno_checkBox.checked = false } }
+
+        function onLoadloader() { page_loader.source = 'Loadingpage.ui.qml' }
+        function onBiofailed() { displaydialog(4) }
+
+        function onIncorrect(number) { if (number === 3) { fingerprint.opacity = 0 ; displaydialog(3) } }
         function onProceed(value) { if (value === 1) { displaybigdialog(0,2) ; exitbutton.visible = true } }
         function onFinishedprocess(pagetoload){ correctpage = pagetoload }
         function onHidekeyboard() { inputPaneln.showKeyboard = inputPanel.showKeyboard = false }
@@ -526,18 +566,29 @@ Item {
 
     // Dialog Box functions
     function displaydialog(functionnum) {
+        center_border2.visible = bad_picture2.visible = true
         dialog_timer.running = false ; time.width = 10
-        dialog_small.anchors.bottomMargin = 20
+        dialog_small.anchors.bottomMargin = constant.smalldialogbottommargin // 20
         dialog_timer.running = true
+        information2.font.bold = false
+        information2.font.pixelSize = 20
         // 1 invalidDialog
         if (functionnum === 1) { information2.text = qsTr("Username To Remove Doesn't Exist") }
-
         // 2 incompleteDialog
         if (functionnum === 2) { information2.text = qsTr("Details You Entered Are Incomplete. Fill the empty fields") }
-
         // 3 incorrectDialog
         if (functionnum === 3) { information2.text = qsTr("Invalid Verification Username or Password") }
-
+        // 4 bioDialog
+        if (functionnum === 4) { information2.text = qsTr("Fingerprint did not match") }
+    }
+    function enrolldialog(info) {
+        center_border2.visible = bad_picture2.visible = false
+        dialog_timer.running = false ; time.width = 10
+        dialog_small.anchors.bottomMargin = 40
+        dialog_timer.running = true
+        information2.font.bold = true
+        information2.font.pixelSize = 24
+        information2.text = qsTr(info)
     }
     function closebigdialog() { dialog_big.visible = false ; f1_switch.checked = false }
 
@@ -616,6 +667,7 @@ Item {
             anchors.rightMargin: 100
         }
         MouseArea {
+            visible: center_border2.visible
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.left: center_border2.right
@@ -694,10 +746,11 @@ Item {
                 anchors.topMargin: header.anchors.topMargin // 30
                 anchors.left: parent.left
                 anchors.leftMargin: anchors.topMargin
+                anchors.right: parent.right
+                anchors.rightMargin: anchors.leftMargin
                 anchors.bottom: b1.top
                 font.family: "Verdana"
                 font.styleName: "Regular"
-                width: parent.width - 40
                 font.pixelSize: 21
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignTop
@@ -761,7 +814,7 @@ Item {
                 hoverEnabled: true
                 onEntered: { b1.color = "#a0a0a0" }
                 onExited: { b1.color = "black" }
-                onClicked: { closebigdialog() ; backend.removesuper([regno_field.text, ver_field.text, "Pin", password.text]) }
+                onClicked: { closebigdialog() ; backend.removesuper([regno_field.text, ver_field.text, password.text, "Pin"]) }
             }
             Rectangle {
                 anchors.top: b2.top ; anchors.topMargin: 0.5 ; visible: b2.visible
@@ -863,9 +916,5 @@ Item {
         visible: false
         anchors.fill: parent
         onClicked: { revert() ; page_loader.source = correctpage }
-    }
-    function animatefingerprint() {
-        if (fingerprint.visible === true) { fingerprint.opacity = 1 }
-        else { fingerprint.opacity = 0 }
     }
 }

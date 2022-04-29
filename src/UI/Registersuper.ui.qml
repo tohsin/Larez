@@ -30,49 +30,48 @@ Item {
             sourceSize.height: 100
             MouseArea {
                 anchors.fill: parent
-                onClicked: { revert() ; page_loader.source = correctpage }
+                onClicked: { backend.stopthread() ; revert() ; page_loader.source = correctpage }
             }
         }
-
-        // Registration Field -- Fingerprint, "Place finger to scan" Information
-        Image {
-            id: fingerprint
-            opacity: 0
-            y: 540
-            width: 140
-            height: 140
-            visible: admin_box.checked | super_box.checked
-            source: "../images/whitefinger.jpg"
+        Rectangle {
+            anchors.top: next_button.top ; anchors.topMargin: 0.5 ; visible: next_button.visible
+            anchors.left: next_button.left ; anchors.leftMargin: -1
+            height: next_button.height + 2.5 ; width: next_button.width + 1.5 ; radius: next_button.radius + 1
+            color: "#e0e0e0"
+        }
+        Rectangle {
+            id: next_button
+            color: "#ffffff"
+            radius: 8
+            width: 180
+            height: 53
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 100
             anchors.horizontalCenter: parent.horizontalCenter
-            fillMode: Image.PreserveAspectFit
-            Behavior on opacity { PropertyAnimation { duration: 500 } }
+            Text {
+                width: 160
+                height: 40
+                text: qsTr("Next")
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 20
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font.bold: true
+                font.family: "Verdana"
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
             MouseArea {
-                id: regfinger
+                id: next_area
                 anchors.fill: parent
-                onClicked: {                    
+                onClicked: {
                     if (super_box.checked === true) { code = "Super Admin"
                     } else { code = "Admin" }
 
-                    if (stationpicked === 0) { displaydialog(4) }
+                    if ( regno_field.text === "" | accname_field.text === "" | password.text === "" ) { displaydialog(2) }
+                    else if(stationpicked === 0) { displaydialog(4) }
                     else { backend.checksuper([regno_field.text, code]) }
                 }
             }
-        }
-        Text {
-            id: place_finger
-            opacity: fingerprint.opacity
-            x: 297
-            width: 262
-            height: 50
-            visible: fingerprint.visible
-            text: qsTr("Place Finger on Scanner to Register Fingerprint")
-            anchors.top: fingerprint.bottom
-            font.family: "Calibri" ; font.styleName: "Regular"
-            font.pixelSize: 22
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignTop
-            font.italic: true            
-            anchors.horizontalCenter: fingerprint.horizontalCenter
         }
 
         // Registration Field contd -- Reg No Text box
@@ -231,6 +230,8 @@ Item {
             font.styleName: "Regular"
             font.bold: true
             MouseArea {
+                id: stationpicker_area
+                visible: (!verwindow.visible) & (!enrollwindow.visible)
                 anchors.fill: parent
                 onClicked: { background.visible = menu.visible = true ; menu.scale = 1 }
             }
@@ -345,15 +346,14 @@ Item {
                 id: super_box
                 width: 13
                 height: 13
-                scale: 1.1
+                scale: 1.15
                 anchors.left: parent.left
                 anchors.top: parent.top
                 anchors.topMargin: 6
                 anchors.leftMargin: 6
                 onCheckedChanged: {
-                    if ( regno_field.text === "" | password.text === "" ) { displaydialog(2) }
+                    if ( regno_field.text === "" | accname_field.text === "" | password.text === "" ) { displaydialog(2) }
                     if (super_box.checked === true & admin_box.checked === true) { admin_box.checked = false }
-                    if (super_box.checked === true) { fingerprint.opacity = 1 } else { fingerprint.opacity = 0 }
                 }
             }
 
@@ -363,9 +363,9 @@ Item {
                 text: qsTr("Super Admin")
                 anchors.verticalCenter: super_box.verticalCenter
                 anchors.left: super_box.right
-                font.pixelSize: 16
-                font.family: "Verdana"
-                anchors.leftMargin: 15
+                anchors.leftMargin: 20
+                font.pixelSize: 18
+                font.family: "Verdana"                
                 MouseArea {
                     anchors.fill: parent
                     onClicked: super_box.checked = !super_box.checked
@@ -377,12 +377,11 @@ Item {
                 height: 13
                 anchors.verticalCenter: super_box.verticalCenter
                 anchors.left: super_text.right
-                anchors.leftMargin: 30
-                scale: 1.1
+                anchors.leftMargin: 40
+                scale: super_box.scale
                 onCheckedChanged: {
-                    if ( regno_field.text === "" | password.text === "" ) { displaydialog(2) }
+                    if ( regno_field.text === "" | accname_field.text === "" | password.text === "" ) { displaydialog(2) }
                     if (admin_box.checked === true & super_box.checked === true) { super_box.checked = false }
-                    if (admin_box.checked === true) { fingerprint.opacity = 1 } else { fingerprint.opacity = 0 }
                 }
             }
 
@@ -454,7 +453,7 @@ Item {
                 sourceSize.height: 100
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: { verwindow.visible = false ; regfinger.visible = true ; username1.text = '' ; password1.text = '' ; fingerprint1.opacity = 0 }
+                    onClicked: { verwindow.visible = false ; next_area.visible = true ; username1.text = '' ; password1.text = '' ; fingerprint1.opacity = 0 }
                 }
             }
             // Navigation contd
@@ -492,7 +491,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        backend.registersuper([regno_field.text, accname_field.text, code, stationname.text, password.text, password.text, username1.text, password1.text , "Pin"])
+                        backend.biometrics([3, regno_field.text, accname_field.text, code, stationname.text, password.text, username1.text, password1.text , "Pin"])
                     }
                 }
             }
@@ -512,7 +511,8 @@ Item {
                 height: submit_button1.height
                 anchors.bottom: submit_button1.bottom
                 visible: !switch1.checked
-                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.left: parent.left
+                anchors.leftMargin: use_fingerprint_button1.anchors.leftMargin
                 Text {
                     width: 150
                     height: 40
@@ -528,6 +528,44 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: { switch1.checked = !switch1.checked ; fingerprint1.opacity = 0 }
+                }
+            }
+            // Navigation Buttons -- Authenticate
+            Rectangle {
+                anchors.top: authenticate_button.top ; anchors.topMargin: 0.5 ; visible: authenticate_button.visible
+                anchors.left: authenticate_button.left ; anchors.leftMargin: -1
+                height: authenticate_button.height + 2.5 ; width: authenticate_button.width + 1.5 ; radius: authenticate_button.radius + 1
+                color: "#e0e0e0"
+            }
+            Rectangle {
+                id: authenticate_button
+                visible: use_pin_button1.visible
+                width: constant.button1width - 20 // 230 - 20
+                height: constant.button1height // 53
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: constant.button2bottommargin // 120
+                anchors.right: parent.right
+                anchors.rightMargin: use_fingerprint_button1.anchors.leftMargin
+                color: "black"
+                radius: constant.button2radius // 8
+                Text {
+                    id: authenticate_text
+                    width: 150
+                    height: 40
+                    color: "white"
+                    text: qsTr("Authenticate")
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.pixelSize: submit_text.font.pixelSize
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.bold: true
+                    font.family: "Verdana"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: { if (username1.text === "") { displaydialog(5) }
+                        else { fingerprint1.opacity = 1 } }
                 }
             }
             // Navigation contd
@@ -563,7 +601,7 @@ Item {
                 }
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: { switch1.checked = !switch1.checked ; fingerprint1.opacity = 1 }
+                    onClicked: { switch1.checked = !switch1.checked }
                 }
             }
             // Navigation contd
@@ -576,7 +614,7 @@ Item {
         // Biometric Elements -- User Rank, Fingerprint picture, "Place Finger" text
         Text {
             id: biometric1
-            visible: !switch1.checked
+            visible: false //!switch1.checked
             anchors.left: parent.left ; anchors.leftMargin: 100
             y: 210
             width: 152
@@ -593,21 +631,19 @@ Item {
             id: fingerprint1
             visible: !switch1.checked
             opacity: 0
-            y: 300
-            width: 150
-            height: 150
+            y: 330
+            width: 200
+            height: 200
             source: "../images/whitefinger.jpg"
             anchors.horizontalCenter: parent.horizontalCenter
             fillMode: Image.PreserveAspectFit
-            Behavior on opacity { PropertyAnimation { duration: 500 } }
-            MouseArea {
-                anchors.fill: parent;
-                onClicked: {
-                    backend.registersuper([regno_field.text, accname_field.text, code, stationname.text, password.text, password.text, '', '' , "Fingerprint"])
-                }
+            onOpacityChanged: {
+                if (opacity == 1){ backend.biometrics([3, regno_field.text, accname_field.text, code, stationname.text, password.text, username1.text, "Fingerprint"]) ; enrolldialog("place finger on scanner") }
+                else if (opacity == 0){ backend.stopthread() }
             }
+            Behavior on opacity { PropertyAnimation { duration: 500 } } 
         }
-        Text {
+        /*Text {
             id: place_finger1
             font.family: "Calibri"
             visible: !switch1.checked
@@ -622,12 +658,12 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignTop            
             anchors.horizontalCenter: fingerprint1.horizontalCenter
-        }
+        }*/
 
         // Typed Elements -- Rank, Username & Pin Text box
         Text {
             id: superadmin1
-            visible: switch1.checked
+            //visible: switch1.checked
             y: 210
             height: 41
             anchors.left: parent.left
@@ -781,14 +817,68 @@ Item {
         }
     }
 
+    // Enrollment Page
+    Rectangle {
+        id: enrollwindow
+        visible: false
+        anchors.fill: parent
+
+        // Fingerprint, Follow the prompt
+        Image {
+            id: fingerprint
+            opacity: 0
+            y: 200
+            width: 250
+            height: 250
+            source: "../images/whitefinger.jpg"
+            anchors.horizontalCenter: parent.horizontalCenter
+            fillMode: Image.PreserveAspectFit
+            onOpacityChanged: if (opacity == 0){ backend.stopthread() }
+            Behavior on opacity { PropertyAnimation { duration: 500 } }
+        }
+        Text {
+            id: follow_prompts
+            width: 262
+            height: 50
+            text: qsTr("Follow The Prompts As They Pop Up")
+            anchors.top: fingerprint.bottom
+            anchors.topMargin: 20
+            anchors.horizontalCenter: fingerprint.horizontalCenter
+            font.family: "Calibri" ; font.styleName: "Regular"
+            font.pixelSize: 22
+            font.italic: true
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignTop
+        }
+        // Enroll Page Information -- Feature Name
+        Text {
+            id: modename2
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: -60
+            width: 150
+            height: 20
+            text: qsTr("Biometrics Enrollment")
+            font.pixelSize: 25
+            anchors.top: parent.top
+            anchors.topMargin: 40
+            font.family: "Verdana"
+            font.styleName: "Regular"
+            font.bold: true
+        }
+    }
+
     Connections {
         target: backend
 
+        function onEnrollinfo(info) { enrolldialog(info) }
+        function onRetryenroll() { enrollwindow.visible = false ; fingerprint.opacity = fingerprint1.opacity = 0 }
+
         function onInvalid(number) { if (number === 1) { displaydialog(1) } }
-        function onIncorrect(number) { if (number === 3) { displaydialog(3) } }
+        function onIncorrect(number) { if (number === 3) { fingerprint1.opacity = 0 ; displaydialog(3) } }
         function onProceed(value) {
             if (value === 1) { displaybigdialog(0,2) ; exitbutton.visible = true }
-            if (value === 2) { if (correctpage === 'Superview.ui.qml'){ displaybigdialog(2,3) } else { displaybigdialog(2,1) } }
+            else if (value === 2) { if (correctpage === 'Superview.ui.qml'){ displaybigdialog(2,3) } else { displaybigdialog(2,1) } }
+            else if (value === 3) { enrollwindow.visible = true ; fingerprint.opacity = 1 ; verwindow.visible = false }
         }
         function onFinishedprocess(pagetoload){ correctpage = pagetoload }
         function onHidekeyboard() { inputPaneln.showKeyboard = inputPanel.showKeyboard = false }
@@ -863,25 +953,34 @@ Item {
 
     // Dialog Box functions
     function displaydialog(functionnum) {
+        center_border2.visible = bad_picture2.visible = true
         dialog_timer.running = false ; time.width = 10
         dialog_small.anchors.bottomMargin = 20
         dialog_timer.running = true
+        information2.font.bold = false
+        information2.font.pixelSize = 20
         // 1 invalidDialog
         if (functionnum === 1) { information2.text = qsTr("Username is already taken") }
-
         // 2 incompleteDialog
         if (functionnum === 2) {
             information2.text = qsTr("Details You Entered Are Incomplete. Fill the empty fields")
-            super_box.checked = false
-            admin_box.checked = false
+            super_box.checked = admin_box.checked = false
         }
-
         // 3 incorrectDialog
         if (functionnum === 3) { information2.text = qsTr("Invalid Verification Username or Password") }
-
         // 4 stationDialog
         if (functionnum === 4) { information2.text = qsTr("You haven't selected a station") }
-
+        // 5 incompleteDialog
+        if (functionnum === 5) { information2.text = qsTr("Username field is empty. Fill all fields before verifying") }
+    }
+    function enrolldialog(info) {
+        center_border2.visible = bad_picture2.visible = false
+        dialog_timer.running = false ; time.width = 10
+        dialog_small.anchors.bottomMargin = 40
+        dialog_timer.running = true
+        information2.font.bold = true
+        information2.font.pixelSize = 24
+        information2.text = qsTr(info)
     }
     function closebigdialog() { dialog_big.visible = false ; f1_switch.checked = f2_switch.checked = false }
 
@@ -895,7 +994,7 @@ Item {
         // 1 confirmDialog
         if (functionnum === 1) {
             information.text = qsTr("You Are About To Register " + code + " " + regno_field.text + ". Do You Want To Continue?")
-            header.text = qsTr("Registering Admin")
+            header.text = qsTr("Registering " + code)
             f1_switch.checked = true
             right_button.clicked.connect(closebigdialog)
         }
@@ -907,7 +1006,7 @@ Item {
         // 3 confirmDialog
         if (functionnum === 3) {
             information.text = qsTr("You Are About To Register " + code + " " + regno_field.text + ". Do You Want To Continue?")
-            header.text = qsTr("Registering Admin")
+            header.text = qsTr("Registering " + code)
             f2_switch.checked = true
             right_button.clicked.connect(closebigdialog)
         }
@@ -969,6 +1068,7 @@ Item {
             anchors.rightMargin: 100
         }
         MouseArea {
+            visible: center_border2.visible
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.left: center_border2.right
@@ -1047,10 +1147,11 @@ Item {
                 anchors.topMargin: header.anchors.topMargin // 30
                 anchors.left: parent.left
                 anchors.leftMargin: anchors.topMargin
+                anchors.right: parent.right
+                anchors.rightMargin: anchors.leftMargin
                 anchors.bottom: b1.top
                 font.family: "Verdana"
                 font.styleName: "Regular"
-                width: parent.width - 40
                 font.pixelSize: 21
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignTop
@@ -1114,7 +1215,7 @@ Item {
                 hoverEnabled: true
                 onEntered: { b1.color = "#a0a0a0" }
                 onExited: { b1.color = "black" }
-                onClicked: { verwindow.visible = true ; closebigdialog() ; regfinger.visible = false ; fingerprint1.opacity = 1 }
+                onClicked: { verwindow.visible = true ; closebigdialog() ; next_area.visible = false }
             }
             MouseArea {
                 id: left_f2
@@ -1123,7 +1224,8 @@ Item {
                 hoverEnabled: true
                 onEntered: { b1.color = "#a0a0a0" }
                 onExited: { b1.color = "black" }
-                onClicked: { closebigdialog() ; regfinger.visible = false ; displaybigdialog(0,2) ; exitbutton.visible = true ; backend.registersuper([regno_field.text, accname_field.text, code, stationname.text, password.text, password.text, "Verified"])}
+                onClicked: { closebigdialog() ; next_area.visible = false ; backend.biometrics([3, regno_field.text, accname_field.text, code, stationname.text, password.text, "Verified"]) }
+                // onClicked: { closebigdialog() ; next_area.visible = false ; displaybigdialog(0,2) ; exitbutton.visible = true }
             }
             Rectangle {
                 anchors.top: b2.top ; anchors.topMargin: 0.5 ; visible: b2.visible

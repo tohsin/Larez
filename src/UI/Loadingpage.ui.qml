@@ -6,6 +6,9 @@ Item {
     property string correctpage: ""
 
     Rectangle {
+        id: time ; width: 10 ; height: 10 ; visible: false
+    }
+    Rectangle {
         id: shadow
         visible: true
         color: "dimgrey"
@@ -20,6 +23,10 @@ Item {
         width: height + 100
         height: parent.height * 2 / 3
         radius: 8
+        MouseArea {
+            anchors.fill: parent
+            onClicked: backend.stopthread()
+        }
     }
     AnimatedImage {
         id: pic
@@ -60,8 +67,112 @@ Item {
     Connections {
         target: backend
 
+        function onEnrollinfo(info) { enrolldialog(info) }
+
         function onFinishedprocess(correctpage){
             page_loader.source = correctpage
+        }
+    }
+
+    // Small Dialog Display Timer
+    SequentialAnimation {
+        id: dialog_timer
+        PropertyAnimation {
+            target: time
+            property: "width"
+            duration: 4000
+            to: 100
+        }
+        ScriptAction { script: { dialog_small.anchors.bottomMargin = -(dialog_small.height + 20) ; time.width = 10 } }
+    }
+
+    // Dialog Box functions
+    function enrolldialog(info) {
+        center_border2.visible = bad_picture2.visible = false
+        dialog_timer.running = false ; time.width = 10
+        dialog_small.anchors.bottomMargin = 40
+        dialog_timer.running = true
+        information2.font.bold = true
+        information2.font.pixelSize = 24
+        information2.text = qsTr(info)
+    }
+
+    // Small Dialog Box Components
+    Rectangle {
+        id: dialog_small
+        visible: true
+        color: "#f0f0f0"
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: -(height + 20)
+        width: 700
+        height: (width / 5) - 30
+        radius: 15
+        Behavior on anchors.bottomMargin { PropertyAnimation { duration: 100 } }
+        Text {
+            id: information2
+            anchors.left: bad_picture2.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: center_border2.left
+            anchors.leftMargin: 10
+            anchors.rightMargin: anchors.leftMargin
+            font.family: "Verdana"
+            font.styleName: "Regular"
+            height: parent.height
+            font.pixelSize: 20
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            color: "black"
+            wrapMode: Text.WordWrap
+            fontSizeMode: Text.Fit
+            font.capitalization: Font.Capitalize
+            text: qsTr("Dialog Information")
+        }
+        Image {
+            id: bad_picture2
+            anchors.left: parent.left
+            anchors.leftMargin: width/2
+            anchors.verticalCenter: parent.verticalCenter
+            width: 50
+            height: width
+            sourceSize.width: width + 20
+            sourceSize.height: width + 20
+            source: "../images/warning.png"
+            fillMode: Image.PreserveAspectFit
+        }
+        Rectangle {
+            id: center_border2
+            color: "dimgray"
+            opacity: 0.7
+            width: 2
+            anchors.top: parent.top
+            anchors.topMargin: 20
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: anchors.topMargin
+            anchors.right: parent.right
+            anchors.rightMargin: 100
+        }
+        MouseArea {
+            visible: center_border2.visible
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            anchors.left: center_border2.right
+            height: parent.height
+            onClicked: { dialog_small.anchors.bottomMargin = -(dialog_small.height + 20) ; time.width = 10 }
+            Text {
+                id: ok2
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                font.family: "Verdana"
+                font.styleName: "Regular"
+                width: 152
+                height: parent.height
+                font.pixelSize: information2.font.pixelSize
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                color: "black"
+                text: qsTr("Ok")
+            }
         }
     }
 }

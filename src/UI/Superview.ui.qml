@@ -728,10 +728,11 @@ Item {
                 anchors.topMargin: header.anchors.topMargin // 30
                 anchors.left: parent.left
                 anchors.leftMargin: anchors.topMargin
+                anchors.right: parent.right
+                anchors.rightMargin: anchors.leftMargin
                 anchors.bottom: b1.top
                 font.family: "Verdana"
                 font.styleName: "Regular"
-                width: parent.width - 40
                 font.pixelSize: 21
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignTop

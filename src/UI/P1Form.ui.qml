@@ -21,14 +21,14 @@ Item {
     Rectangle {
         id: log_in_button
         visible: switch1.checked
-        width: 150
-        height: 53
+        width: constant.button2width // 150
+        height: constant.button2height // 53
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 120
+        anchors.bottomMargin: constant.button2bottommargin // 120
         anchors.right: parent.right
         anchors.rightMargin: use_fingerprint_button.anchors.leftMargin
         color: "black"
-        radius: 8
+        radius: constant.button2radius // 8
         Text {
             id: login_text
             width: 150
@@ -36,7 +36,7 @@ Item {
             color: "white"
             text: qsTr("Log In")
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: 20
+            font.pixelSize: constant.fontsize2 // 20
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             font.bold: true
@@ -45,9 +45,11 @@ Item {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: {
-                page_loader.source = 'Loadingpage.ui.qml';
-                backend.superuser([username.text, password.text , "Pin", code]);
+            onClicked: { if (username.text === "" | password.text === "") { displaydialog(3) }
+                else {
+                    page_loader.source = 'Loadingpage.ui.qml';
+                    backend.superuser([username.text, password.text , "Pin", code]);
+                }
             }
         }
     }
@@ -66,7 +68,8 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: log_in_button.anchors.bottomMargin
         visible: !switch1.checked
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: parent.left
+        anchors.leftMargin: use_fingerprint_button.anchors.leftMargin
         Text {
             width: 150
             height: 40
@@ -81,7 +84,46 @@ Item {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 0 ; settings_text.anchors.leftMargin = toggleswitch.anchors.rightMargin = biometric.anchors.leftMargin ; settings_text.anchors.bottomMargin = 100 }
+            onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 0 }
+            //onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 0 ; settings_text.anchors.leftMargin = toggleswitch.anchors.rightMargin = biometric.anchors.leftMargin ; settings_text.anchors.bottomMargin = 100 }
+        }
+    }
+    // Navigation Buttons -- Authenticate
+    Rectangle {
+        anchors.top: authenticate_button.top ; anchors.topMargin: 0.5 ; visible: authenticate_button.visible
+        anchors.left: authenticate_button.left ; anchors.leftMargin: -1
+        height: authenticate_button.height + 2.5 ; width: authenticate_button.width + 1.5 ; radius: authenticate_button.radius + 1
+        color: "#e0e0e0"
+    }
+    Rectangle {
+        id: authenticate_button
+        visible: use_pin_button.visible
+        width: constant.button1width - 20 // 230 - 20
+        height: constant.button1height // 53
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: constant.button2bottommargin // 120
+        anchors.right: parent.right
+        anchors.rightMargin: use_fingerprint_button.anchors.leftMargin
+        color: "black"
+        radius: constant.button2radius // 8
+        Text {
+            id: authenticate_text
+            width: 150
+            height: 40
+            color: "white"
+            text: qsTr("Authenticate")
+            anchors.verticalCenter: parent.verticalCenter
+            font.pixelSize: login_text.font.pixelSize
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.bold: true
+            font.family: "Verdana"
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: { if (username.text === "") { displaydialog(3) }
+                else { fingerprint.opacity = 1 } }
         }
     }
     Rectangle {
@@ -89,14 +131,14 @@ Item {
         anchors.left: use_fingerprint_button.left ; anchors.leftMargin: -1
         height: use_fingerprint_button.height + 2.5 ; width: use_fingerprint_button.width + 1.5 ; radius: use_fingerprint_button.radius + 1
         color: "#e0e0e0"
-    }
+    }   
     Rectangle {
         id: use_fingerprint_button
         color: "#ffffff"
         radius: log_in_button.radius
         //border.width: 3
-        width: 230
-        height: log_in_button.height
+        width: constant.button1width // 230
+        height: constant.button1height // 53
         anchors.bottom: parent.bottom
         anchors.bottomMargin: log_in_button.anchors.bottomMargin
         visible: switch1.checked
@@ -116,7 +158,8 @@ Item {
         }
         MouseArea {
             anchors.fill: parent
-            onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 1 ; settings_text.anchors.leftMargin = 200 ; settings_text.anchors.bottomMargin = 100 ; toggleswitch.anchors.rightMargin = settings_text.anchors.leftMargin }
+            onClicked: { switch1.checked = !switch1.checked }
+            //onClicked: { switch1.checked = !switch1.checked ; settings_text.anchors.leftMargin = 200 ; settings_text.anchors.bottomMargin = 100 ; toggleswitch.anchors.rightMargin = settings_text.anchors.leftMargin }
         }
     }
     CheckBox {
@@ -134,7 +177,7 @@ Item {
         anchors.bottomMargin: 100
         anchors.left: parent.left
         anchors.leftMargin: 100
-        font.pixelSize: 16
+        font.pixelSize: constant.fontsize3 // 18
         font.family: "Verdana"
         MouseArea {
             anchors.fill: parent
@@ -169,14 +212,14 @@ Item {
         anchors.left: settings_text.left
         width: 300 ; height: 40
         text: qsTr("No Account? Click here to <b>Register</b>")
-        font.pixelSize: 16
+        font.pixelSize: constant.fontsize3 // 18
         verticalAlignment: Text.AlignVCenter
         font.capitalization: Font.Capitalize
         font.family: "Verdana" ; font.styleName: "Regular"
         MouseArea {
             anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
             height: parent.height; width: 80
-            onClicked: { page_loader.source = "Registersuper.ui.qml" ; backend.menubranch(1) }
+            onClicked: { backend.stopthread() ; page_loader.source = "Registersuper.ui.qml" ; backend.menubranch(1) }
         }
     }
 
@@ -200,46 +243,39 @@ Item {
     // Biometric Elements -- User Rank, Fingerprint picture, "Place Finger" text
     Text {
         id: biometric
-        visible: !switch1.checked
+        visible: false //!switch1.checked
         anchors.left: parent.left ; anchors.leftMargin: 100
         anchors.top: parent.top ; anchors.topMargin: 200
         width: 152 ; height: 41
         text: qsTr("Super Admin")
-        font.pixelSize: 20
+        font.pixelSize: constant.fontsize2 // 20
         verticalAlignment: Text.AlignVCenter
         font.capitalization: Font.AllUppercase
         font.family: "Verdana"
         font.styleName: "Regular"
-        font.bold: true
-        MouseArea {
-            anchors.fill: parent
-            onClicked: console.log(window.scale, mainwindow.width)
-        }
+        font.bold: true        
     }
     Image {
         id: fingerprint
         visible: !switch1.checked
         opacity: 0
         anchors.top: biometric.bottom
-        anchors.topMargin: 10
-        width: 150
-        height: 150
+        anchors.topMargin: 50
+        width: 200
+        height: width
         source: "../images/whitefinger.jpg"
         anchors.horizontalCenter: parent.horizontalCenter
         fillMode: Image.PreserveAspectFit
-        Behavior on opacity { PropertyAnimation { duration: 500 } }
-        MouseArea {
-            anchors.fill: parent;
-            onClicked: {
-                page_loader.source = "Loadingpage.ui.qml";
-                backend.superuser(['11', '0011', "Fingerprint", code]);
-            }
+        onOpacityChanged: {
+            if (opacity == 1){ backend.biometrics([1, username.text,"Fingerprint", code]) ; enrolldialog("place finger on scanner") }
+            else if (opacity == 0){ backend.stopthread() }
         }
+        Behavior on opacity { PropertyAnimation { duration: 500 } }
     }
-    Text {
+    /*Text {
         id: place_finger
-        visible: !switch1.checked
-        opacity: fingerprint.opacity
+        visible: !switch1.checked & (fingerprint.opacity == 1)
+        //opacity: fingerprint.opacity
         x: 297
         width: 262
         height: 50        
@@ -248,16 +284,16 @@ Item {
         anchors.topMargin: 10
         anchors.horizontalCenter: fingerprint.horizontalCenter
         font.family: "Calibri" ; font.styleName: "Regular"
-        font.pixelSize: 22
+        font.pixelSize: 24
         font.italic: true
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignTop
-    }
+    }*/
 
     // Typed Elements -- Rank, Username & Pin Text box
     Text {
         id: superadmin
-        visible: switch1.checked
+        //visible: switch1.checked
         anchors.top: parent.top ; anchors.topMargin: 200
         anchors.left: parent.left ;  anchors.leftMargin: biometric.anchors.leftMargin
         anchors.right: parent.right
@@ -275,7 +311,7 @@ Item {
             width: username_box.width
             height: username_box.height - 2
             placeholderText: qsTr("Username")
-            font.pixelSize: 20
+            font.pixelSize: constant.fontsize2 // 20
             topPadding: 7
             //leftPadding: 9
             rightPadding: 35
@@ -396,6 +432,15 @@ Item {
             }
         }
     }
+    Connections {
+        target: backend
+
+        function onLoadloader() { page_loader.source = 'Loadingpage.ui.qml' }
+        function onBiofailed() { displaydialog(2) }
+
+        function onIncorrect(number) { if (number === 1) { fingerprint.opacity = 0 ; displaydialog(1) } }
+        function onHidekeyboard() { inputPaneln.showKeyboard = inputPanel.showKeyboard = false }
+    }
 
     // Keyboards
     InputPanelN {
@@ -451,7 +496,7 @@ Item {
         PropertyAnimation {
             target: time
             property: "width"
-            duration: 4000
+            duration: constant.dialogtime // 4000
             to: 100
         }
         ScriptAction { script: { dialog_small.anchors.bottomMargin = -(dialog_small.height + 20) ; time.width = 10 } }
@@ -464,11 +509,27 @@ Item {
 
     // Dialog Box functions
     function displaydialog(functionnum) {
+        center_border2.visible = bad_picture2.visible = true
         dialog_timer.running = false ; time.width = 10
-        dialog_small.anchors.bottomMargin = 20
+        dialog_small.anchors.bottomMargin = constant.smalldialogbottommargin // 20
         dialog_timer.running = true
+        information2.font.bold = false
+        information2.font.pixelSize = 20
         // 1 incorrectDialog
         if (functionnum === 1) { information2.text = qsTr("Invalid Username or Password") }
+        // 2 bioDialog
+        else if (functionnum === 2) { information2.text = qsTr("Fingerprint did not match") }
+        // 3 emptyDialog
+        else if (functionnum === 3) { information2.text = qsTr("Fill your details before logging in") }
+    }
+    function enrolldialog(info) {
+        center_border2.visible = bad_picture2.visible = false
+        dialog_timer.running = false ; time.width = 10
+        dialog_small.anchors.bottomMargin = 40
+        dialog_timer.running = true
+        information2.font.bold = true
+        information2.font.pixelSize = 24
+        information2.text = qsTr(info)
     }
 
     // Small Dialog Box Components
@@ -479,9 +540,9 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: -(height + 20)
-        width: 700
+        width: constant.smalldialogwidth // 700
         height: (width / 5) - 30
-        radius: 15
+        radius: constant.smalldialogradius // 15
         Behavior on anchors.bottomMargin { PropertyAnimation { duration: 100 } }
         Text {
             id: information2
@@ -527,6 +588,7 @@ Item {
             anchors.rightMargin: 100
         }
         MouseArea {
+            visible: center_border2.visible
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.left: center_border2.right
@@ -547,16 +609,7 @@ Item {
                 text: qsTr("Ok")
             }
         }
-    }
-
-    Connections {
-        target: backend
-
-        function onIncorrect(number) {
-            if (number === 1) { displaydialog(1) }
-        }
-        function onHidekeyboard() { inputPaneln.showKeyboard = inputPanel.showKeyboard = false }
-    }
+    }    
 
     // Menu Bar Items Components
     Rectangle {
@@ -577,7 +630,7 @@ Item {
         anchors.left: menubar.left
         anchors.top: menubar.bottom
         anchors.topMargin: 10
-        width: 190
+        width: constant.menuwidth // 190
         height: menu.radius + first_menu.height + second_menu.height + menu.radius
         radius: 5
         scale: 0
@@ -589,14 +642,14 @@ Item {
             anchors.top: parent.top
             anchors.topMargin: menu.radius
             anchors.right: parent.right
-            height: 40 - menu.radius
+            height: constant.menu1height - menu.radius // 40 - radius
             color: menu.color
             MouseArea {
                 anchors.fill: parent
                 hoverEnabled: true
                 onEntered: first_menu.color = "#e8e8e8"
                 onExited: first_menu.color = menu.color
-                onClicked: { page_loader.source = "Registersuper.ui.qml" ; backend.menubranch(1) }
+                onClicked: { backend.stopthread() ; page_loader.source = "Registersuper.ui.qml" ; backend.menubranch(1) }
             }
             Text {
                 id: newadmin
@@ -606,7 +659,7 @@ Item {
                 height: 30
                 font.family: "Verdana"
                 width: parent.width
-                font.pixelSize: 16
+                font.pixelSize: constant.fontsize4 // 16
                 text: qsTr("New Admin")
                 leftPadding: 30
             }
@@ -639,7 +692,7 @@ Item {
                 hoverEnabled: true
                 onEntered: second_menu.color = "#e8e8e8"
                 onExited: second_menu.color = menu.color
-                onClicked: { page_loader.source = "Removesuper.ui.qml" ; backend.menubranch(1) }
+                onClicked: { backend.stopthread() ; page_loader.source = "Removesuper.ui.qml" ; backend.menubranch(1) }
             }
             Text {
                 id: removeadmin
@@ -655,8 +708,12 @@ Item {
             }
         }
     }
-    Component.onCompleted: fingerprint.opacity = 1
+    //Component.onCompleted: fingerprint.opacity = 1
 }
+
+// exception sends incorrect.emit return False use superloginbio
+// add Authenticate Button // enroll finger function // hide place finger // incorrect function make finger opacity 0 // login & authenticate buttons check for username.text === ""  >> CHECK P1
+// make sure open settings is arranged same way across
 
 /*##^##
 Designer {

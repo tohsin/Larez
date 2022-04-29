@@ -579,20 +579,19 @@ Item {
             id: box
             color: "white"
             anchors.centerIn: parent
-            width: 400
-            height: 200
+            width: 700
+            height: width / 2
             radius: 10
             Text {
                 id: header
                 anchors.top: parent.top
-                anchors.topMargin: 15
+                anchors.topMargin: 30
                 anchors.horizontalCenter: parent.horizontalCenter
-                anchors.leftMargin: 20
                 height: 40
                 font.family: "Verdana"
                 font.styleName: "Regular"
                 width: parent.width - 40
-                font.pixelSize: 17
+                font.pixelSize: 24
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 color: "black"
@@ -602,15 +601,16 @@ Item {
             }
             Text {
                 id: information
-                anchors.top: good_picture.bottom
-                anchors.topMargin: 20
+                anchors.top: header.bottom
+                anchors.topMargin: header.anchors.topMargin // 30
                 anchors.left: parent.left
-                anchors.leftMargin: 20
+                anchors.leftMargin: anchors.topMargin
+                anchors.right: parent.right
+                anchors.rightMargin: anchors.leftMargin
                 anchors.bottom: b1.top
                 font.family: "Verdana"
                 font.styleName: "Regular"
-                width: parent.width - 40
-                font.pixelSize: 14
+                font.pixelSize: 21
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignTop
                 color: "black"
@@ -623,7 +623,7 @@ Item {
                 id: good_picture
                 visible: true
                 anchors.top: parent.top
-                anchors.topMargin: 15
+                anchors.topMargin: 20
                 anchors.left: parent.left
                 anchors.leftMargin: 18
                 width: 35
@@ -642,14 +642,14 @@ Item {
             Rectangle {
                 id: b1
                 visible: button_number.checked
-                height: 43
-                width: 140
+                height: 50
+                width: 170
                 color: "black"
                 radius: 8
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: 20
+                anchors.bottomMargin: header.anchors.topMargin + 20 // 50
                 anchors.left: parent.left
-                anchors.leftMargin: 30
+                anchors.leftMargin: anchors.bottomMargin * 2 // 60
                 Text {
                     id: yes
                     anchors.verticalCenter: parent.verticalCenter
@@ -658,7 +658,7 @@ Item {
                     font.styleName: "Regular"
                     width: 152
                     height: parent.height
-                    font.pixelSize: 16
+                    font.pixelSize: 22
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: "white"

@@ -8,7 +8,7 @@ Item {
         id: time ; width: 10 ; height: 10 ; visible: false
     }
 
-    // Navigation Buttons -- Back button
+    // Navigation Buttons -- Back button, enroll button
     Image {
         id: back_button
         anchors.left: parent.left
@@ -25,43 +25,40 @@ Item {
             onClicked: { revert() ; stack.pop() ; stack.replace('P3Form.ui.qml') }
         }
     }
-
-    // Registration Field -- Fingerprint, "Place finger to scan" Information
-    Image {
-        id: fingerprint
-        visible: false
-        opacity: 0
-        y: 530
-        width: 140
-        height: 140        
-        source: "../images/whitefinger.jpg"
+    Rectangle {
+        anchors.top: enroll_button.top ; anchors.topMargin: 0.5 ; visible: enroll_button.visible
+        anchors.left: enroll_button.left ; anchors.leftMargin: -1
+        height: enroll_button.height + 2.5 ; width: enroll_button.width + 1.5 ; radius: enroll_button.radius + 1
+        color: "#e0e0e0"
+    }
+    Rectangle {
+        id: enroll_button
+        color: "#ffffff"
+        radius: 8
+        width: 230
+        height: 53
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 120
         anchors.horizontalCenter: parent.horizontalCenter
-        fillMode: Image.PreserveAspectFit
-        Behavior on opacity { PropertyAnimation { duration: 500 } }
+        Text {
+            width: 160
+            height: 40
+            text: qsTr("Enroll Fingerprint")
+            anchors.verticalCenter: parent.verticalCenter
+            font.pixelSize: 20
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.bold: true
+            font.family: "Verdana"
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                if ( regno_field.text === "" | password.text === "" ) { displaydialog(2)
+                if ( regno_field.text === "" | accname_field.text === "" | password.text === "" ) { displaydialog(2)
                 } else { backend.checkuser(regno_field.text) }
             }
         }
-    }
-    Text {
-        id: place_finger
-        visible: fingerprint.visible
-        opacity: fingerprint.opacity
-        x: 297
-        width: 262
-        height: 50        
-        text: qsTr("Place Finger on Scanner to Register Fingerprint")
-        anchors.top: fingerprint.bottom
-        font.family: "Calibri"
-        font.pixelSize: 22
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignTop
-        font.italic: true
-        anchors.topMargin: 10
-        anchors.horizontalCenter: fingerprint.horizontalCenter
     }
 
     // Registration Field contd -- Reg No Text box
@@ -274,52 +271,7 @@ Item {
                 onClicked: password.text = ""
             }
         }
-        Text {
-            id: enterfingerprint
-            x: 336
-            width: 140
-            height: 40
-            text: qsTr("Enter Fingerprint  >")
-            anchors.right: password_box.right
-            anchors.top: password_box.bottom
-            font.family: "Verdana"
-            font.pixelSize: 18
-            font.bold: true
-            horizontalAlignment: Text.AlignRight
-            anchors.topMargin: 15
-            MouseArea {
-                anchors.fill: parent
-                onClicked: { hidekeyboard() ; fingerprint.visible = true ; fingerprint.opacity = 1 ; goback.visible = true ; enterfingerprint.visible = false }
-            }
-        }
-        Text {
-            id: goback
-            visible: false
-            x: 336
-            width: 140
-            height: 40
-            text: qsTr("<  Go Back")
-            anchors.right: password_box.right
-            anchors.top: password_box.bottom
-            font.family: enterfingerprint.font.family
-            font.pixelSize: enterfingerprint.font.pixelSize
-            font.bold: true
-            horizontalAlignment: Text.AlignRight
-            anchors.topMargin: enterfingerprint.anchors.topMargin
-            MouseArea {
-                anchors.fill: parent
-                onClicked: { fingerprint.visible = false ; fingerprint.opacity = 0 ; goback.visible = false ; enterfingerprint.visible = true }
-            }
-        }
     }
-    Connections {
-        target: backend
-
-        function onInvalid(number) { if (number === 1) { displaydialog(1) } }
-        function onProceed(value) { if (value === 1) { displaybigdialog(2,1) } }
-        function onHidekeyboard() { inputPaneln.showKeyboard = inputPanel.showKeyboard = false }
-    }
-
     // Page Information -- Feature name
     Text {
         id: modename
@@ -335,6 +287,90 @@ Item {
         font.styleName: "Regular"
         font.bold: true
     }
+
+    // Enrollment Page
+    Rectangle {
+        id: enrollwindow
+        visible: false
+        anchors.fill: parent
+
+        // Navigation -- Back button
+        Image {
+            id: back
+            anchors.left: parent.left
+            anchors.leftMargin: 35
+            anchors.top: parent.top
+            anchors.topMargin: 40
+            width: 30
+            height: 30
+            source: "../images/back.jpg"
+            sourceSize.width: 100
+            sourceSize.height: 100
+            MouseArea {
+                anchors.fill: parent
+                onClicked: { enrollwindow.visible = false ; fingerprint.opacity = 0 }
+            }
+        }
+        // Fingerprint, Follow the prompt
+        Image {
+            id: fingerprint
+            opacity: 0
+            y: 200
+            width: 250
+            height: 250
+            source: "../images/whitefinger.jpg"
+            anchors.horizontalCenter: parent.horizontalCenter
+            fillMode: Image.PreserveAspectFit
+            onOpacityChanged: {
+                if (opacity == 1){ backend.biometrics([8, regno_field.text, accname_field.text, password.text]) }
+                else if (opacity == 0){ backend.stopthread() }
+            }
+            Behavior on opacity { PropertyAnimation { duration: 500 } }
+        }
+        Text {
+            id: follow_prompts
+            width: 262
+            height: 50
+            text: qsTr("Follow The Prompts As They Pop Up")
+            anchors.top: fingerprint.bottom
+            anchors.topMargin: 20
+            anchors.horizontalCenter: fingerprint.horizontalCenter
+            font.family: "Calibri" ; font.styleName: "Regular"
+            font.pixelSize: 22
+            font.italic: true
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignTop
+        }
+        // Enroll Page Information -- Feature Name
+        Text {
+            id: modename1
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: -60
+            width: 150
+            height: 20
+            text: qsTr("Biometrics Enrollment")
+            font.pixelSize: 25
+            anchors.top: parent.top
+            anchors.topMargin: 40
+            font.family: "Verdana"
+            font.styleName: "Regular"
+            font.bold: true
+        }
+    }
+    Connections {
+        target: backend
+
+        function onEnrollinfo(info) { enrolldialog(info) }
+        function onRetryenroll() { enrollwindow.visible = false; fingerprint.opacity = 0 }
+
+        function onInvalid(number) { if (number === 1) { displaydialog(1) } }
+        function onProceed(value) {
+            if (value === 1) { displaybigdialog(0,2) ; exitbutton.visible = true }
+            else if (value === 2) { enrollwindow.visible = true ; fingerprint.opacity = 1 }
+        }
+        function onHidekeyboard() { inputPaneln.showKeyboard = inputPanel.showKeyboard = false }
+    }
+
     Component.onCompleted: {
         image.scale = 0.6
         image.anchors.horizontalCenterOffset = (mainwindow.width / 2) - 45
@@ -405,14 +441,25 @@ Item {
 
     // Dialog Box functions
     function displaydialog(functionnum) {
+        center_border2.visible = bad_picture2.visible = true
         dialog_timer.running = false ; time.width = 10
         dialog_small.anchors.bottomMargin = 20
         dialog_timer.running = true
+        information2.font.bold = false
+        information2.font.pixelSize = 20
         // 1 invalidDialog
         if (functionnum === 1) { information2.text = qsTr("Reg No is either already in use or doesn't exist") }
         // 2 incompleteDialog
         if (functionnum === 2) { information2.text = qsTr("Details You Entered Are Incomplete. Fill the empty fields") }
-
+    }
+    function enrolldialog(info) {
+        center_border2.visible = bad_picture2.visible = false
+        dialog_timer.running = false ; time.width = 10
+        dialog_small.anchors.bottomMargin = 40
+        dialog_timer.running = true
+        information2.font.bold = true
+        information2.font.pixelSize = 24
+        information2.text = qsTr(info)
     }
     function closebigdialog() { dialog_big.visible = false ; f1_switch.checked  = false }
 
@@ -423,14 +470,14 @@ Item {
 
         // 1 confirmDialog
         if (functionnum === 1) {
-            information.text = qsTr("You Are About To Register " + regno_field.text + ". Do You Want To Continue?")
+            information.text = qsTr("You Are About To Register " + regno_field.text + ".\n Do You Want To Continue?")
             header.text = qsTr("Registering User")
             f1_switch.checked = true
             right_button.clicked.connect(closebigdialog)
         }
         // 2 successDialog
         if (functionnum === 2) {
-            information.text = qsTr("New User Has Been Registered Successfully")
+            information.text = qsTr(accname_field.text + " Has Been Registered Successfully")
             header.text = qsTr("Registration Successful")
         }
     }
@@ -491,6 +538,7 @@ Item {
             anchors.rightMargin: 100
         }
         MouseArea {
+            visible: center_border2.visible
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.left: center_border2.right
@@ -569,10 +617,11 @@ Item {
                 anchors.topMargin: header.anchors.topMargin // 30
                 anchors.left: parent.left
                 anchors.leftMargin: anchors.topMargin
+                anchors.right: parent.right
+                anchors.rightMargin: anchors.leftMargin
                 anchors.bottom: b1.top
                 font.family: "Verdana"
                 font.styleName: "Regular"
-                width: parent.width - 40
                 font.pixelSize: 21
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignTop
@@ -636,7 +685,7 @@ Item {
                 hoverEnabled: true
                 onEntered: { b1.color = "#a0a0a0" }
                 onExited: { b1.color = "black" }
-                onClicked: { backend.registeruser([regno_field.text, accname_field.text, password.text, password.text]) ; displaybigdialog(0,2) ; exitbutton.visible = true }
+                onClicked: { backend.registeruser([regno_field.text, accname_field.text, password.text, password.text]) ; exitbutton.visible = true }
             }
             Rectangle {
                 anchors.top: b2.top ; anchors.topMargin: 0.5 ; visible: b2.visible
@@ -737,6 +786,6 @@ Item {
         id: exitbutton
         visible: false
         anchors.fill: parent
-        onClicked: { revert() ; stack.replace('P3Form.ui.qml') }
+        onClicked: { backend.stopthread() ; revert() ; stack.replace('P3Form.ui.qml') }
     }
 }

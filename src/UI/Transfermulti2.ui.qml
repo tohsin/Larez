@@ -183,13 +183,13 @@ Item {
             anchors.top: fingerprint.bottom
             anchors.topMargin: 50
             anchors.horizontalCenter: parent.horizontalCenter
-            visible: !switch1.checked & !renderswitch1.checked
+            visible: username.visible
             onVisibleChanged: animatefingerprint(1)
             Text {
                 id: number_text
                 width: 160
                 height: 40
-                text: qsTr("Type Number")
+                text: qsTr("Confirm")
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 18
                 horizontalAlignment: Text.AlignHCenter
@@ -200,11 +200,16 @@ Item {
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 0 }
+                onClicked: {
+                    if (username_field.text === '' | amount_field.text === '') { displaydialog(4) }
+                    else if (checkamount(parseFloat(amount_field.text)) === 0) { return }
+                    else { backend.transferrecipient([username_field.text, 1]) }
+                    if (renderswitch1.checked === true) { rendered1.height = 85 ; scrollView.contentHeight = scrollView.contentHeight - 300 ; changecolor(1) }
+                }
             }
         }
         // Entry 1 contd -- Fingerprint button, ( 2 left )
-        Rectangle {
+        /*Rectangle {
             anchors.top: use_fingerprint_button.top ; anchors.topMargin: 0.5 ; visible: use_fingerprint_button.visible
             anchors.left: use_fingerprint_button.left ; anchors.leftMargin: -1
             height: use_fingerprint_button.height + 2.5 ; width: use_fingerprint_button.width + 1.5 ; radius: use_fingerprint_button.radius + 1
@@ -237,7 +242,7 @@ Item {
                 anchors.fill: parent
                 onClicked: { switch1.checked = !switch1.checked ; fingerprint.opacity = 1 }
             }
-        }
+        }*/
         // Entry 1 contd -- Amount, ( 1 left )
         Text {
             id: amount
@@ -316,7 +321,7 @@ Item {
         // Entry 1 last -- Username, ( Done )
         Text {
             id: username
-            visible: use_fingerprint_button.visible
+            visible: switch1.checked & !renderswitch1.checked
             anchors.top: amount.bottom
             anchors.topMargin: 100
             height: 41
@@ -333,7 +338,6 @@ Item {
                 id: username_field
                 font.family: "Calibri"
                 height: username_box.height - 2
-                visible: use_fingerprint_button.visible
                 anchors.verticalCenter: username_box.verticalCenter
                 anchors.left: username_box.left
                 anchors.right: username_box.right
@@ -352,7 +356,6 @@ Item {
             }
             Rectangle {
                 id: username_box
-                visible: use_fingerprint_button.visible
                 height: 40
                 color: "transparent"
                 radius: 5
@@ -370,7 +373,7 @@ Item {
                     anchors.right: parent.right
                 }
             }
-            Text {
+            /*Text {
                 id: proceed
                 x: 336
                 width: 140
@@ -393,7 +396,7 @@ Item {
                         if (renderswitch1.checked === true) { rendered1.height = 85 ; scrollView.contentHeight = scrollView.contentHeight - 300 ; changecolor(1) }
                     }
                 }
-            }
+            }*/
             Image {
                 id:clearusername
                 height: 14
@@ -581,13 +584,13 @@ Item {
             height: use_username_button.height
             anchors.top: fingerprint2.bottom
             anchors.topMargin: 50
-            visible: !switch2.checked & !renderswitch2.checked & multi_switch2.checked
+            visible: username2.visible
             anchors.horizontalCenter: parent.horizontalCenter
             onVisibleChanged: animatefingerprint(2)
             Text {
                 width: 160
                 height: 40
-                text: qsTr("Type Number")
+                text: qsTr("Confirm")
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: number_text.font.pixelSize
                 horizontalAlignment: Text.AlignHCenter
@@ -598,11 +601,16 @@ Item {
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked: { switch2.checked = !switch2.checked ; fingerprint2.opacity = 0 }
+                onClicked: {
+                    if (username_field2.text === '' | amount_field2.text === '') { displaydialog(4) }
+                    else if (checkamount(parseFloat(amount_field2.text)) === 0) { return }
+                    else { backend.transferrecipient([username_field2.text, 2]) }
+                    if (renderswitch2.checked === true) { rendered2.height = 85 ; scrollView.contentHeight = scrollView.contentHeight - 300 ; changecolor(2) }
+                }
             }
         }
         // Entry 2 contd -- Fingerprint button, ( 2 left )
-        Rectangle {
+        /*Rectangle {
             anchors.top: use_fingerprint_button2.top ; anchors.topMargin: 0.5 ; visible: use_fingerprint_button2.visible
             anchors.left: use_fingerprint_button2.left ; anchors.leftMargin: -1
             height: use_fingerprint_button2.height + 2.5 ; width: use_fingerprint_button2.width + 1.5 ; radius: use_fingerprint_button2.radius + 1
@@ -634,7 +642,7 @@ Item {
                 anchors.fill: parent
                 onClicked: { switch2.checked = !switch2.checked ; fingerprint2.opacity = 1 }
             }
-        }
+        }*/
         // Entry 2 contd -- Amount, ( 1 left )
         Text {
             id: amount2
@@ -712,7 +720,7 @@ Item {
         // Entry 2 last -- Username, ( Done )
         Text {
             id: username2
-            visible: use_fingerprint_button2.visible & multi_switch2.checked
+            visible: switch2.checked & !renderswitch2.checked & multi_switch2.checked
             anchors.top: amount2.bottom
             anchors.topMargin: 100
             height: 41
@@ -729,7 +737,6 @@ Item {
                 id: username_field2
                 font.family: "Calibri"
                 height: username_box2.height - 2
-                visible: use_fingerprint_button2.visible
                 anchors.verticalCenter: username_box2.verticalCenter
                 anchors.left: username_box2.left
                 anchors.right: username_box2.right
@@ -748,7 +755,6 @@ Item {
             }
             Rectangle {
                 id: username_box2
-                visible: use_fingerprint_button2.visible
                 height: 40
                 color: "transparent"
                 radius: 5
@@ -766,7 +772,7 @@ Item {
                     anchors.right: parent.right
                 }
             }
-            Text {
+            /*Text {
                 id: proceed2
                 width: 140
                 height: 40
@@ -788,7 +794,7 @@ Item {
                         if (renderswitch2.checked === true) { rendered2.height = 85 ; scrollView.contentHeight = scrollView.contentHeight - 300 ; changecolor(2) }
                     }
                 }
-            }
+            }*/
             Image {
                 id:clearusername2
                 height: 14
@@ -1017,13 +1023,13 @@ Item {
             height: use_username_button.height
             anchors.top: fingerprint3.bottom
             anchors.topMargin: 50
-            visible: !switch3.checked & !renderswitch3.checked & multi_switch3.checked
+            visible: username3.visible
             anchors.horizontalCenter: parent.horizontalCenter
             onVisibleChanged: animatefingerprint(3)
             Text {
                 width: 160
                 height: 40
-                text: qsTr("Type Number")
+                text: qsTr("Confirm")
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: number_text.font.pixelSize
                 horizontalAlignment: Text.AlignHCenter
@@ -1034,11 +1040,16 @@ Item {
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked: { switch3.checked = !switch3.checked ; fingerprint3.opacity = 0 }
+                onClicked: {
+                    if (username_field3.text === '' | amount_field3.text === '') { displaydialog(4) }
+                    else if (checkamount(parseFloat(amount_field3.text)) === 0) { return }
+                    else { backend.transferrecipient([username_field3.text, 3]) }
+                    if (renderswitch3.checked === true) { rendered3.height = 85 ; scrollView.contentHeight = scrollView.contentHeight - 300 ; changecolor(3) }
+                }
             }
         }
         // Entry 3 contd -- Fingerprint button, ( 2 left )
-        Rectangle {
+        /*Rectangle {
             anchors.top: use_fingerprint_button3.top ; anchors.topMargin: 0.5 ; visible: use_fingerprint_button3.visible
             anchors.left: use_fingerprint_button3.left ; anchors.leftMargin: -1
             height: use_fingerprint_button3.height + 2.5 ; width: use_fingerprint_button3.width + 1.5 ; radius: use_fingerprint_button3.radius + 1
@@ -1070,7 +1081,7 @@ Item {
                 anchors.fill: parent
                 onClicked: { switch3.checked = !switch3.checked ; fingerprint3.opacity = 1 }
             }
-        }
+        }*/
         // Entry 3 contd -- Amount, ( 1 left )
         Text {
             id: amount3
@@ -1148,7 +1159,7 @@ Item {
         // Entry 3 last -- Username, ( Done )
         Text {
             id: username3
-            visible: use_fingerprint_button3.visible & multi_switch3.checked
+            visible: switch3.checked & !renderswitch3.checked & multi_switch3.checked
             anchors.top: amount3.bottom
             anchors.topMargin: 100
             height: 41
@@ -1165,7 +1176,6 @@ Item {
                 id: username_field3
                 font.family: "Calibri"
                 height: username_box3.height - 2
-                visible: use_fingerprint_button3.visible
                 anchors.verticalCenter: username_box3.verticalCenter
                 anchors.left: username_box3.left
                 anchors.right: username_box3.right
@@ -1184,7 +1194,6 @@ Item {
             }
             Rectangle {
                 id: username_box3
-                visible: use_fingerprint_button3.visible
                 height: 40
                 color: "transparent"
                 radius: 5
@@ -1864,10 +1873,11 @@ Item {
                 anchors.topMargin: header.anchors.topMargin // 30
                 anchors.left: parent.left
                 anchors.leftMargin: anchors.topMargin
+                anchors.right: parent.right
+                anchors.rightMargin: anchors.leftMargin
                 anchors.bottom: b1.top
                 font.family: "Verdana"
                 font.styleName: "Regular"
-                width: parent.width - 40
                 font.pixelSize: 21
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignTop
