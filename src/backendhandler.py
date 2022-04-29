@@ -366,9 +366,12 @@ class Handler(QObject):
         self.adminworksheet = update_admin_database(all_admins, self.adminworksheet)
 
         self.proceed.emit(1) # Successful dialog
+
+        '''
         with open ('admindummy.csv', 'a') as file:
             csv_writer = csv.writer(file)
             csv_writer.writerow(information)
+        '''
         self.log("41-1", regno) if rank == 'Super Admin' else self.log("41-0", regno)
         # Regular Admin registering as Super Admin
         if (rank == 'Super Admin') & (self.adminsheet['Name'].get(regno) != None):
@@ -400,22 +403,26 @@ class Handler(QObject):
                 data = list(self.adminsheet.loc[removename])
                 self.adminsheet.drop(removename, inplace = True)
             data.append(datetime.datetime.now().__str__()[:19])
+
+            '''
             with open('deletedadmins.csv', 'a') as dfile:
                 csv_writer = csv.writer(dfile)
                 csv_writer.writerow(data)
-                
+           '''
             self.proceed.emit(1)
 
             all_admins = self.supersheet
             all_admins.update(self.adminsheet)
             self.adminworksheet = update_admin_database(all_admins, self.adminworksheet)
 
-            formatted_list = self.pdtolist('Admins')
             removerank = data[2]
+            '''
+            formatted_list = self.pdtolist('Admins')            
             
             with open ('admindummy.csv', 'w') as file:
                 csv_writer = csv.writer(file)
                 csv_writer.writerows(formatted_list)
+            ''''
             self.log(['6','1',removerank,supername,superlog], removename)
         else:
             self.invalid.emit(1); self.log(['6','0','Undefined',supername,superlog], removename)
@@ -551,11 +558,13 @@ class Handler(QObject):
 
         self.userworksheet = update_admin_database(self.customersheet, self.userworksheet)
 
+        '''
         formatted_list = self.pdtolist('Users')
 
         with open ('userdummy.csv', 'w') as file:
             csv_writer = csv.writer(file)
             csv_writer.writerows(formatted_list)
+        '''
         self.log(['7','1',rank,supername,superlog], amount)
 
     def _depositbio(self, details):
@@ -584,9 +593,11 @@ class Handler(QObject):
         self.customersheet.loc[self.student] = details
         self.userworksheet = update_admin_database(self.customersheet, self.userworksheet)
 
+        '''
         with open ('userdummy.csv', 'a+') as file:
             csv_writer = csv.writer(file)
             csv_writer.writerow(details)
+        '''
         self.log("41-2", self.student)
 
     def _registeruserbio(self, details): # details = [reg no, acc name, password]
@@ -623,11 +634,14 @@ class Handler(QObject):
             self.customersheet.at[self.recipient, 'Amount'] = recipientbal
 
         self.userworksheet = update_admin_database(self.customersheet, self.userworksheet)
+
+        '''
         formatted_list = self.pdtolist('Users')
 
         with open ('userdummy.csv', 'w') as file:
             csv_writer = csv.writer(file)
             csv_writer.writerows(formatted_list)
+        '''
 
     """
     Keyboard Slots and Signals
