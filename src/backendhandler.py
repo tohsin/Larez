@@ -2,11 +2,12 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.Qt import QInputMethodEvent
 from PyQt5.QtCore import QObject, QThreadPool, pyqtSignal as Signal
 
-#from fingerprintfunctions import *
+# from fingerprintfunctions import *
 from checkfunc import *
 from database import *
 
 import datetime
+
 
 class Handler(QObject):
     def __init__(self):
@@ -54,9 +55,9 @@ class Handler(QObject):
     14. Retryenroll: If the enrollment process fails, this resets the page
     """
     incorrect = Signal(int)
-    invalid = Signal(int) 
+    invalid = Signal(int)
     finishedprocess = Signal(str)
-    loggeduser = Signal(str) 
+    loggeduser = Signal(str)
     accbalance = Signal(float)
     featuremode = Signal(str)
     proceed = Signal(int)
@@ -99,15 +100,15 @@ class Handler(QObject):
     20. _registeruser: Called to assign the variables which tell the program Reg No., Password, and Fingerprint of New User
     20.1 _registeruserbio: Called to register fingerprint. If successful, calls _registeruser and passes in the information
     21. _transactiondone: Called after a Purchase or Transfer was attempted regardless if it was successful or not
-    """        
+    """
 
     def _superlogin(self, s_user):
         self.super = s_user[0]
         s_password = s_user[1]
-        self.superlog = s_user[2] # Remove this line when fingerprint if-block is done
+        self.superlog = s_user[2]  # Remove this line when fingerprint if-block is done
         # Write an if block for when fingerprint is used
-        
-        if self.supersheet['Name'].get(self.super) == None: self.loaded(self.pageindex[1]); self.incorrect.emit(1); self.log("1001", self.super)
+
+        if self.supersheet['Name'].get(self.super) is None: self.loaded(self.pageindex[1]); self.incorrect.emit(1); self.log("1001", self.super)
         else:
             data = self.supersheet.loc[self.supersheet['Name'].get(self.super)]
             if s_password == data.Pin:
@@ -127,21 +128,21 @@ class Handler(QObject):
 
         for output in bioinput:
             # False finger didn't match
-            if output == False: self.loaded(self.pageindex[1]); self.log("1011", self.super); self.biofailed.emit(); breakout = True; break
+            if output is False: self.loaded(self.pageindex[1]); self.log("1011", self.super); self.biofailed.emit(); breakout = True; break
             # None finger wasn't scanned
-            elif output == None: print('none timed out'); breakout = True; break
-            elif output == True: self.loadloader.emit() # True finger was scanned
+            elif output is None: print('none timed out'); breakout = True; break
+            elif output is True: self.loadloader.emit() # True finger was scanned
             elif type(output) == str: self.enrollinfo.emit(output) # str - verifying
             elif output == "Found": break
 
-        if breakout == True: return True
+        if breakout is True: return True
 
         data = self.supersheet.loc[self.supersheet['Name'].get(self.super)]
 
         self.loaded(self.pageindex[2]) if s_user[2] == 0 else self.loaded(self.pageindex['supersetting']); self.accountname.emit([data['Account Name'], data.Station])
         self.log("1111", self.super)
 
-        return False # successful
+        return False  # successful
 
     def _superlogout(self, code):
         self.log("51-1", self.super)
@@ -150,10 +151,10 @@ class Handler(QObject):
 
     def _adminlogin(self, a_user):
         self.admin = a_user[0]
-        a_password = a_user[1] # Calls pi to capture finger for processing
+        a_password = a_user[1]  # Calls pi to capture finger for processing
         self.adminlog = a_user[2]
-        
-        if self.adminsheet['Name'].get(self.admin) == None: self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1000", self.admin)
+
+        if self.adminsheet['Name'].get(self.admin) is None: self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1000", self.admin)
         else:
             data = self.adminsheet.loc[self.adminsheet['Name'].get(self.admin)]
             if a_password == data.Pin:
@@ -173,31 +174,31 @@ class Handler(QObject):
 
         for output in bioinput:
             # False finger didn't match
-            if output == False: self.loaded(self.pageindex[2]); self.log("1010", self.admin); self.biofailed.emit(); breakout = True; break
+            if output is False: self.loaded(self.pageindex[2]); self.log("1010", self.admin); self.biofailed.emit(); breakout = True; break
             # None finger wasn't scanned
-            elif output == None: print('none timed out'); breakout = True; break
-            elif output == True: self.loadloader.emit() # True finger was scanned
+            elif output is None: print('none timed out'); breakout = True; break
+            elif output is True: self.loadloader.emit() # True finger was scanned
             elif type(output) == str: self.enrollinfo.emit(output) # str - verifying
             elif output == "Found": break
 
-        if breakout == True: return True
+        if breakout is True: return True
 
         data = self.adminsheet.loc[self.adminsheet['Name'].get(self.admin)]
 
         self.loaded(self.pageindex[3]) if a_user[2] == 0 else self.loaded(self.pageindex['adminsetting']); self.accountname.emit([data['Account Name'], data.Station, str(data.Amount)])
         self.log("1110", self.admin)
 
-        return False # successful
+        return False  # successful
 
     def _adminlogout(self):
         self.log("51-0", self.admin)
         self.admin, self.adminlog = "", ""
 
     def _verifysuper(self, code, details):
-        if code == 0: # For Register
+        if code == 0:  # For Register
             regno, rank = details[0], details[2]
             supername, superpassword, superlog = details[5:8]
-            if self.supersheet['Name'].get(supername) == None:
+            if self.supersheet['Name'].get(supername) is None:
                 self.log('40-1', f"{regno} Unfound {supername}") if rank == 'Super Admin' else self.log('40-0', f"{regno} Unfound {supername}")
                 self.incorrect.emit(3); return True
             else:
@@ -205,28 +206,28 @@ class Handler(QObject):
                 if superpassword != data.Pin:
                     self.log('40-1', f"{regno} Unverified {supername}") if rank == 'Super Admin' else self.log('40-0', f"{regno} Unverified {supername}")
                     self.incorrect.emit(3); return True
-            return False # successful
+            return False  # successful
 
-        elif code == 1: # For Removal
+        elif code == 1:  # For Removal
             removename, supername, superpassword, superlog = details
 
-            if self.supersheet['Name'].get(supername) == None: self.log(['6','0','Unfound', f'Unfound {supername}', superlog], removename); self.incorrect.emit(3); return True
+            if self.supersheet['Name'].get(supername) is None: self.log(['6', '0', 'Unfound', f'Unfound {supername}', superlog], removename); self.incorrect.emit(3); return True
             else:
                 data = self.supersheet.loc[self.supersheet['Name'].get(supername)]
                 if superpassword != data.Pin:
-                    self.log(['6','0','Unfound', f"Unverified {supername}", superlog], removename)
+                    self.log(['6', '0', 'Unfound', f"Unverified {supername}", superlog], removename)
                     self.incorrect.emit(3); return True
-            return False # successful
+            return False  # successful
 
-        elif code == 2: # For Deposit
+        elif code == 2:  # For Deposit
             amount = float(details[0])
             supername, superpin, superlog = details[1:4]
 
-            if self.supersheet['Name'].get(supername) != None: # Super Verified
+            if self.supersheet['Name'].get(supername) is not None:  # Super Verified
                 data = self.supersheet.loc[self.supersheet['Name'].get(supername)]
                 rank = '1'
                 if superpin != data.Pin:
-                    self.log(['7','0',rank,supername,f"Unverified {superlog}"], amount)
+                    self.log(['7', '0', rank,supername, f"Unverified {superlog}"], amount)
                     self.incorrect.emit(3); return True
             elif self.adminsheet['Name'].get(supername) != None: # Admin Verified
                 data = self.adminsheet.loc[self.adminsheet['Name'].get(supername)]
@@ -237,12 +238,12 @@ class Handler(QObject):
             else:
                 self.log(['7','0','3',supername,f"Unfound {superlog}"], amount)
                 self.incorrect.emit(3); return True
-            return False # successful
+            return False  # successful
 
     def _verifysuperbio(self, code, details):
         breakout = False
 
-        if code == 0: # For Register
+        if code == 0:  # For Register
             regno, rank = details[0], details[2]
             supername, superlog = details[5:7]
             try:
@@ -253,50 +254,50 @@ class Handler(QObject):
 
             for output in bioinput:
                 # False - finger didn't match
-                if output == False:
+                if output is False:
                     self.log('40-1', f"{regno} Unverified {supername}") if rank == 'Super Admin' else self.log('40-0', f"{regno} Unverified {supername}")
                     self.biofailed.emit(); breakout = True; break
                 # None - no finger was scanned
-                elif output == None: print('none timed out'); breakout = True; break
+                elif output is None: print('none timed out'); breakout = True; break
                 # elif output == True: self.enrollinfo.emit("Processing Fingerprint. Please Wait...") # True - finger was scanned
                 elif type(output) == str: self.enrollinfo.emit(output) # str - verifying
                 elif output == "Found": break
 
-            if breakout == True: return True
+            if breakout is True: return True
 
-            return False # successful
+            return False  # successful
 
-        elif code == 1: # For Removal
+        elif code == 1:  # For Removal
             removename, supername, superlog = details
             try:
                 bioinput = auth(self.superbiosheet[supername])
             except KeyError:
-                self.log(['6','0','Unfound', f'Unfound {supername}', superlog], removename); self.incorrect.emit(3)
+                self.log(['6', '0', 'Unfound', f'Unfound {supername}', superlog], removename); self.incorrect.emit(3)
                 return None
 
             for output in bioinput:
                 # False finger didn't match
-                if output == False: self.loaded(pageindex['Removesuper']) ; self.log(['6','0','Unfound', f'Unverified {supername}', superlog], removename); self.biofailed.emit(); self._menubranch(self.intermediatepage); breakout = True; break
+                if output is False: self.loaded(self.pageindex['Removesuper']); self.log(['6', '0', 'Unfound', f'Unverified {supername}', superlog], removename); self.biofailed.emit(); self._menubranch(self.intermediatepage); breakout = True; break
                 # None finger wasn't scanned
-                elif output == None: print('none timed out'); breakout = True; break
-                elif output == True: self.loadloader.emit() # True finger was scanned
+                elif output is None: print('none timed out'); breakout = True; break
+                elif output is True: self.loadloader.emit() # True finger was scanned
                 elif type(output) == str: self.enrollinfo.emit(output) # str - verifying
-                elif output == "Found": break
+                elif output is "Found": break
 
-            if breakout == True: return True
+            if breakout is True: return True
 
             return False
 
-        elif code == 2: # For Deposit
+        elif code == 2:  # For Deposit
             amount = float(details[0])
-            supername, superlog = details[1:3] # supername, superpin, superlog = details[1:4]
+            supername, superlog = details[1:3]  # supername, superpin, superlog = details[1:4]
 
             admin_n_super_bio = self.adminbiosheet
             admin_n_super_bio.update(self.superbiosheet)
             try:
-                bioinput = auth(admin_n_super_bio[supername]) # used in all the codes
+                bioinput = auth(admin_n_super_bio[supername])  # used in all the codes
             except KeyError:
-                self.log(['7','0','3',supername,f"Unfound {superlog}"], amount)
+                self.log(['7', '0', '3', supername, f"Unfound {superlog}"], amount)
                 self.incorrect.emit(3); return None
 
             for output in bioinput:
@@ -451,16 +452,16 @@ class Handler(QObject):
 
     def _removesuperbio(self, details):
         result = self._verifysuperbio(1, details)
-        if result == False:
+        if result is False:
             details.append('Verified')
-            self.loaded(pageindex['Removesuper'])
+            self.loaded(self.pageindex['Removesuper'])
             self._removesuper(details)
-            return False #stops thread
-        elif result == None: return False # for keyerrors - stops thread
-        elif result == True: return True # it either failed or finger wasn't scanned
+            return False  # stops thread
+        elif result is None: return False  # for keyerrors - stops thread
+        elif result is True: return True  # it either failed or finger wasn't scanned
 
-    def _userlogin(self, user): #user = [name, pin, "Fingerprint/Pin"]
-        #self.userdetails(user, 2) # ANSWER
+    def _userlogin(self, user):  # user = [name, pin, "Fingerprint/Pin"]
+        # self.userdetails(user, 2) # ANSWER
         self.student = user[0]
         u_password = user[1]
         self.studentlog = user[2]
@@ -480,21 +481,21 @@ class Handler(QObject):
         self.student, self.studentlog = user[:2]
 
         try:
-            bioinput = auth(self.userbiosheet[self.student]) # check what incorrect. emit causes
+            bioinput = auth(self.userbiosheet[self.student])  # check what incorrect. emit causes
         except KeyError:
             self.loaded('close'); self.incorrect.emit(1); self.log("1012", self.student)
             return False
 
         for output in bioinput:
             # False finger didn't match
-            if output == False: self.loaded('close'); self.log("1012", self.student); self.biofailed.emit(); breakout = True; break
+            if output is False: self.loaded('close'); self.log("1012", self.student); self.biofailed.emit(); breakout = True; break
             # None finger wasn't scanned
-            elif output == None: print('none timed out'); breakout = True; break
-            elif output == True: self.loadstack.emit() # True finger was scanned
+            elif output is None: print('none timed out'); breakout = True; break
+            elif output is True: self.loadstack.emit() # True finger was scanned
             elif type(output) == str: self.enrollinfo.emit(output) # str - verifying
-            elif output == "Found": break
+            elif output is "Found": break
 
-        if breakout == True: return True
+        if breakout is True: return True
 
         data = self.customersheet.loc[self.customersheet['Name'].get(self.student)]
 
@@ -504,7 +505,7 @@ class Handler(QObject):
         self.loaded(self.pageindex[self.activity]); self._switchfeature()
         self.log("1112", self.student)
 
-        return False # successful
+        return False  # successful
 
     def _userlogout(self):
         self.log("51-2", self.student)
@@ -516,22 +517,22 @@ class Handler(QObject):
 
     def _menubranch(self, stem):
         self.intermediatepage = stem
-        if stem == 4: self.loaded(self.pageindex['supersetting']) ; return
-        elif stem == 5: self.loaded(self.pageindex['adminsetting']) ; return
+        if stem == 4: self.loaded(self.pageindex['supersetting']); return
+        elif stem == 5: self.loaded(self.pageindex['adminsetting']); return
         self.loaded(self.pageindex[stem])
 
     def _switchfeature(self):
         self.loggeduser.emit(self.accname)
         self.featuremode.emit(self.activity)
         self.accbalance.emit(self.availbal)
-        
+
     def _purchaseamounts(self, amounts):
         total = 0
         for amount in amounts:
             tempnum = 0
             if (amount.strip()).isnumeric():
                 tempnum = int(amount.strip())
-                if 0 < tempnum < 50: self.incorrect.emit(1) ; return
+                if 0 < tempnum < 50: self.incorrect.emit(1); return
                 total += tempnum
         else:
             self.incorrect.emit(1) if round(total, 2) == 0 else self.totalexp.emit(round(total, 2))
@@ -539,15 +540,15 @@ class Handler(QObject):
     def _purchasefeature(self, amount):
         self.amount = amount
 
-    def _transferrecipient(self, info): # info = [fingerpicture/username, code]
-        if self.customersheet['Name'].get(info[0]) == None: self.incorrect.emit(2)
+    def _transferrecipient(self, info):  # info = [fingerpicture/username, code]
+        if self.customersheet['Name'].get(info[0]) is None: self.incorrect.emit(2)
         else:
-            recipient = self.customersheet.loc[info[0]]['Account Name']            
+            recipient = self.customersheet.loc[info[0]]['Account Name']
             self.accountname.emit([recipient, info[1]])  # ; self.displayuser.emit(username)
 
-    def _transferfeature(self, details): # details = [amount, fingerpicture/ username, "Fingerprint/ Typed"]
+    def _transferfeature(self, details):  # details = [amount, fingerpicture/ username, "Fingerprint/ Typed"]
         self.amount = 0.0 if details[0] == '' else float(details[0])
-        self.recipient = details[1]        
+        self.recipient = details[1]
 
         # if self.customersheet['Name'].get(self.recipient) == None: self.loaded('close'); self.incorrect.emit(2)
         # ANSWER BELOW
@@ -564,7 +565,7 @@ class Handler(QObject):
         # Bio verify
         if details[-1] == 'Verified':
             amount = float(details[0])
-            supername, superlog  = details[1:3]
+            supername, superlog = details[1:3]
         else:
             amount = float(details[0])
             supername, superpin, superlog = details[1:4]
@@ -630,9 +631,9 @@ class Handler(QObject):
         for output in fingerdata:
             if type(output) == str: self.enrollinfo.emit(output)
             elif type(output) == dict: enrolledfinger = output; break
-            elif output == False: self.enrollinfo.emit('Error Occured'); breakout = True; break
+            elif output is False: self.enrollinfo.emit('Error Occured'); breakout = True; break
 
-        if breakout == True: self.retryenroll.emit(); return False
+        if breakout is True: self.retryenroll.emit(); return False
 
         details.append(str(enrolledfinger[regno]))
         self.userbiosheet.update(enrolledfinger)
@@ -648,13 +649,13 @@ class Handler(QObject):
         self.availbal -= round(self.amount, 2)
         self.customersheet.at[self.student, 'Amount'] = self.availbal
 
-        if code == 0: # Purchase
+        if code == 0:  # Purchase
             self.log("2112", self.student) if self.studentlog == "Fingerprint" else self.log("2102", self.student)
             adminbalance = self.adminsheet.loc[self.admin]['Amount']
             adminbalance += round(self.amount, 2)
             self.adminsheet.at[self.admin, 'Amount'] = adminbalance
             self.adminworksheet = update_admin_database(self.adminsheet, self.adminworksheet)
-        elif code == 1: # Transfer
+        elif code == 1:  # Transfer
             self.log("3112", self.student) if self.studentlog == "Fingerprint" else self.log("3102", self.student)
             recipientbal = self.customersheet.loc[self.recipient]['Amount']
             recipientbal += round(self.amount, 2)
@@ -696,23 +697,23 @@ class Handler(QObject):
     7. _functionlist: Returns the appropriate function to run when called by _biometrics function
     8. _biometrics: Starts a thread to run the function returned from _functionlist in the thread
     """
-    
+
     def test_gspread(self):
-        #from pandas import read_csv
+        # from pandas import read_csv
 
         spreadsheet, self.adminworksheet = load_admin_database()
-        spreadsheet.set_index(spreadsheet['Name'], inplace = True)
+        spreadsheet.set_index(spreadsheet['Name'], inplace=True)
         spreadsheet = spreadsheet.astype({'Amount': float})
-        self.supersheet = spreadsheet.loc[spreadsheet['Rank']=='Super Admin']
-        self.adminsheet = spreadsheet.loc[spreadsheet['Rank']=='Admin']
+        self.supersheet = spreadsheet.loc[spreadsheet['Rank'] == 'Super Admin']
+        self.adminsheet = spreadsheet.loc[spreadsheet['Rank'] == 'Admin']
 
         self.customersheet, self.userworksheet = load_user_database()
-        self.customersheet.set_index(self.customersheet['Name'], inplace = True)
+        self.customersheet.set_index(self.customersheet['Name'], inplace=True)
         self.customersheet = self.customersheet.astype({'Amount': float})
 
         self.superbiosheet = {username: eval(finger) for finger, username in zip(self.supersheet['Fingerprint'],self.supersheet['Name'])}
         self.adminbiosheet = {username: eval(finger) for finger, username in zip(self.adminsheet['Fingerprint'],self.adminsheet['Name'])}
-        self.userbiosheet = {username: eval(finger) for finger, username in zip(self.customersheet['Fingerprint'],self.customersheet['Name'])}
+        self.userbiosheet = {username: eval(finger) for finger, username in zip(self.customersheet['Fingerprint'], self.customersheet['Name'])}
 
         '''
         # Experimental
@@ -740,7 +741,7 @@ class Handler(QObject):
         print(f"Admins: {len(spreadsheet)} Entries\nUsers: {len(self.customersheet)} Entries")
         self.finishedprocess.emit(self.pageindex[1])
 
-        return False # successful
+        return False  # successful
         """
         When working
             df.set_index(df['Name'], inplace = True)
@@ -757,6 +758,7 @@ class Handler(QObject):
             deleteddf.loc[index] = [data.Name, data.Rank, data.Pin, data.Fingerprint]
             df.drop(index, inplace = True)
         """
+
     def pdtolist(self, instruction):
         if instruction == 'Admins':
             superlist = [list(self.supersheet.iloc[i]) for i in range(len(self.supersheet))]
@@ -805,9 +807,9 @@ class Handler(QObject):
 
     def _functionlist(self, code):
         handlerfunctions = {
-        1: self._superloginbio, 2: self._adminloginbio, 3: self._registersuper,
-        4: self._removesuperbio, 5: self._userloginbio, 6: 'self._transferrecipientbio',
-        7: self._depositbio, 8: self._registeruserbio
+            1: self._superloginbio, 2: self._adminloginbio, 3: self._registersuper,
+            4: self._removesuperbio, 5: self._userloginbio, 6: 'self._transferrecipientbio',
+            7: self._depositbio, 8: self._registeruserbio
         }
         return handlerfunctions[code]
 

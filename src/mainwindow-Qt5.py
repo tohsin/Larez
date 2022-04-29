@@ -8,7 +8,6 @@ import sys
 
 
 class Worker(QRunnable):
-    """thread"""
     def __init__(self, values, function):
         super().__init__()
         self.instructions = values
@@ -25,6 +24,7 @@ class Worker(QRunnable):
     def kill(self):
         self.isalive = False
         self.killed = True
+
 
 class Backend(Handler):
     googlesheet = None
@@ -71,12 +71,12 @@ class Backend(Handler):
 
     @Slot(list)
     def checksuper(self, details):
-        self._checksuper(details)       
-    
+        self._checksuper(details)
+
     @Slot(list)
     def removesuper(self, details):
         self._removesuper(details)
-    
+
     @Slot(list)
     def studentuser(self, user):
         self._userlogin(user)
@@ -96,7 +96,7 @@ class Backend(Handler):
     @Slot()
     def switchfeature(self):
         self._switchfeature()
-        
+
     @Slot(list)
     def purchaseamounts(self, amounts):
         self._purchaseamounts(amounts)
@@ -108,10 +108,10 @@ class Backend(Handler):
     @Slot(list)
     def transferrecipient(self, info):
         self._transferrecipient(info)
-        
+
     @Slot(list)
     def transferfeature(self, details):
-        self._transferfeature(details)         
+        self._transferfeature(details)
 
     @Slot(list)
     def deposit(self, details):
@@ -132,35 +132,34 @@ class Backend(Handler):
     """
 
     @Slot(str)
-    def sendKeyToFocusItem(self, text):        
+    def sendKeyToFocusItem(self, text):
         self._sendKeyToFocusItem(text)
 
     @Slot()
-    def hideKeyboard(self): # K in Keyboard is capital
+    def hideKeyboard(self):  # K in Keyboard is capital
         self._hideKeyboard()
 
     @Slot()
     def stopthread(self):
         self.worker.kill()
-        
+
     @Slot(list)
-    def biometrics(self, instructions): #(self,code,processinfo)
+    def biometrics(self, instructions):  # (self,code,processinfo)
         self.worker = Worker(instructions, self._biometrics)
         self.threadpool.start(self.worker)
+
 
 if __name__ == "__main__":
     print('>', end='')
     app = QApplication(sys.argv)
-    engine = QQmlApplicationEngine()    
+    engine = QQmlApplicationEngine()
     back = Backend()
     engine.rootContext().setContextProperty("backend", back)
-    print('> ', end= '')
+    print('> ', end='')
     engine.load('UI/Home.ui.qml')
     print("loaded")
-    back.biometrics("Start") # Start up
+    back.biometrics("Start")  # Start up
     engine.quit.connect(app.quit)
     result = app.exec_()
     back.closeapp()
     sys.exit(result)
-
-
