@@ -229,7 +229,7 @@ class Handler(QObject):
                 if superpin != data.Pin:
                     self.log(['7', '0', rank,supername, f"Unverified {superlog}"], amount)
                     self.incorrect.emit(3); return True
-            elif self.adminsheet['Name'].get(supername) != None: # Admin Verified
+            elif self.adminsheet['Name'].get(supername) is not None: # Admin Verified
                 data = self.adminsheet.loc[self.adminsheet['Name'].get(supername)]
                 rank = '0'
                 if superpin != data.Pin:
@@ -282,7 +282,7 @@ class Handler(QObject):
                 elif output is None: print('none timed out'); breakout = True; break
                 elif output is True: self.loadloader.emit() # True finger was scanned
                 elif type(output) == str: self.enrollinfo.emit(output) # str - verifying
-                elif output is "Found": break
+                elif output == "Found": break
 
             if breakout is True: return True
 
@@ -302,26 +302,26 @@ class Handler(QObject):
 
             for output in bioinput:
                 # False finger didn't match
-                if output == False: self.loaded('close'); self.log(['7','0','3', supername,f"Unverified {superlog}"], amount); self.biofailed.emit(); breakout = True; break
+                if output is False: self.loaded('close'); self.log(['7', '0', '3', supername, f"Unverified {superlog}"], amount); self.biofailed.emit(); breakout = True; break
                 # None finger wasn't scanned
-                elif output == None: print('none timed out'); breakout = True; break
-                elif output == True: self.loadstack.emit() # True finger was scanned
-                elif type(output) == str: self.enrollinfo.emit(output) # str - verifying
+                elif output is None: print('none timed out'); breakout = True; break
+                elif output is True: self.loadstack.emit()  # True finger was scanned
+                elif type(output) == str: self.enrollinfo.emit(output)  # str - verifying
                 elif output == "Found": break
 
-            if breakout == True: return True
+            if breakout is True: return True
 
-            return False # successful
+            return False  # successful
 
     def _checksuper(self, details):
         regno = details[0]
         rank = details[1]
         # Condition fails if name is found in corresponding adminlist
-        if ((rank == 'Super Admin') & (self.supersheet['Name'].get(regno) != None)) | ((rank == 'Admin') & (self.adminsheet['Name'].get(regno) != None)):
+        if ((rank == 'Super Admin') & (self.supersheet['Name'].get(regno) is not None)) | ((rank == 'Admin') & (self.adminsheet['Name'].get(regno) is not None)):
             self.invalid.emit(1); self.log("40-1", regno) if rank == 'Super Admin' else self.log("40-0", regno)
         else: self.proceed.emit(2)
-        
-    def _registersuper(self, details): # [regno, accname, code, station, password, (supername,superpassword), 'Fingerprint'/'Pin/'Verified']
+
+    def _registersuper(self, details):  # [regno, accname, code, station, password, (supername,superpassword), 'Fingerprint'/'Pin/'Verified']
         # self.userdetails(details, 3) # ANSWER
 
         breakout = False
@@ -331,22 +331,22 @@ class Handler(QObject):
             regno, accname, rank, station, password, supername, superlog = details[:7]
 
         # Super verify
-        if details[-1] == "Verified": # Super Admin has not been verified already
+        if details[-1] == "Verified":  # Super Admin has not been verified already
             details.insert(5, self.super)
             # [regno_field.text, accname_field.text, code, stationname.text, password.text, supername, "Verified"]
 
         elif details[-1] == "Pin":
             supername, superpassword, superlog = details[5:8]
-            if self._verifysuper(0, details) == True: return True # unsuccessful
+            if self._verifysuper(0, details) is True: return True  # unsuccessful
             # [regno_field.text, accname_field.text, code, stationname.text, password.text, username1.text, password1.text , "Pin"]
 
         elif details[-1] == "Fingerprint":
             result = self._verifysuperbio(0, details)
-            if result == None: return False # for keyerrors - stops thread
-            elif result == True: return True # unsuccessful
+            if result is None: return False # for keyerrors - stops thread
+            elif result is True: return True # unsuccessful
             # [regno_field.text, accname_field.text, code, stationname.text, password.text, supername, "Fingerprint"]
 
-        self.proceed.emit(3) # To go to enroll page
+        self.proceed.emit(3)  # To go to enroll page
 
         # Enrolling fingerprint
         fingerdata = enroll_finger(regno)
@@ -354,9 +354,9 @@ class Handler(QObject):
         for output in fingerdata:
             if type(output) == str: self.enrollinfo.emit(output)
             elif type(output) == dict: enrolledfinger = output; break
-            elif output == False: self.enrollinfo.emit('Error Occured'); breakout = True; break
+            elif output is False: self.enrollinfo.emit('Error Occured'); breakout = True; break
 
-        if breakout == True: self.retryenroll.emit(); return False
+        if breakout is True: self.retryenroll.emit(); return False
 
         # Data conformity
         details.insert(3, 0)
@@ -369,8 +369,8 @@ class Handler(QObject):
 
         self._completeregistration(details)
 
-        return False # successful
-    
+        return False  # successful
+
     def _completeregistration(self, details):
         import csv
 
@@ -397,13 +397,13 @@ class Handler(QObject):
         '''
         self.log("41-1", regno) if rank == 'Super Admin' else self.log("41-0", regno)
         # Regular Admin registering as Super Admin
-        if (rank == 'Super Admin') & (self.adminsheet['Name'].get(regno) != None):
+        if (rank == 'Super Admin') & (self.adminsheet['Name'].get(regno) is not None):
             if details[-1] != "Verified": self.log("41-1", f"{regno} by Super: {supername} - {superlog}")
             else: self.log("41-1", f"{regno} by Super: {self.super} - {self.superlog}")
 
     def _removesuper(self, details):
         import csv
-        #self.userdetails(details, 4) # ANSWER
+        # self.userdetails(details, 4) # ANSWER
         if details[-1] == 'Verified':
             removename, superlog, supername = details[:3]
             self._menubranch(self.intermediatepage)
@@ -411,20 +411,20 @@ class Handler(QObject):
             removename, supername, superpassword, superlog = details # Remove rank has been removed from details[1]
 
         # Super verify
-        if superlog == 'Pin': # if Fingerprint calls this function, it's been verified
-            if self._verifysuper(1, details) == True: return # True if failed
-        
+        if superlog == 'Pin':  # if Fingerprint calls this function, it's been verified
+            if self._verifysuper(1, details) is True: return  # True if failed
+
         # Removee verify
-        if (self.supersheet['Name'].get(removename) != None) | (self.adminsheet['Name'].get(removename) != None): # if a super admin and an admin, it'll remove admin profile
-            if (self.supersheet['Name'].get(removename) != None) & (self.adminsheet['Name'].get(removename) != None): # user in both lists
+        if (self.supersheet['Name'].get(removename) is not None) | (self.adminsheet['Name'].get(removename) is not None):  # if a super admin and an admin, it'll remove admin profile
+            if (self.supersheet['Name'].get(removename) is not None) & (self.adminsheet['Name'].get(removename) is not None):  # user in both lists
                 data = list(self.adminsheet.loc[removename])
-                self.adminsheet.drop(removename, inplace = True)
-            elif self.supersheet['Name'].get(removename) != None: # user a superadmin
+                self.adminsheet.drop(removename, inplace=True)
+            elif self.supersheet['Name'].get(removename) is not None:  # user a superadmin
                 data = list(self.supersheet.loc[removename])
-                self.supersheet.drop(removename, inplace = True)
-            elif self.adminsheet['Name'].get(removename) != None: # user an admin
+                self.supersheet.drop(removename, inplace=True)
+            elif self.adminsheet['Name'].get(removename) is not None:  # user an admin
                 data = list(self.adminsheet.loc[removename])
-                self.adminsheet.drop(removename, inplace = True)
+                self.adminsheet.drop(removename, inplace=True)
             data.append(datetime.datetime.now().__str__()[:19])
 
             '''
@@ -466,7 +466,7 @@ class Handler(QObject):
         u_password = user[1]
         self.studentlog = user[2]
 
-        if self.customersheet['Name'].get(self.student) == None: self.loaded('close'); self.incorrect.emit(1); self.log("1002", self.student)
+        if self.customersheet['Name'].get(self.student) is None: self.loaded('close'); self.incorrect.emit(1); self.log("1002", self.student)
         else:
             data = self.customersheet.loc[self.customersheet['Name'].get(self.student)]
             self.availbal = data.Amount
@@ -493,7 +493,7 @@ class Handler(QObject):
             elif output is None: print('none timed out'); breakout = True; break
             elif output is True: self.loadstack.emit() # True finger was scanned
             elif type(output) == str: self.enrollinfo.emit(output) # str - verifying
-            elif output is "Found": break
+            elif output == "Found": break
 
         if breakout is True: return True
 
@@ -571,8 +571,8 @@ class Handler(QObject):
             supername, superpin, superlog = details[1:4]
 
         # Super verify
-        if superlog == 'Pin': # if Fingerprint calls this function, it's been verified
-            if self._verifysuper(2, details) == True: return # True if failed
+        if superlog == 'Pin':  # if Fingerprint calls this function, it's been verified
+            if self._verifysuper(2, details) is True: return  # True if failed
 
         self.availbal += round(amount, 2)
         self.customersheet.at[self.student, 'Amount'] = self.availbal
@@ -580,6 +580,12 @@ class Handler(QObject):
 
         self.userworksheet = update_admin_database(self.customersheet, self.userworksheet)
 
+        if self.supersheet['Name'].get(supername) is not None:  # Super Verified
+            rank = '1'
+        elif self.adminsheet['Name'].get(supername) is not None:  # Admin Verified
+            rank = '0'
+        else:
+            rank = '3'
         '''
         formatted_list = self.pdtolist('Users')
 
@@ -587,24 +593,24 @@ class Handler(QObject):
             csv_writer = csv.writer(file)
             csv_writer.writerows(formatted_list)
         '''
-        self.log(['7','1',rank,supername,superlog], amount)
+        self.log(['7', '1', rank, supername, superlog], amount)
 
     def _depositbio(self, details):
         result = self._verifysuperbio(2, details)
-        if result == False:
+        if result is False:
             self.loaded('close')
             details.append('Verified')
             self._deposit(details)
-            return False #stops thread
-        elif result == None: return False # for keyerrors - stops thread
-        elif result == True: return True # it either failed or finger wasn't scanned
+            return False  # stops thread
+        elif result is None: return False  # for keyerrors - stops thread
+        elif result is True: return True  # it either failed or finger wasn't scanned
 
     def _checkuser(self, name):
-        if self.customersheet['Name'].get(name) != None:
+        if self.customersheet['Name'].get(name) is not None:
             self.invalid.emit(1); self.log("40-2", name)
         else: self.proceed.emit(2)
-            
-    def _registeruser(self, details): # details = [reg no, acc name, password, fingerpicture]
+
+    def _registeruser(self, details):  # details = [reg no, acc name, password, fingerpicture]
         import csv
         # self.userdetails(details, 32) # ANSWER
         self.student = details[0]
@@ -679,11 +685,11 @@ class Handler(QObject):
     """
     hidekeyboard = Signal()
 
-    def _sendKeyToFocusItem(self, text):        
-        self.event.setCommitString("", -1,1) if text == '\x7F' else self.event.setCommitString(text)    
+    def _sendKeyToFocusItem(self, text):
+        self.event.setCommitString("", -1, 1) if text == '\x7F' else self.event.setCommitString(text)
         QApplication.sendEvent(QApplication.focusObject(), self.event)
 
-    def _hideKeyboard(self): # K in Keyboard is capital
+    def _hideKeyboard(self):  # K in Keyboard is capital
         self.hidekeyboard.emit()
 
     """
