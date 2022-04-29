@@ -70,26 +70,35 @@ class Handler(QObject):
 
     """
     Slots are used to communicate with Python from QML
-    1. Superuser: Runs during a Super Admin log in. It passes the information entered and, at the end, emits appropriate Signal(s) based on the outcome of the login attempt
-    2. Superadminlogout: Called when a Super Admin is logged out.
-    3. Adminuser: Runs during an Admin log in. See Description of 'Superuser Slot' in No. 2 for extra detail
-    4. Adminlogout: Called when an Admin is logged out.
-    5. Checksuper: Used when Removing/Registering to certify they exist/don't exist respectively
-    6. Registersuper: Called when Registering a Super Admin or Admin
-    7. Removesuper: Called when Removing a Super Admin or Admin
-    8. Studentuser: Runs during a User/Student log in. See Description of 'Superuser Slot' in No. 2 for extra detail
-    9. Userlogout: Called when a User/Student is logged out.
-    10. Feature: Called to assign the variable which tells the program what activity was chosen. Helps to Display and Load the correct page
-    11. Menubranch: Tells the code what page the menu branched out from
-    12. Switchfeature: Called to emit Signals which display Activity window, Logged user's name, and Account balance. See 'Loggeduser Signal' in No. 4 of Signal List
-    13. Purchaseamounts: Used to sum the multiple purchase values. Calls totalexp Signal
-    14. Purchasefeature: Called to assign the variable which tells the program what amount was spent
-    15. Transferrecipient: Checks if the beneficiary of a transaction exists
-    16. Transferfeature: Called to assign the variables which tell the program what amount was transferred, the Recipient, and Recipient's means of identification
-    17. Deposit: Called when making a deposit to confirm admin to verify the deposit and update the database
-    18. Checkuser: Called when registering a new user to be sure reg no doesn't already exist
-    19. Registeruser: Called to assign the variables which tell the program Reg No., Password, and Fingerprint of New User
-    20. Transactiondone: Called after a Purchase or Transfer was attempted regardless if it was successful or not
+    1. _superlogin: Runs during a Super Admin log in. It passes the information entered and, at the end, emits appropriate Signal(s) based on the outcome of the login attempt
+    1.1 _superloginbio: Waits for fingerprint and runs functions based on the result
+    2. _superlogout: Called when a Super Admin is logged out.
+    3. _adminlogin: Runs during an Admin log in. See Description of 'Superuser Slot' in No. 2 for extra detail
+    3.1 _adminloginbio: Waits for fingerprint and runs functions based on the result
+    4. _adminlogout: Called when an Admin is logged out.
+    5. _verifysuper: Used to verify super for Registersuper, Removesuper, Deposit functions which require confirmation before executing
+    5.1 _verifysuperbio: Fingerprint version of _verifysuper. The verification is done with fingerprint
+    6. _checksuper: Used when Removing/Registering to certify they exist/don't exist respectively
+    7. _registersuper: Called when Registering a Super Admin or Admin
+    7.1 _completeregistration: Called by _registersuper after successful verification
+    8. _removesuper: Called when Removing a Super Admin or Admin. The verification is done by typing details
+    8.1 _removesuperbio: The verification is done with fingerprint
+    9. _userlogin: Runs during a User/Student log in. See Description of 'Superuser Slot' in No. 2 for extra detail
+    9.1 _userloginbio: Waits for fingerprint and runs functions based on the result
+    10. _userlogout: Called when a User/Student is logged out.
+    11. _feature: Called to assign the variable which tells the program what activity was chosen. Helps to Display and Load the correct page
+    12. _menubranch: Tells the code what page the menu branched out from
+    13. _switchfeature: Called to emit Signals which display Activity window, Logged user's name, and Account balance. See 'Loggeduser Signal' in No. 4 of Signal List
+    14. _purchaseamounts: Used to sum the multiple purchase values. Calls totalexp Signal
+    15. _purchasefeature: Called to assign the variable which tells the program what amount was spent
+    16. _transferrecipient: Checks if the beneficiary of a transaction exists
+    17. _transferfeature: Called to assign the variables which tell the program what amount was transferred, the Recipient, and Recipient's means of identification
+    18. _deposit: Called when making a deposit to confirm admin to verify the deposit and update the database
+    18.1 _depositbio: The verification is done with fingerprint
+    19. _checkuser: Called when registering a new user to be sure reg no doesn't already exist
+    20. _registeruser: Called to assign the variables which tell the program Reg No., Password, and Fingerprint of New User
+    20.1 _registeruserbio: Called to register fingerprint. If successful, calls _registeruser and passes in the information
+    21. _transactiondone: Called after a Purchase or Transfer was attempted regardless if it was successful or not
     """        
 
     def _superlogin(self, s_user):
@@ -148,7 +157,7 @@ class Handler(QObject):
         else:
             data = self.adminsheet.loc[self.adminsheet['Name'].get(self.admin)]
             if a_password == data.Pin:
-                self.loaded(self.pageindex[3]) if a_user[3] == 0 else self.loaded(self.pageindex['adminsetting']); self.accountname.emit([data['Account Name'], data.Station])
+                self.loaded(self.pageindex[3]) if a_user[3] == 0 else self.loaded(self.pageindex['adminsetting']); self.accountname.emit([data['Account Name'], data.Station, str(data.Amount)])
                 self.log("1100", self.admin) if self.adminlog == 'Pin' else self.log("1110", self.admin)
             else: self.loaded(self.pageindex[2]); self.incorrect.emit(1); self.log("1000", self.admin)
 
@@ -175,7 +184,7 @@ class Handler(QObject):
 
         data = self.adminsheet.loc[self.adminsheet['Name'].get(self.admin)]
 
-        self.loaded(self.pageindex[3]) if a_user[2] == 0 else self.loaded(self.pageindex['adminsetting']); self.accountname.emit([data['Account Name'], data.Station])
+        self.loaded(self.pageindex[3]) if a_user[2] == 0 else self.loaded(self.pageindex['adminsetting']); self.accountname.emit([data['Account Name'], data.Station, str(data.Amount)])
         self.log("1110", self.admin)
 
         return False # successful
@@ -315,7 +324,10 @@ class Handler(QObject):
         # self.userdetails(details, 3) # ANSWER
 
         breakout = False
-        regno, accname, rank, station, password, supername, superlog = details[:7]
+        if details[-1] == "Verified":
+            regno, accname, rank, station, password, superlog = details
+        else:
+            regno, accname, rank, station, password, supername, superlog = details[:7]
 
         # Super verify
         if details[-1] == "Verified": # Super Admin has not been verified already
@@ -346,7 +358,8 @@ class Handler(QObject):
         if breakout == True: self.retryenroll.emit(); return False
 
         # Data conformity
-        details.insert(5, str(enrolledfinger[regno]))
+        details.insert(3, 0)
+        details.insert(6, str(enrolledfinger[regno]))
 
         if rank == "Super Admin":
             self.superbiosheet.udpate(enrolledfinger)
@@ -360,9 +373,9 @@ class Handler(QObject):
     def _completeregistration(self, details):
         import csv
 
-        information = details[:6]
+        information = details[:7]
         regno, rank = details[0], details[2]
-        supername, superlog = details[6], details[-1]
+        supername, superlog = details[7], details[-1]
 
         information.append(datetime.datetime.now().__str__()[:19])
 
@@ -456,9 +469,9 @@ class Handler(QObject):
         else:
             data = self.customersheet.loc[self.customersheet['Name'].get(self.student)]
             self.availbal = data.Amount
-            self.accname = data[1]
+            self.accname = data['Account Name']
             if u_password == data.Pin:
-                self.loaded(self.pageindex[self.activity]); self.switchfeature()
+                self.loaded(self.pageindex[self.activity]); self._switchfeature()
                 self.log("1102", self.student)
             else: self.loaded('close'); self.incorrect.emit(1); self.log("1002", self.student)
 
@@ -486,9 +499,9 @@ class Handler(QObject):
         data = self.customersheet.loc[self.customersheet['Name'].get(self.student)]
 
         self.availbal = data.Amount
-        self.accname = data[1]
+        self.accname = data['Account Name']
 
-        self.loaded(self.pageindex[self.activity]); self.switchfeature()
+        self.loaded(self.pageindex[self.activity]); self._switchfeature()
         self.log("1112", self.student)
 
         return False # successful
@@ -535,7 +548,6 @@ class Handler(QObject):
     def _transferfeature(self, details): # details = [amount, fingerpicture/ username, "Fingerprint/ Typed"]
         self.amount = 0.0 if details[0] == '' else float(details[0])
         self.recipient = details[1]        
-        self.recipientlog = details[2]
 
         # if self.customersheet['Name'].get(self.recipient) == None: self.loaded('close'); self.incorrect.emit(2)
         # ANSWER BELOW
@@ -638,6 +650,10 @@ class Handler(QObject):
 
         if code == 0: # Purchase
             self.log("2112", self.student) if self.studentlog == "Fingerprint" else self.log("2102", self.student)
+            adminbalance = self.adminsheet.loc[self.admin]['Amount']
+            adminbalance += round(self.amount, 2)
+            self.adminsheet.at[self.admin, 'Amount'] = adminbalance
+            self.adminworksheet = update_admin_database(self.adminsheet, self.adminworksheet)
         elif code == 1: # Transfer
             self.log("3112", self.student) if self.studentlog == "Fingerprint" else self.log("3102", self.student)
             recipientbal = self.customersheet.loc[self.recipient]['Amount']
@@ -677,6 +693,8 @@ class Handler(QObject):
     4. Writeout: Executed activity is written to external log file. 'Log Function' calls 'Writout'
     5. Log: Called after an activity has been executed successfully or failingly
     6. Closeapp: Runs when close button is clicked. It prints the activity log for that current session and closes the application
+    7. _functionlist: Returns the appropriate function to run when called by _biometrics function
+    8. _biometrics: Starts a thread to run the function returned from _functionlist in the thread
     """
     
     def test_gspread(self):
@@ -684,6 +702,7 @@ class Handler(QObject):
 
         spreadsheet, self.adminworksheet = load_admin_database()
         spreadsheet.set_index(spreadsheet['Name'], inplace = True)
+        spreadsheet = spreadsheet.astype({'Amount': float})
         self.supersheet = spreadsheet.loc[spreadsheet['Rank']=='Super Admin']
         self.adminsheet = spreadsheet.loc[spreadsheet['Rank']=='Admin']
 
@@ -699,6 +718,7 @@ class Handler(QObject):
         # Experimental
         spreadsheet = read_csv('admindummy.csv', dtype = str)
         spreadsheet.set_index(spreadsheet['Name'], inplace = True)
+        spreadsheet = spreadsheet.astype({'Amount': float})
         self.supersheet = spreadsheet.loc[spreadsheet['Rank']=='Super Admin']
         self.adminsheet = spreadsheet.loc[spreadsheet['Rank']=='Admin']
         self.customersheet = read_csv('userdummy.csv', dtype = str)
@@ -716,7 +736,7 @@ class Handler(QObject):
         userworksheet = update_admin_database(self.customersheet, userworksheet)
         '''
 
-        #print(f"{spreadsheet}\n{type(spreadsheet['Fingerprint'])}")
+        print(f"{spreadsheet}")
         print(f"Admins: {len(spreadsheet)} Entries\nUsers: {len(self.customersheet)} Entries")
         self.finishedprocess.emit(self.pageindex[1])
 
@@ -766,7 +786,7 @@ class Handler(QObject):
         elif code[0] == '2':
             message = f"Purchase {passkey[code[1]]}: {userkey[code[3]]} {name} used {biokey[code[2]]} for {self.amount:.2f} by {datetime.datetime.now().__str__()[:19]}\n"
         elif code[0] == '3':
-            message = f"Transfer {passkey[code[1]]}: {userkey[code[3]]} {name} used {biokey[code[2]]} for {self.amount:.2f} to {self.recipientlog} {self.recipient} by {datetime.datetime.now().__str__()[:19]}\n"
+            message = f"Transfer {passkey[code[1]]}: {userkey[code[3]]} {name} used {biokey[code[2]]} for {self.amount:.2f} to {self.recipient} by {datetime.datetime.now().__str__()[:19]}\n"
         elif code[0] == '4':
             message = f"Register {passkey[code[1]]}: {userkey[code[3]]} {name} by {datetime.datetime.now().__str__()[:19]}\n"
         elif code[0] == '5':
