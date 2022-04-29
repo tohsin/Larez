@@ -343,7 +343,13 @@ class Handler(QObject):
         if breakout == True: self.retryenroll.emit(); return False
 
         # Data conformity
-        details.insert(5, enrolledfinger[regno])
+        details.insert(5, str(enrolledfinger[regno]))
+
+        if rank == "Super Admin":
+            self.superbiosheet.udpate(enrolledfinger)
+        elif rank == "Admin":
+            self.adminbiosheet.update(enrolledfinger)
+
         self._completeregistration(details)
 
         return False # successful
@@ -425,7 +431,7 @@ class Handler(QObject):
             ''''
             self.log(['6','1',removerank,supername,superlog], removename)
         else:
-            self.invalid.emit(1); self.log(['6','0','Undefined',supername,superlog], removename)
+            self.invalid.emit(1); self.log(['6','0','Unfound',supername,superlog], removename)
 
     def _removesuperbio(self, details):
         result = self._verifysuperbio(1, details)
@@ -613,7 +619,9 @@ class Handler(QObject):
 
         if breakout == True: self.retryenroll.emit(); return False
 
-        details.append(enrolledfinger[regno])
+        details.append(str(enrolledfinger[regno]))
+        self.userbiosheet.update(enrolledfinger)
+
         self._registeruser(details)
         self.proceed.emit(1)
 
