@@ -54,9 +54,9 @@ Item {
         }
     }
     Rectangle {
-        anchors.top: use_pin_button.top ; anchors.topMargin: -0.5 ; visible: use_pin_button.visible
+        anchors.top: use_pin_button.top ; anchors.topMargin: 0.5 ; visible: use_pin_button.visible
         anchors.left: use_pin_button.left ; anchors.leftMargin: -1
-        height: use_pin_button.height + 3.5 ; width: use_pin_button.width + 1.5 ; radius: use_pin_button.radius + 1
+        height: use_pin_button.height + 2.5 ; width: use_pin_button.width + 1.5 ; radius: use_pin_button.radius + 1
         color: "#e0e0e0"
     }
     Rectangle {
