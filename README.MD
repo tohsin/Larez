@@ -1,11 +1,10 @@
 ## To Log into app: 
-Click the fingerprint icon to login with default users
 
-If you wish to manually fill, below are the details:
+Super User info in supersheet. Admin in adminsheet. User in customersheet
 ```
-supersheet = {'11': '0011', '13': '0013', '15': '0015'} # '11' is logged in by clicking the fingerprint icon    
-adminsheet = {'12': '0012', '14': '0014', '16': '0016'} # '12' is logged in by clicking the fingerprint icon    
-customersheet = {'21': '0021', '22': '0022'} # '21' is logged in by clicking the fingerprint icon
+supersheet = {'11': '11', '13': '13', '15': '15'}   
+adminsheet = {'12': '12', '14': '14', '16': '16'}    
+customersheet = {'21': '21', '22': '22', '23': '23'}
 ```
 ### Create Virtual environment in python
 ```
