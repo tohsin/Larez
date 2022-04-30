@@ -2,8 +2,8 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.Qt import QInputMethodEvent
 from PyQt5.QtCore import QObject, QThreadPool, pyqtSignal as Signal
 
-# from fingerprintfunctions import *
-from checkfunc import *
+from fingerprintfunctions import *
+# from checkfunc import *
 from database import *
 
 import datetime

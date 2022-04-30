@@ -93,10 +93,9 @@ def enroll_finger(reg_no):
                 i = finger.get_image()
 
     mem[reg_no] = finger.get_fpdata('char',1)
-    mem2[finger.get_fpdata('char',1)] = reg_no
 
-    print(mem)    
-    yield mem2
+    print(mem)
+    yield mem
 
     return True
 
