@@ -1,6 +1,7 @@
 ## To Log into app: 
 
 Super User info in supersheet. Admin in adminsheet. User in customersheet
+View admindummy.csv and userdummy.csv for full database
 ```
 supersheet = {'11': '11', '13': '13', '15': '15'}   
 adminsheet = {'12': '12', '14': '14', '16': '16'}    
