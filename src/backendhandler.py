@@ -550,16 +550,6 @@ class Handler(QObject):
         self.amount = 0.0 if details[0] == '' else float(details[0])
         self.recipient = details[1]
 
-        # if self.customersheet['Name'].get(self.recipient) == None: self.loaded('close'); self.incorrect.emit(2)
-        # ANSWER BELOW
-        """self.amount = 0.0 if details[0] == '' else float(details[0])
-        if self.recipientlog == "Fingerprint":
-            if self.recipient in self.googlesheet('users')[fingerprint]:
-                self.recipient = self.googlesheet('users')[fingerprint][self.recipient] # return a name
-            else: self.loaded('close'); self.incorrect.emit(2)
-        elif self.recipientlog == "Typed":
-            if self.recipient not in self.customersheet: self.loaded('close'); self.incorrect.emit(2)"""
-
     def _deposit(self, details):
         import csv
         # Bio verify
@@ -706,64 +696,62 @@ class Handler(QObject):
 
     def test_gspread(self):
         # from pandas import read_csv
+        run = True
+        attempts = 10
+        while run:
+            try:
+                spreadsheet, self.adminworksheet = load_admin_database()
+                spreadsheet.set_index(spreadsheet['Name'], inplace=True)
+                spreadsheet = spreadsheet.astype({'Amount': float})
+                self.supersheet = spreadsheet.loc[spreadsheet['Rank'] == 'Super Admin']
+                self.adminsheet = spreadsheet.loc[spreadsheet['Rank'] == 'Admin']
 
-        spreadsheet, self.adminworksheet = load_admin_database()
-        spreadsheet.set_index(spreadsheet['Name'], inplace=True)
-        spreadsheet = spreadsheet.astype({'Amount': float})
-        self.supersheet = spreadsheet.loc[spreadsheet['Rank'] == 'Super Admin']
-        self.adminsheet = spreadsheet.loc[spreadsheet['Rank'] == 'Admin']
+                self.customersheet, self.userworksheet = load_user_database()
+                self.customersheet.set_index(self.customersheet['Name'], inplace=True)
+                self.customersheet = self.customersheet.astype({'Amount': float})
 
-        self.customersheet, self.userworksheet = load_user_database()
-        self.customersheet.set_index(self.customersheet['Name'], inplace=True)
-        self.customersheet = self.customersheet.astype({'Amount': float})
+                self.superbiosheet = {username: eval(finger) for finger, username in zip(self.supersheet['Fingerprint'],self.supersheet['Name'])}
+                self.adminbiosheet = {username: eval(finger) for finger, username in zip(self.adminsheet['Fingerprint'],self.adminsheet['Name'])}
+                self.userbiosheet = {username: eval(finger) for finger, username in zip(self.customersheet['Fingerprint'], self.customersheet['Name'])}
 
-        self.superbiosheet = {username: eval(finger) for finger, username in zip(self.supersheet['Fingerprint'],self.supersheet['Name'])}
-        self.adminbiosheet = {username: eval(finger) for finger, username in zip(self.adminsheet['Fingerprint'],self.adminsheet['Name'])}
-        self.userbiosheet = {username: eval(finger) for finger, username in zip(self.customersheet['Fingerprint'], self.customersheet['Name'])}
+                '''
+                # For When Internet Fails You
+                spreadsheet = read_csv('admindummy.csv', dtype = str)
+                spreadsheet.set_index(spreadsheet['Name'], inplace = True)
+                spreadsheet = spreadsheet.astype({'Amount': float})
+                self.supersheet = spreadsheet.loc[spreadsheet['Rank']=='Super Admin']
+                self.adminsheet = spreadsheet.loc[spreadsheet['Rank']=='Admin']
 
-        '''
-        # Experimental
-        spreadsheet = read_csv('admindummy.csv', dtype = str)
-        spreadsheet.set_index(spreadsheet['Name'], inplace = True)
-        spreadsheet = spreadsheet.astype({'Amount': float})
-        self.supersheet = spreadsheet.loc[spreadsheet['Rank']=='Super Admin']
-        self.adminsheet = spreadsheet.loc[spreadsheet['Rank']=='Admin']
-        self.customersheet = read_csv('userdummy.csv', dtype = str)
-        self.customersheet.set_index(self.customersheet['Name'], inplace = True)
-        self.customersheet = self.customersheet.astype({'Amount': float})
-        self.superbiosheet = {username: eval(finger) for finger, username in zip(self.supersheet['Fingerprint'],self.supersheet['Name'])}
-        self.adminbiosheet = {username: eval(finger) for finger, username in zip(self.adminsheet['Fingerprint'],self.adminsheet['Name'])}
-        self.userbiosheet = {username: eval(finger) for finger, username in zip(self.customersheet['Fingerprint'],self.customersheet['Name'])}
+                self.customersheet = read_csv('userdummy.csv', dtype = str)
+                self.customersheet.set_index(self.customersheet['Name'], inplace = True)
+                self.customersheet = self.customersheet.astype({'Amount': float})
+
+                self.superbiosheet = {username: eval(finger) for finger, username in zip(self.supersheet['Fingerprint'],self.supersheet['Name'])}
+                self.adminbiosheet = {username: eval(finger) for finger, username in zip(self.adminsheet['Fingerprint'],self.adminsheet['Name'])}
+                self.userbiosheet = {username: eval(finger) for finger, username in zip(self.customersheet['Fingerprint'],self.customersheet['Name'])}
 
 
-        admindf, adminworksheet = load_admin_database()
-        userdf, userworksheet = load_user_database()
+                admindf, adminworksheet = load_admin_database()
+                userdf, userworksheet = load_user_database()
 
-        adminworksheet = update_admin_database(spreadsheet, adminworksheet)
-        userworksheet = update_admin_database(self.customersheet, userworksheet)
-        '''
+                adminworksheet = update_admin_database(spreadsheet, adminworksheet)
+                userworksheet = update_admin_database(self.customersheet, userworksheet)
+                '''
 
-        print(f"{spreadsheet}")
-        print(f"Admins: {len(spreadsheet)} Entries\nUsers: {len(self.customersheet)} Entries")
-        self.finishedprocess.emit(self.pageindex[1])
+            except:
+                attempts -= 1
+                if attempts == 0:
+                    self.retryenroll.emit()
+                    return False  # ends function. Restart needed
 
-        return False  # successful
-        """
-        When working
-            df.set_index(df['Name'], inplace = True)
-        For finding column
-            if y['Name'].get(username) == None: self.incorrect.emit(1)
-            else: data = y.loc[y['Name'].get(username)]
-        when writing to csv
-            df.sort_values('Name')
-            df.to_csv('path', index = False)
-        To Add
-            df.loc[name] = [name,rank,pin,fingerprint]
-        To Remove
-            data = df.loc[index]
-            deleteddf.loc[index] = [data.Name, data.Rank, data.Pin, data.Fingerprint]
-            df.drop(index, inplace = True)
-        """
+            else:
+                run = False  # stops loop successfully
+        else:
+            print(f"{spreadsheet}")
+            print(f"Admins: {len(spreadsheet)} Entries\nUsers: {len(self.customersheet)} Entries")
+            self.finishedprocess.emit(self.pageindex[1])
+
+            return False  # successful
 
     def pdtolist(self, instruction):
         if instruction == 'Admins':

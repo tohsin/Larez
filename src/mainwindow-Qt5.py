@@ -27,8 +27,6 @@ class Worker(QRunnable):
 
 
 class Backend(Handler):
-    googlesheet = None
-
     """
     Slots are used to communicate with Python from QML
     1. Superuser: Runs during a Super Admin log in. It passes the information entered and, at the end, emits appropriate Signal(s) based on the outcome of the login attempt
