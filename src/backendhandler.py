@@ -695,9 +695,10 @@ class Handler(QObject):
     """
 
     def test_gspread(self):
+        import time
         # from pandas import read_csv
         run = True
-        attempts = 10
+        attempts = 7
         while run:
             try:
                 spreadsheet, self.adminworksheet = load_admin_database()
@@ -739,6 +740,7 @@ class Handler(QObject):
                 '''
 
             except:
+                time.sleep(1)
                 attempts -= 1
                 if attempts == 0:
                     self.retryenroll.emit()
