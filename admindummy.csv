@@ -1,6 +1,13 @@
-Name,Account Name,Rank,Station,Pin,Fingerprint,Date Created
-11,Oti J,Super Admin,Caf 2,0011,0011,placeholder
-13,Kalu,Super Admin,Caf 1,0013,0013,placeholder
-14,Precious,Super Admin,Guest House,0014,0014,placeholder
-12,Tosin Oseni,Admin,CUCRID,0012,0012,placeholder
-15,Dumebi,Admin,CDS Buttery,0015,0015,placeholder
+Name,Account Name,Rank,Amount,Station,Pin,Fingerprint,Date Created
+11,Oti J,Super Admin,0,Caf 2,11,11,placeholder
+13,Kalu,Super Admin,0,Caf 1,13,13,placeholder
+15,Precious,Super Admin,0,Guest House,15,15,placeholder
+12,Favour Oduh,Admin,0,CUCRID,12,12,placeholder
+14,Dumebi,Admin,0,CDS Buttery,14,14,placeholder
+16,Tosin Oseni,Admin,0,CUCRID,16,16,placeholder
+33,33,Admin,0,Caf 1,33,"[1, 2, 4, 5, 7, 8, 9, 6, 4, 3]",2022-04-27 14:06:39
+234,234,Super Admin,0,Caf 1,234,"[1, 2, 4, 5, 7, 8, 9, 6, 4, 3]",2022-04-27 20:12:36
+88,88,Admin,0,Caf 1,881,"[1, 2, 4, 5, 7, 8, 9, 6, 4, 3]",2022-04-29 03:02:34
+76,76,Admin,0,Caf 1,76,"[1, 2, 4, 5, 7, 8, 9, 6, 4, 3]",2022-04-29 03:17:37
+65,65,Admin,0,Caf 2,65,"[1, 2, 4, 5, 7, 8, 9, 6, 4, 3]",2022-04-29 03:18:16
+445,445,Admin,0,Caf 2,45,"[1, 2, 4, 5, 7, 8, 9, 6, 4, 3]",2022-04-29 03:22:11
