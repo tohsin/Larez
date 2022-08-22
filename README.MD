@@ -1,9 +1,9 @@
-![page 1](https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/Resized%20screenshots/1.%20Splash_.png)
-![page 2.1](https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/Resized%20screenshots/2.%20Super%20Login%20(Not%20waiting%20for%20finger)_.png)
-![page 2.2](https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/Resized%20screenshots/2.%20Super%20Login%20(Waiting%20for%20finger)_.png)
-![page 3](https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/Resized%20screenshots/3.%20Admin%20Login_.png)
-![page 8](https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/Resized%20screenshots/8.%20Feature%20page_.png)
-![page 13](https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/Resized%20screenshots/13.%20Transfer_.png)
+<img src="https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/1.%20Splash.PNG" title="Pg 1. Splash" style="width: 320px"> <img src="https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/2.%20Super%20Login%20(Not%20waiting%20for%20finger).PNG" title="Pg 2. Super Admin Login" style="width: 320px">
+<img src="https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/2.%20Super%20Login%20(Waiting%20for%20finger).PNG" title="Pg 2 (Biometric)" style="width: 320px">
+<img src="https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/3.%20Admin%20Login.PNG" title="Pg 3. Admin Login (Pin)" style="width: 320px">
+<img src="https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/8.%20Feature%20page.PNG" title="Pg 8. Features" style="width: 320px">
+<img src="https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/13.%20Transfer.PNG" title="Pg 13. Transfer" style="width: 320px">
+
 
 ## To Log into app: 
 
