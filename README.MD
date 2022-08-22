@@ -1,3 +1,10 @@
+![page 1](https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/Resized%20screenshots/1.%20Splash_.png)
+![page 2.1](https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/Resized%20screenshots/2.%20Super%20Login%20(Not%20waiting%20for%20finger)_.png)
+![page 2.2](https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/Resized%20screenshots/2.%20Super%20Login%20(Waiting%20for%20finger)_.png)
+![page 3](https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/Resized%20screenshots/3.%20Admin%20Login_.png)
+![page 8](https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/Resized%20screenshots/8.%20Feature%20page_.png)
+![page 13](https://github.com/tohsin/Larez/blob/qt5-implementation/Screenshots/Resized%20screenshots/13.%20Transfer_.png)
+
 ## To Log into app: 
 
 Super User info in supersheet. Admin in adminsheet. User in customersheet
