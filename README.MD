@@ -1,4 +1,5 @@
-<img src="Screenshots/1. Splash.PNG" title="Pg 1. Splash" style="width: 320px"> <img src="Screenshots/2.%20Super%20Login%20(Not%20waiting%20for%20finger).PNG" title="Pg 2. Super Admin Login" style="width: 320px">
+<img src="Screenshots/1. Splash.PNG" title="Pg 1. Splash" style="width: 320px"> 
+<img src="Screenshots/2.%20Super%20Login%20(Not%20waiting%20for%20finger).PNG" title="Pg 2. Super Admin Login" style="width: 320px">
 <img src="Screenshots/2.%20Super%20Login%20(Waiting%20for%20finger).PNG" title="Pg 2 (Biometric)" style="width: 320px">
 <img src="Screenshots/3.%20Admin%20Login.PNG" title="Pg 3. Admin Login (Pin)" style="width: 320px">
 <img src="Screenshots/8.%20Feature%20page.PNG" title="Pg 8. Features" style="width: 320px">
